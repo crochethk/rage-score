@@ -222,7 +222,7 @@ wobei Gebotsbonus = {
 
 **TA-03:** Das System **muss** auf Desktop-Browsern (Chrome 139+, Firefox 142+) laufen.
 
-**TA-04:** Das System **sollte** auf Mobile-Browsern (Chrome Android, Safari iOS) laufen.
+**TA-04:** Das System **soll** auf Mobile-Browsern (Chrome Android, Safari iOS) laufen.
 
 ### 6.2 Datenhaltung
 
@@ -230,16 +230,22 @@ wobei Gebotsbonus = {
 
 - **Implementierung:** Browser-lokaler Speicher (localStorage/sessionStorage).
 
-**TA-06:** Das System **sollte** Datenexport ermöglichen:
-
-- **Implementierung:** JSON-Download des Spielstands.
-
-**TA-07:** Das System **sollte** Audruck des Spielstands ermöglichen:
-
-- **Implementierung:** PDF-Generierung und -Download des Spielstands.
-
 ## 8. Ausblick und Erweiterungen
 
 Die folgenden Funktionen sind **nicht Teil** der initialen Umsetzung, aber als zukünftige Erweiterungen denkbar:
 
-- **E-03:** Regelwerk-Varianten (andere Länder-Versionen)
+**ETA-06:** Das System **soll** Datenexport ermöglichen:
+
+- **Implementierung:** JSON-Download des Spielstands.
+
+**ETA-07:** Das System **soll** Audruck des Spielstands ermöglichen:
+
+- **Implementierung:** PDF-Generierung und -Download des Spielstands.
+
+**EFA-03:** Regelwerk-Varianten (andere Länder-Versionen)
+
+**EFA-04:** Modus mit benutzerdefinierbaren Runden
+
+- Beliebige Anzahl Runden
+- Benutzerdefinierte Anzahl an Karten pro Runde
+  - ggf. zufällige Anzahl Karten pro Runde
