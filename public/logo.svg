@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 850" role="img" aria-label="Rage Score Tracker Logo">
+  <defs>
+    <!-- jagged displacement (subtle) -->
+    <filter id="jagged-subtle" x="-40%" y="-40%" width="180%" height="180%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="24" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+
+    <!-- stronger jagged displacement (for the red outline) -->
+    <filter id="jagged-strong" x="-50%" y="-50%" width="200%" height="200%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" seed="12" result="noise2"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise2" scale="442" xChannelSelector="R" yChannelSelector="G"/>
+      <!-- soften a touch so the red glow spreads like a flame -->
+      <feGaussianBlur stdDeviation="2" result="blurred"/>
+      <feMerge>
+        <feMergeNode in="blurred"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- stronger jagged displacement 2 (for the red outline) -->
+    <filter id="jagged-strong2" x="-50%" y="-50%" width="200%" height="200%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.005" numOctaves="4" seed="8" result="noise3"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise3" scale="442" xChannelSelector="R" yChannelSelector="G"/>
+      <!-- soften a touch so the red glow spreads like a flame -->
+      <feGaussianBlur stdDeviation="2" result="blurred"/>
+      <feMerge>
+        <feMergeNode in="blurred"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- background -->
+  <rect width="100%" height="90%" fill="#0e2a44"/>
+
+  <!-- outer red flame-like distorted stroke -->
+  <text
+    x="50%" y="64%"
+    text-anchor="middle"
+    font-family="'Arial Black', sans-serif"
+    font-weight="900"
+    font-size="520"
+    fill="none"
+    stroke="#e12b2b"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    stroke-width="82"
+    filter="url(#jagged-strong)"
+    paint-order="stroke"
+    style="letter-spacing:0.02em">
+    R
+  </text>
+  <text
+    x="50%" y="64%"
+    text-anchor="middle"
+    font-family="'Arial Black', sans-serif"
+    font-weight="900"
+    font-size="520"
+    fill="none"
+    stroke="#e12b2b"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    stroke-width="82"
+    filter="url(#jagged-strong2)"
+    paint-order="stroke"
+    style="letter-spacing:0.02em">
+    R
+  </text>
+
+  <!-- middle navy jagged outline -->
+  <text
+    x="50%" y="64%"
+    text-anchor="middle"
+    font-family="'Arial Black', sans-serif"
+    font-weight="900"
+    font-size="520"
+    fill="none"
+    stroke="#072b4a"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    stroke-width="34"
+    filter="url(#jagged-subtle)"
+    paint-order="stroke"
+    style="letter-spacing:0.02em">
+    R
+  </text>
+
+  <!-- inner white solid R -->
+  <text
+    x="50%" y="64%"
+    text-anchor="middle"
+    font-family="'Arial Black', sans-serif"
+    font-weight="900"
+    font-size="520"
+    fill="#ffffff"
+    stroke="#ffffff"
+    stroke-width="6"
+    stroke-linejoin="miter"
+    paint-order="fill"
+    style="letter-spacing:0.02em"
+    filter="url(#soft-shadow)">
+    R
+  </text>
+
+  <!-- small jagged cut lines -->
+  <g transform="translate(-8, -45)" opacity="0.95">
+    <path d="M235 470 l18 -12 l-6 -20 l22 -8 l-10 -18 l18 -12"
+          stroke="#072b4a" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M330 425 l-14 -20 l26 -8 l-6 -30 l22 -4"
+          stroke="#072b4a" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M470 590 l-14 -20 l26 -8 l-6 -30 l22 -4"
+          stroke="#072b4a" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

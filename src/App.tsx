@@ -1,7 +1,11 @@
+import logo from "/logo.png";
+
 export default function App() {
   return (
     <>
-      <h1>Hello World</h1>
+      <div>
+        <img src={logo} className="logo" alt="logo" width={"5%"} />
+      </div>
     </>
   );
 }
