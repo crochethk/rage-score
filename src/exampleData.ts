@@ -8,8 +8,8 @@ interface ScoreTableMockData {
 export const dataSet1: ScoreTableMockData = {
   players: [
     {
-      id: "p1-uuid",
-      name: "Toni",
+      id: "p1-uuid", // generated upon player creation
+      name: "Toni", // user input
     },
     {
       id: "p2-uuid",
@@ -23,12 +23,13 @@ export const dataSet1: ScoreTableMockData = {
 
   rounds: [
     {
-      cardsDealt: 42,
+      roundNumber: 1, // generated during game
+      cardsDealt: 42, // configuration dependent
       playerData: {
         "p1-uuid": {
-          bid: 11,
-          tricksTaken: 11,
-          bonusCardPoints: 11,
+          bid: 11, // user input
+          tricksTaken: 11, // user input
+          bonusCardPoints: 11, // user input
         },
         "p2-uuid": {
           bid: 12,
@@ -43,6 +44,7 @@ export const dataSet1: ScoreTableMockData = {
       },
     },
     {
+      roundNumber: 2,
       cardsDealt: 43,
       playerData: {
         "p1-uuid": {
@@ -63,6 +65,7 @@ export const dataSet1: ScoreTableMockData = {
       },
     },
     {
+      roundNumber: 3,
       cardsDealt: 44,
       playerData: {
         "p1-uuid": {

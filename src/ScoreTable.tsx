@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { dataSet1 as demoData } from "./exampleData";
 import type { Player, PlayerRoundData, Round } from "./types";
 
@@ -28,34 +29,36 @@ function PlayerRoundDataCell({ roundData }: { roundData: PlayerRoundData }) {
   );
 }
 
-interface RoundDataCellsProps {
-  players: Player[];
-  round: Round;
-}
-
-function RoundDataCells({ players, round }: RoundDataCellsProps) {
-  const cells = players.map((p) => (
-    <td key={p.id}>
-      <PlayerRoundDataCell roundData={round.playerData[p.id]} />
-    </td>
-  ));
-  return cells;
-}
-
 interface ScoreTableBodyProps {
   players: Player[];
   rounds: Round[];
 }
 
 function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
-  const rows = rounds.map((round, roundIdx, _) => (
-    <tr key={roundIdx}>
+  const rows: JSX.Element[] = [];
+
+  for (const round of rounds) {
+    const rowLabel = (
       <th scope="row">
-        {round.cardsDealt} (Runde {roundIdx + 1})
+        {round.cardsDealt} (Runde {round.roundNumber})
       </th>
-      <RoundDataCells players={players} round={round} />
-    </tr>
-  ));
+    );
+
+    const cells = players.map((p) => (
+      <td key={p.id}>
+        <PlayerRoundDataCell roundData={round.playerData[p.id]} />
+      </td>
+    ));
+
+    const row = (
+      <tr key={round.roundNumber}>
+        {rowLabel}
+        {cells}
+      </tr>
+    );
+    rows.push(row);
+  }
+
   return <tbody>{rows}</tbody>;
 }
 

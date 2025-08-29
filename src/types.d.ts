@@ -36,6 +36,10 @@ export interface PlayerRoundData {
  */
 export interface Round {
   /**
+   * Which round this object represents.
+   */
+  roundNumber: number;
+  /**
    * The number of cards dealt to each player in this round.
    */
   cardsDealt: number;
