@@ -10,7 +10,7 @@
 
 ### 1.1 Zweck des Dokuments
 
-Dieses Dokument spezifiziert die Anforderungen für eine digitale Wertungstabelle für das Kartenspiel "Rage" nach deutschen Spielregeln.
+Dieses Dokument spezifiziert die Anforderungen für eine digitale Punktetabelle für das Kartenspiel "Rage" nach deutschen Spielregeln.
 
 ### 1.2 Produktvision
 
@@ -25,7 +25,7 @@ Dieses Dokument spezifiziert die Anforderungen für eine digitale Wertungstabell
 
 - Jeder Spieler erhält 1 Punkt pro gewonnenen Stich
 - Bei exakter Gebotserfüllung: +10 Bonuspunkte
-- Bei Gebotsverfehllung: -5 Strafpunkte
+- Bei Gebotsverfehlung: -5 Strafpunkte
 - 3 Bonuskarten à +5 Punkte pro Runde verfügbar
 - 3 Strafkarten à -5 Punkte pro Runde verfügbar
 
@@ -92,7 +92,7 @@ wobei Gebotsbonus = {
 
 ### 2.3 Datenvalidierung
 
-**FA-11a:** Das System **muss** sicherstellen, dass das eigegebene Gebot plausibel ist.
+**FA-11a:** Das System **muss** sicherstellen, dass das eingegebene Gebot plausibel ist.
 
 - **Akzeptanzkriterium:** Eingabe über Auswahl aus einer Liste mit Ganzzahlen zwischen 0 und der in der aktuellen Runde ausgeteilten Kartenanzahl.
 
@@ -118,27 +118,19 @@ wobei Gebotsbonus = {
 
 - **Akzeptanzkriterium:** Tabellarische Darstellung mit Runde, Spieler, Gebot, Stiche, Bonuspunkte, Rundenpunkte.
 
-**FA-16:** Das System **muss** die aktuelle Rundennummer prominent anzeigen.
-
-- **Akzeptanzkriterium:** Rundennummer ist jederzeit im Header sichtbar.
-
-<!--
-**FA-17:** Das System **muss** Punkteänderungen nach Rundenabschluss hervorheben.
-
-- **Akzeptanzkriterium:** Neue Rundenpunkte werden 3 Sekunden farblich hervorgehoben.
--->
-
 ## 3. Qualitätsanforderungen
 
 ### 3.1 Benutzbarkeit
 
-**QA-02:** Das System **muss** Eingaben mit maximal 6 (Regelfall 4) Klicks pro Spieler und Runde ermöglichen.
+**QA-02:** Das System **muss** Eingaben mit maximal 7 (Regelfall 5) Klicks pro Spieler und Runde ermöglichen.
 
-- **Messkriterium:** Pfad von Rundenbeginn bis -abschluss erfordert ≤ 6 × Spieleranzahl.
+- **Messkriterium:** Pfad von Rundenbeginn bis -abschluss erfordert ≤ 7 × Spieleranzahl + 2 (Eingabe-Dialog öffnen/schließen).
 
 **QA-03:** Das System **soll** auf Smartphones gut bedienbar sein.
 
 - **Messkriterium:** Nutzen der vom jeweiligen OS bereitgestellten nativen Eingabemethoden (z.B. über "select" Elemente) und angepassten Layouts.
+
+**QA-04:** Das System **soll** die Navigation vom Eingabebereich für einen Spieler zum Eingabebereich des nächsten Spielers mittels einem Klick ermöglichen.
 
 ### 3.2 Zuverlässigkeit
 
@@ -152,7 +144,7 @@ wobei Gebotsbonus = {
 
 **QA-06:** Das System **soll** eingegebene Daten während der Spielsitzung nicht verlieren.
 
-- **Messkriterium:** Daten bleiben bei Seitenwechsel, Seiten-Reload oder kurzeitiger Inaktivität erhalten.
+- **Messkriterium:** Daten bleiben bei Seitenwechsel, Seiten-Reload oder kurzzeitiger Inaktivität erhalten.
 
 <!--
 ## 4. Datenmodell
@@ -182,19 +174,18 @@ wobei Gebotsbonus = {
 
 ## 5. Benutzeroberfläche
 
-### 5.1 Hauptansicht-Anforderungen
+### 5.1 Hauptansicht
 
 **UI-01:** Die Hauptansicht **muss** folgende Bereiche enthalten:
 
-- Spielerübersicht mit aktuellen Punktständen
-- Eingabebereich für aktuelle Runde
-- Aktionsbereich mit Hauptfunktionen
+- Übersicht mit Spielernamen, den jeweiligen Rundeneingaben, berechneten Rundenpunkten und den aktuellen Gesamtpunktständen
+- Eingabebereich für aktuelle Runde (ggf. als Pop-Up)
 
 **UI-03:** Der Eingabebereich **muss** je Spieler drei Eingabefelder (Gebot, Stiche, Bonus) enthalten.
 
 **UI-04:** Alle Eingabefelder **müssen** klar beschriftet und visuell gruppiert sein.
 
-### 5.2 Interaktions-Anforderungen
+### 5.2 Interaktion
 
 **UI-05:** Das System **muss** bei unvollständigen Eingaben den Benutzer führen.
 
@@ -210,7 +201,7 @@ wobei Gebotsbonus = {
 
 ## 6. Technische Rahmenbedingungen
 
-### 6.1 Plattform-Anforderungen
+### 6.1 Plattform
 
 **TA-01:** Das System **muss** als Webanwendung implementiert werden.
 
@@ -238,7 +229,7 @@ Die folgenden Funktionen sind **nicht Teil** der initialen Umsetzung, aber als z
 
 - **Implementierung:** JSON-Download des Spielstands.
 
-**ETA-07:** Das System **soll** Audruck des Spielstands ermöglichen:
+**ETA-07:** Das System **soll** Ausdruck des Spielstands ermöglichen:
 
 - **Implementierung:** PDF-Generierung und -Download des Spielstands.
 
