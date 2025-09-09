@@ -10,7 +10,7 @@ function ScoreTableHead({ players }: { players: Player[] }) {
     </th>
   ));
   return (
-    <thead>
+    <thead className="text-center table-dark bg-dark sticky-top">
       <tr>
         <th scope="col"># Karten</th>
         {names}
@@ -40,7 +40,7 @@ function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
 
   for (const round of rounds) {
     const rowLabel = (
-      <th scope="row">
+      <th scope="row" className="table-secondary text-center">
         {round.cardsDealt} (Runde {round.roundNumber})
       </th>
     );
@@ -65,7 +65,7 @@ function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
 
 function ScoreTableFoot() {
   return (
-    <tfoot className="table-group-divider">
+    <tfoot className="table-info fw-bold text-center sticky-bottom">
       <tr>
         <th scope="row">Gesamtpunkte</th>
         {/* Add some example values to the footer */}
@@ -80,7 +80,7 @@ function ScoreTableFoot() {
 export default function ScoreTable() {
   return (
     <>
-      <Table className="table-light" bordered hover>
+      <Table className="table-light text-nowrap" bordered hover>
         <ScoreTableHead players={demoData.players} />
         <ScoreTableBody players={demoData.players} rounds={demoData.rounds} />
         <ScoreTableFoot />
