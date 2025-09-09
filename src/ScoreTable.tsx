@@ -1,4 +1,3 @@
-import type { JSX } from "react";
 import { dataSet3 as demoData } from "./exampleData";
 import type { Player, PlayerRoundData, Round } from "./types";
 import { Table } from "react-bootstrap";
@@ -36,31 +35,28 @@ interface ScoreTableBodyProps {
 }
 
 function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
-  const rows: JSX.Element[] = [];
+  return (
+    <tbody className="table-group-divider">
+      {rounds.map((round) => RoundDataRow({ players, round }))}
+    </tbody>
+  );
+}
 
-  for (const round of rounds) {
-    const rowLabel = (
+function RoundDataRow({ players, round }: { players: Player[]; round: Round }) {
+  const cells = players.map((p) => (
+    <td key={p.id}>
+      <PlayerRoundDataCell roundData={round.playerData[p.id]} />
+    </td>
+  ));
+
+  return (
+    <tr key={round.roundNumber}>
       <th scope="row" className="table-secondary text-center">
         {round.cardsDealt} (Runde {round.roundNumber})
       </th>
-    );
-
-    const cells = players.map((p) => (
-      <td key={p.id}>
-        <PlayerRoundDataCell roundData={round.playerData[p.id]} />
-      </td>
-    ));
-
-    const row = (
-      <tr key={round.roundNumber}>
-        {rowLabel}
-        {cells}
-      </tr>
-    );
-    rows.push(row);
-  }
-
-  return <tbody className="table-group-divider">{rows}</tbody>;
+      {cells}
+    </tr>
+  );
 }
 
 function ScoreTableFoot() {
