@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 import { dataSet3 as demoData } from "./exampleData";
 import type { Player, PlayerRoundData, Round } from "./types";
+import { Table } from "react-bootstrap";
 
 function ScoreTableHead({ players }: { players: Player[] }) {
   const names = players.map((p) => (
@@ -9,7 +10,7 @@ function ScoreTableHead({ players }: { players: Player[] }) {
     </th>
   ));
   return (
-    <thead>
+    <thead className="text-center table-dark bg-dark sticky-top">
       <tr>
         <th scope="col"># Karten</th>
         {names}
@@ -39,7 +40,7 @@ function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
 
   for (const round of rounds) {
     const rowLabel = (
-      <th scope="row">
+      <th scope="row" className="table-secondary text-center">
         {round.cardsDealt} (Runde {round.roundNumber})
       </th>
     );
@@ -59,12 +60,12 @@ function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
     rows.push(row);
   }
 
-  return <tbody>{rows}</tbody>;
+  return <tbody className="table-group-divider">{rows}</tbody>;
 }
 
 function ScoreTableFoot() {
   return (
-    <tfoot>
+    <tfoot className="table-info fw-bold text-center sticky-bottom">
       <tr>
         <th scope="row">Gesamtpunkte</th>
         {/* Add some example values to the footer */}
@@ -79,11 +80,11 @@ function ScoreTableFoot() {
 export default function ScoreTable() {
   return (
     <>
-      <table className="scoreTable">
+      <Table className="table-light text-nowrap" bordered hover>
         <ScoreTableHead players={demoData.players} />
         <ScoreTableBody players={demoData.players} rounds={demoData.rounds} />
         <ScoreTableFoot />
-      </table>
+      </Table>
     </>
   );
 }
