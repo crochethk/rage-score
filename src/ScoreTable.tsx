@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import { dataSet1 as demoData } from "./exampleData";
+import { dataSet3 as demoData } from "./exampleData";
 import type { Player, PlayerRoundData, Round } from "./types";
 
 function ScoreTableHead({ players }: { players: Player[] }) {
