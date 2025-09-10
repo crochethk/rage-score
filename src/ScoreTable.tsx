@@ -2,6 +2,18 @@ import { dataSet3 as demoData } from "./exampleData";
 import type { Player, PlayerRoundData, Round } from "./types";
 import { Table } from "react-bootstrap";
 
+export default function ScoreTable() {
+  return (
+    <>
+      <Table className="table-light text-nowrap" bordered hover>
+        <ScoreTableHead players={demoData.players} />
+        <ScoreTableBody players={demoData.players} rounds={demoData.rounds} />
+        <ScoreTableFoot />
+      </Table>
+    </>
+  );
+}
+
 function ScoreTableHead({ players }: { players: Player[] }) {
   const names = players.map((p) => (
     <th key={p.id} scope="col">
@@ -15,17 +27,6 @@ function ScoreTableHead({ players }: { players: Player[] }) {
         {names}
       </tr>
     </thead>
-  );
-}
-
-function PlayerRoundDataCell({ roundData }: { roundData: PlayerRoundData }) {
-  const { bid, tricksTaken, bonusCardPoints } = roundData;
-  return (
-    <ul>
-      <li>Wette: {bid}</li>
-      <li>Ergebnis: {tricksTaken}</li>
-      <li>Bonus/Malus: {bonusCardPoints}</li>
-    </ul>
   );
 }
 
@@ -59,6 +60,17 @@ function RoundDataRow({ players, round }: { players: Player[]; round: Round }) {
   );
 }
 
+function PlayerRoundDataCell({ roundData }: { roundData: PlayerRoundData }) {
+  const { bid, tricksTaken, bonusCardPoints } = roundData;
+  return (
+    <ul>
+      <li>Wette: {bid}</li>
+      <li>Ergebnis: {tricksTaken}</li>
+      <li>Bonus/Malus: {bonusCardPoints}</li>
+    </ul>
+  );
+}
+
 function ScoreTableFoot() {
   return (
     <tfoot className="table-info fw-bold text-center sticky-bottom">
@@ -70,17 +82,5 @@ function ScoreTableFoot() {
         ))}
       </tr>
     </tfoot>
-  );
-}
-
-export default function ScoreTable() {
-  return (
-    <>
-      <Table className="table-light text-nowrap" bordered hover>
-        <ScoreTableHead players={demoData.players} />
-        <ScoreTableBody players={demoData.players} rounds={demoData.rounds} />
-        <ScoreTableFoot />
-      </Table>
-    </>
   );
 }
