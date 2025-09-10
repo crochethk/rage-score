@@ -1,5 +1,5 @@
 import { dataSet3 as demoData } from "./exampleData";
-import type { Player, PlayerRoundData, Round } from "./types";
+import type { Player, PlayerRoundData, Round, GameData } from "./types";
 import { Table } from "react-bootstrap";
 
 export default function ScoreTable() {
@@ -30,10 +30,7 @@ function ScoreTableHead({ players }: { players: Player[] }) {
   );
 }
 
-interface ScoreTableBodyProps {
-  players: Player[];
-  rounds: Round[];
-}
+type ScoreTableBodyProps = GameData;
 
 function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
   return (

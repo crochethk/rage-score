@@ -1,6 +1,11 @@
 /** Unique identifier for a player. */
 type PlayerId = string;
 
+export interface GameData {
+  players: Player[];
+  rounds: Round[];
+}
+
 /** Represents a player in the game. */
 export interface Player {
   /**
