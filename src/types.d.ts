@@ -50,6 +50,7 @@ export interface Round {
   cardsDealt: number;
   /**
    * Data of all players for this round, indexed by the player IDs.
+   * PlayerRoundData may be partial if the round is still ongoing.
    */
-  playerData: Record<PlayerId, PlayerRoundData>;
+  playerData: Record<PlayerId, Partial<PlayerRoundData>>;
 }

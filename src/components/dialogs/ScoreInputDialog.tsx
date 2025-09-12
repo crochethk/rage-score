@@ -20,7 +20,10 @@ interface ScoreInputDialogProps {
   round: Round;
 
   /** Callback invoked when the score input changes for a player in a round. */
-  onScoreInput: (playerId: PlayerId, newRoundData: PlayerRoundData) => void;
+  onScoreInput: (
+    playerId: PlayerId,
+    newRoundData: Partial<PlayerRoundData>,
+  ) => void;
 
   /** Callback triggered to move to the next player. */
   onNextPlayer: () => void;
@@ -46,7 +49,14 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
         <Col sm="8" style={{ maxWidth: "576px" }}>
           <h5>Runde 123</h5>
           <h3>Max Musterfrau</h3>
-          <ScoreInputForm />
+          <ScoreInputForm
+            playerId={player.id}
+            roundData={roundData}
+            maxBid={round.cardsDealt}
+            onScoreInput={(playerId, newRoundData) =>
+              props.onScoreInput(playerId, newRoundData)
+            }
+          />
 
           <div id="roundPointsDisplay">
             {roundScore ?? <i>Warte auf Eingaben...</i>}
@@ -75,9 +85,26 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
   );
 }
 
-function ScoreInputForm() {
-  // TODO the range should be based on passed props, so it depends on dealt cards
-  const possibleBidsOptions = range(0, 10 + 1).map((b) => (
+interface ScoreInputFormProps {
+  /** The player whose score is being input. */
+  playerId: PlayerId;
+
+  /** The player's data for the current round. */
+  roundData: Partial<PlayerRoundData>;
+
+  /** The largest possible bid for this round. */
+  maxBid: number;
+
+  /** Callback invoked when the score input changes for a player in a round. */
+  onScoreInput: (
+    playerId: PlayerId,
+    newRoundData: Partial<PlayerRoundData>,
+  ) => void;
+}
+
+function ScoreInputForm(props: ScoreInputFormProps) {
+  const { playerId, roundData, maxBid, onScoreInput } = props;
+  const possibleBidsOptions = range(0, maxBid + 1).map((b) => (
     <option key={b} value={b}>
       {b}
     </option>
@@ -89,7 +116,17 @@ function ScoreInputForm() {
         controlId="bidInput"
         className="my-2"
       >
-        <Form.Select required className="text-center" defaultValue="">
+        <Form.Select
+          required
+          className="text-center"
+          onChange={(ev) =>
+            onScoreInput(playerId, {
+              ...roundData,
+              bid: ev.target.value === "" ? undefined : Number(ev.target.value),
+            })
+          }
+          value={roundData.bid ?? ""}
+        >
           <option value="">---</option>
           {possibleBidsOptions}
         </Form.Select>
@@ -100,7 +137,18 @@ function ScoreInputForm() {
         controlId="tricksInput"
         className="my-2"
       >
-        <Form.Select required className="text-center" defaultValue="">
+        <Form.Select
+          required
+          className="text-center"
+          onChange={(ev) =>
+            onScoreInput(playerId, {
+              ...roundData,
+              tricksTaken:
+                ev.target.value === "" ? undefined : Number(ev.target.value),
+            })
+          }
+          value={roundData.tricksTaken ?? ""}
+        >
           <option value="">---</option>
           {possibleBidsOptions}
         </Form.Select>
@@ -111,12 +159,24 @@ function ScoreInputForm() {
         controlId="cardPointsInput"
         className="my-2"
       >
-        <Form.Select defaultValue={0} className="text-center">
-          {range(3 * -5, 3 * 5 + 1, 5).map((p) => (
-            <option key={p} value={p}>
-              {p > 0 ? "+" + p : p}
-            </option>
-          ))}
+        <Form.Select
+          className="text-center"
+          onChange={(ev) =>
+            onScoreInput(playerId, {
+              ...roundData,
+              bonusCardPoints: Number(ev.target.value),
+            })
+          }
+          value={roundData.bonusCardPoints ?? 0}
+        >
+          {
+            // Generate option -15 to +15 in steps of 5
+            range(3 * -5, 3 * 5 + 1, 5).map((p) => (
+              <option key={p} value={p}>
+                {p > 0 ? "+" + p : p}
+              </option>
+            ))
+          }
         </Form.Select>
       </Form.FloatingLabel>
     </Form.Floating>
