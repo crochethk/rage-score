@@ -33,6 +33,13 @@ interface ScoreInputDialogProps {
 }
 
 export function ScoreInputDialog(props: ScoreInputDialogProps) {
+  const { player, round } = props;
+  const roundData = round.playerData[player.id];
+
+  const roundScore = isCompletePlayerRoundData(roundData)
+    ? calculateRoundScore(roundData)
+    : null;
+
   return (
     <>
       <Row className="text-center justify-content-center">
@@ -42,7 +49,7 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
           <ScoreInputForm />
 
           <div id="roundPointsDisplay">
-            <i>Warte auf Eingaben...</i>
+            {roundScore ?? <i>Warte auf Eingaben...</i>}
           </div>
         </Col>
       </Row>
@@ -130,4 +137,26 @@ function ScoreInputForm() {
       </Form.FloatingLabel>
     </Form.Floating>
   );
+}
+
+/**
+ * Type guard function to check whether `PlayerRoundData` is complete.
+ */
+function isCompletePlayerRoundData(
+  data: Partial<PlayerRoundData>,
+): data is PlayerRoundData {
+  return (
+    data.bid !== undefined &&
+    data.tricksTaken !== undefined &&
+    data.bonusCardPoints !== undefined
+  );
+}
+
+/**
+ * Calculates a player's points of a round based on the provided data.
+ */
+function calculateRoundScore(roundData: PlayerRoundData): number {
+  const { bid, tricksTaken, bonusCardPoints } = roundData;
+  const bidBonus = tricksTaken === bid ? 10 : -5;
+  return tricksTaken + bidBonus + bonusCardPoints;
 }
