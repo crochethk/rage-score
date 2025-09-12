@@ -89,12 +89,7 @@ function ScoreInputForm() {
         controlId="bidInput"
         className="my-2"
       >
-        <Form.Select
-          aria-label="Gewettete Stiche"
-          required
-          className="text-center"
-          defaultValue=""
-        >
+        <Form.Select required className="text-center" defaultValue="">
           <option value="">---</option>
           {possibleBidsOptions}
         </Form.Select>
@@ -105,12 +100,7 @@ function ScoreInputForm() {
         controlId="tricksInput"
         className="my-2"
       >
-        <Form.Select
-          aria-label="Bekommene Stiche"
-          required
-          className="text-center"
-          defaultValue=""
-        >
+        <Form.Select required className="text-center" defaultValue="">
           <option value="">---</option>
           {possibleBidsOptions}
         </Form.Select>
@@ -121,11 +111,7 @@ function ScoreInputForm() {
         controlId="cardPointsInput"
         className="my-2"
       >
-        <Form.Select
-          aria-label="Bonuspunkte"
-          defaultValue={0}
-          className="text-center"
-        >
+        <Form.Select defaultValue={0} className="text-center">
           {range(3 * -5, 3 * 5 + 1, 5).map((p) => (
             <option key={p} value={p}>
               {p > 0 ? "+" + p : p}
