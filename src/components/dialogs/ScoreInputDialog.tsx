@@ -1,4 +1,5 @@
 import { ButtonGroup, Col, Form, Row } from "react-bootstrap";
+import type { Player, PlayerId, PlayerRoundData, Round } from "../../types";
 import {
   PrimaryDialogButton,
   SecondaryDialogButton,
@@ -11,7 +12,27 @@ const range = (start: number, stop: number, step = 1) => {
   );
 };
 
-export function ScoreInputDialog() {
+interface ScoreInputDialogProps {
+  /** The player whose score is being input. */
+  player: Player;
+
+  /** The current data of the round in question. */
+  round: Round;
+
+  /** Callback invoked when the score input changes for a player in a round. */
+  onScoreInput: (playerId: PlayerId, newRoundData: PlayerRoundData) => void;
+
+  /** Callback triggered to move to the next player. */
+  onNextPlayer: () => void;
+
+  /** Callback triggered to move to the previous player. */
+  onPrevPlayer: () => void;
+
+  /** Callback called when score input is completed. */
+  onDone: () => void;
+}
+
+export function ScoreInputDialog(props: ScoreInputDialogProps) {
   return (
     <>
       <Row className="text-center justify-content-center">
