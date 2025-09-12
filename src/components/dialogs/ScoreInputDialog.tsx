@@ -93,10 +93,9 @@ function ScoreInputForm() {
           aria-label="Gewettete Stiche"
           required
           className="text-center"
+          defaultValue=""
         >
-          <option value="" selected>
-            ---
-          </option>
+          <option value="">---</option>
           {possibleBidsOptions}
         </Form.Select>
       </Form.FloatingLabel>
@@ -110,10 +109,9 @@ function ScoreInputForm() {
           aria-label="Bekommene Stiche"
           required
           className="text-center"
+          defaultValue=""
         >
-          <option value="" selected>
-            ---
-          </option>
+          <option value="">---</option>
           {possibleBidsOptions}
         </Form.Select>
       </Form.FloatingLabel>
