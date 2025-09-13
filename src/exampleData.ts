@@ -261,27 +261,3 @@ export const dataSet3: ScoreTableMockData = {
     },
   ],
 };
-
-/** Typical situation with partial round data at the beginning of a game.  */
-export const dataSet4: ScoreTableMockData = {
-  players: [
-    { id: "p1-uuid", name: "Toni" },
-    { id: "p2-uuid", name: "Alex" },
-    { id: "p3-uuid", name: "Charlie" },
-  ],
-
-  rounds: [
-    {
-      roundNumber: 1,
-      cardsDealt: 42,
-      playerData: {
-        "p1-uuid": {
-          bid: 11,
-          // --- Rest not yet entered ---
-        },
-        "p2-uuid": {},
-        "p3-uuid": {},
-      },
-    },
-  ],
-};

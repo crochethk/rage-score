@@ -1,18 +1,7 @@
+import type { JSX } from "react";
 import { dataSet3 as demoData } from "./exampleData";
-import type { Player, PlayerRoundData, Round, GameData } from "./types";
+import type { Player, PlayerRoundData, Round } from "./types";
 import { Table } from "react-bootstrap";
-
-export default function ScoreTable() {
-  return (
-    <>
-      <Table className="table-light text-nowrap" bordered hover>
-        <ScoreTableHead players={demoData.players} />
-        <ScoreTableBody players={demoData.players} rounds={demoData.rounds} />
-        <ScoreTableFoot />
-      </Table>
-    </>
-  );
-}
 
 function ScoreTableHead({ players }: { players: Player[] }) {
   const names = players.map((p) => (
@@ -30,46 +19,48 @@ function ScoreTableHead({ players }: { players: Player[] }) {
   );
 }
 
-type ScoreTableBodyProps = GameData;
-
-function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
-  return (
-    <tbody className="table-group-divider">
-      {rounds.map((round) => RoundDataRow({ players, round }))}
-    </tbody>
-  );
-}
-
-function RoundDataRow({ players, round }: { players: Player[]; round: Round }) {
-  const cells = players.map((p) => (
-    <td key={p.id}>
-      <PlayerRoundDataCell roundData={round.playerData[p.id]} />
-    </td>
-  ));
-
-  return (
-    <tr key={round.roundNumber}>
-      <th scope="row" className="table-secondary text-center">
-        {round.cardsDealt} (Runde {round.roundNumber})
-      </th>
-      {cells}
-    </tr>
-  );
-}
-
-interface PlayerRoundDataCellProps {
-  roundData: Partial<PlayerRoundData>;
-}
-
-function PlayerRoundDataCell({ roundData }: PlayerRoundDataCellProps) {
+function PlayerRoundDataCell({ roundData }: { roundData: PlayerRoundData }) {
   const { bid, tricksTaken, bonusCardPoints } = roundData;
   return (
     <ul>
-      <li>Wette: {bid ?? ""}</li>
-      <li>Ergebnis: {tricksTaken ?? ""}</li>
-      <li>Bonus/Malus: {bonusCardPoints ?? ""}</li>
+      <li>Wette: {bid}</li>
+      <li>Ergebnis: {tricksTaken}</li>
+      <li>Bonus/Malus: {bonusCardPoints}</li>
     </ul>
   );
+}
+
+interface ScoreTableBodyProps {
+  players: Player[];
+  rounds: Round[];
+}
+
+function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
+  const rows: JSX.Element[] = [];
+
+  for (const round of rounds) {
+    const rowLabel = (
+      <th scope="row" className="table-secondary text-center">
+        {round.cardsDealt} (Runde {round.roundNumber})
+      </th>
+    );
+
+    const cells = players.map((p) => (
+      <td key={p.id}>
+        <PlayerRoundDataCell roundData={round.playerData[p.id]} />
+      </td>
+    ));
+
+    const row = (
+      <tr key={round.roundNumber}>
+        {rowLabel}
+        {cells}
+      </tr>
+    );
+    rows.push(row);
+  }
+
+  return <tbody className="table-group-divider">{rows}</tbody>;
 }
 
 function ScoreTableFoot() {
@@ -83,5 +74,17 @@ function ScoreTableFoot() {
         ))}
       </tr>
     </tfoot>
+  );
+}
+
+export default function ScoreTable() {
+  return (
+    <>
+      <Table className="table-light text-nowrap" bordered hover>
+        <ScoreTableHead players={demoData.players} />
+        <ScoreTableBody players={demoData.players} rounds={demoData.rounds} />
+        <ScoreTableFoot />
+      </Table>
+    </>
   );
 }

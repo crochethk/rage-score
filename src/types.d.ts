@@ -1,11 +1,6 @@
 /** Unique identifier for a player. */
 type PlayerId = string;
 
-export interface GameData {
-  players: Player[];
-  rounds: Round[];
-}
-
 /** Represents a player in the game. */
 export interface Player {
   /**
@@ -50,7 +45,6 @@ export interface Round {
   cardsDealt: number;
   /**
    * Data of all players for this round, indexed by the player IDs.
-   * PlayerRoundData may be partial if the round is still ongoing.
    */
-  playerData: Record<PlayerId, Partial<PlayerRoundData>>;
+  playerData: Record<PlayerId, PlayerRoundData>;
 }
