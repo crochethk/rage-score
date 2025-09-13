@@ -57,13 +57,17 @@ function RoundDataRow({ players, round }: { players: Player[]; round: Round }) {
   );
 }
 
-function PlayerRoundDataCell({ roundData }: { roundData: PlayerRoundData }) {
+interface PlayerRoundDataCellProps {
+  roundData: Partial<PlayerRoundData>;
+}
+
+function PlayerRoundDataCell({ roundData }: PlayerRoundDataCellProps) {
   const { bid, tricksTaken, bonusCardPoints } = roundData;
   return (
     <ul>
-      <li>Wette: {bid}</li>
-      <li>Ergebnis: {tricksTaken}</li>
-      <li>Bonus/Malus: {bonusCardPoints}</li>
+      <li>Wette: {bid ?? ""}</li>
+      <li>Ergebnis: {tricksTaken ?? ""}</li>
+      <li>Bonus/Malus: {bonusCardPoints ?? ""}</li>
     </ul>
   );
 }
