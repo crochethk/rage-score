@@ -26,10 +26,10 @@ interface ScoreInputDialogProps {
   ) => void;
 
   /** Callback triggered to move to the next player. */
-  onNextPlayer: () => void;
+  onNextPlayer: (currentPlayerId: PlayerId) => void;
 
   /** Callback triggered to move to the previous player. */
-  onPrevPlayer: () => void;
+  onPrevPlayer: (currentPlayerId: PlayerId) => void;
 
   /** Callback called when score input is completed. */
   onDone: () => void;
@@ -69,14 +69,22 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
           <div className="d-grid">
             <ButtonGroup vertical>
               <ButtonGroup size="lg" aria-label="Navigations-Buttons">
-                <PrimaryDialogButton aria-label="Nächster Spieler">
+                <PrimaryDialogButton
+                  aria-label="Vorheriger Spieler"
+                  onClick={() => props.onPrevPlayer(player.id)}
+                >
                   ←
                 </PrimaryDialogButton>
-                <PrimaryDialogButton aria-label="Vorheriger Spieler">
+                <PrimaryDialogButton
+                  aria-label="Nächster Spieler"
+                  onClick={() => props.onNextPlayer(player.id)}
+                >
                   →
                 </PrimaryDialogButton>
               </ButtonGroup>
-              <SecondaryDialogButton>Fertig</SecondaryDialogButton>
+              <SecondaryDialogButton onClick={props.onDone}>
+                Fertig
+              </SecondaryDialogButton>
             </ButtonGroup>
           </div>
         </Col>
