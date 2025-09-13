@@ -4,6 +4,10 @@ import {
   PrimaryDialogButton,
   SecondaryDialogButton,
 } from "../ui/Button/DialogButton";
+import {
+  isCompletePlayerRoundData,
+  calculateRoundScore,
+} from "../../gameUtils";
 
 const range = (start: number, stop: number, step = 1) => {
   return Array.from(
@@ -189,26 +193,4 @@ function ScoreInputForm(props: ScoreInputFormProps) {
       </Form.FloatingLabel>
     </Form.Floating>
   );
-}
-
-/**
- * Type guard function to check whether `PlayerRoundData` is complete.
- */
-function isCompletePlayerRoundData(
-  data: Partial<PlayerRoundData>,
-): data is PlayerRoundData {
-  return (
-    data.bid !== undefined &&
-    data.tricksTaken !== undefined &&
-    data.bonusCardPoints !== undefined
-  );
-}
-
-/**
- * Calculates a player's points of a round based on the provided data.
- */
-function calculateRoundScore(roundData: PlayerRoundData): number {
-  const { bid, tricksTaken, bonusCardPoints } = roundData;
-  const bidBonus = tricksTaken === bid ? 10 : -5;
-  return tricksTaken + bidBonus + bonusCardPoints;
 }
