@@ -1,14 +1,14 @@
-import { dataSet3 as demoData } from "./exampleData";
 import type { Player, PlayerRoundData, Round, GameData } from "./types";
 import { Table } from "react-bootstrap";
 
-export default function ScoreTable() {
+export default function ScoreTable({ gameData }: { gameData: GameData }) {
+  const { players, rounds } = gameData;
   return (
     <>
       <Table className="table-light text-nowrap" bordered hover>
-        <ScoreTableHead players={demoData.players} />
-        <ScoreTableBody players={demoData.players} rounds={demoData.rounds} />
-        <ScoreTableFoot />
+        <ScoreTableHead players={players} />
+        <ScoreTableBody players={players} rounds={rounds} />
+        <ScoreTableFoot players={players} rounds={rounds} />
       </Table>
     </>
   );
@@ -72,15 +72,21 @@ function PlayerRoundDataCell({ roundData }: PlayerRoundDataCellProps) {
   );
 }
 
-function ScoreTableFoot() {
+type ScoreTableFootProps = GameData;
+
+function ScoreTableFoot({ players, rounds }: ScoreTableFootProps) {
   return (
     <tfoot className="table-info fw-bold text-center sticky-bottom">
       <tr>
         <th scope="row">Gesamtpunkte</th>
         {/* Add some example values to the footer */}
-        {demoData.players.map((p, i) => (
+        {players.map((p, i) => (
           <td key={p.id}>{42 + Math.floor(Math.sin(i) * 15)}</td>
         ))}
+
+        {
+          // TODO Actual total score calculation using rounds data
+        }
       </tr>
     </tfoot>
   );
