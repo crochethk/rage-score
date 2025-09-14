@@ -1,3 +1,4 @@
+import * as gu from "./gameUtils";
 import type { Player, PlayerRoundData, Round, GameData } from "./types";
 import { Table } from "react-bootstrap";
 
@@ -66,11 +67,18 @@ interface PlayerRoundDataCellProps {
 function PlayerRoundDataCell({ roundData }: PlayerRoundDataCellProps) {
   const { bid, tricksTaken, bonusCardPoints } = roundData;
   return (
-    <ul>
-      <li>Wette: {bid ?? ""}</li>
-      <li>Ergebnis: {tricksTaken ?? ""}</li>
-      <li>Bonus/Malus: {bonusCardPoints ?? ""}</li>
-    </ul>
+    <>
+      <ul>
+        <li>Wette: {bid ?? ""}</li>
+        <li>Ergebnis: {tricksTaken ?? ""}</li>
+        <li>Bonus/Malus: {bonusCardPoints ?? ""}</li>
+      </ul>
+      {gu.isCompletePlayerRoundData(roundData) ? (
+        <b>{gu.calculateRoundScore(roundData)}</b>
+      ) : (
+        "---"
+      )}
+    </>
   );
 }
 
