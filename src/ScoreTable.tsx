@@ -35,7 +35,9 @@ type ScoreTableBodyProps = GameData;
 function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
   return (
     <tbody className="table-group-divider">
-      {rounds.map((round) => RoundDataRow({ players, round }))}
+      {rounds.map((round) => (
+        <RoundDataRow key={round.roundNumber} players={players} round={round} />
+      ))}
     </tbody>
   );
 }
