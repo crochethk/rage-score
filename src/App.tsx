@@ -4,7 +4,7 @@ import type { Player, Round } from "./types";
 import { useLocalStorage } from "./hooks";
 import { useEffect } from "react";
 
-import { dataSet3 as demoData } from "./exampleData";
+import { dataSet42 as demoData } from "./exampleData";
 
 export default function App() {
   const [players, setPlayers] = useLocalStorage<Player[]>("players", []);
