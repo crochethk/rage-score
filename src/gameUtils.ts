@@ -1,4 +1,4 @@
-import type { PlayerRoundData } from "./types";
+import type { PlayerId, PlayerRoundData, Round } from "./types";
 
 /**
  * Type guard function to check whether `PlayerRoundData` is complete.
@@ -20,4 +20,15 @@ export function calculateRoundScore(roundData: PlayerRoundData): number {
   const { bid, tricksTaken, bonusCardPoints } = roundData;
   const bidBonus = tricksTaken === bid ? 10 : -5;
   return tricksTaken + bidBonus + bonusCardPoints;
+}
+
+export function calculateTotalScore(
+  playerId: PlayerId,
+  rounds: Round[],
+): number {
+  const playerRoundsData = rounds.map((r) => r.playerData[playerId]);
+  const score = playerRoundsData.reduce((acc, rd) => {
+    return acc + (isCompletePlayerRoundData(rd) ? calculateRoundScore(rd) : 0);
+  }, 0);
+  return score;
 }

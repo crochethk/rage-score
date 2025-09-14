@@ -1,3 +1,4 @@
+import * as gu from "./gameUtils";
 import type { Player, PlayerRoundData, Round, GameData } from "./types";
 import { Table } from "react-bootstrap";
 
@@ -66,11 +67,18 @@ interface PlayerRoundDataCellProps {
 function PlayerRoundDataCell({ roundData }: PlayerRoundDataCellProps) {
   const { bid, tricksTaken, bonusCardPoints } = roundData;
   return (
-    <ul>
-      <li>Wette: {bid ?? ""}</li>
-      <li>Ergebnis: {tricksTaken ?? ""}</li>
-      <li>Bonus/Malus: {bonusCardPoints ?? ""}</li>
-    </ul>
+    <>
+      <ul>
+        <li>Wette: {bid ?? ""}</li>
+        <li>Ergebnis: {tricksTaken ?? ""}</li>
+        <li>Bonus/Malus: {bonusCardPoints ?? ""}</li>
+      </ul>
+      {gu.isCompletePlayerRoundData(roundData) ? (
+        <b>{gu.calculateRoundScore(roundData)}</b>
+      ) : (
+        "---"
+      )}
+    </>
   );
 }
 
@@ -81,14 +89,9 @@ function ScoreTableFoot({ players, rounds }: ScoreTableFootProps) {
     <tfoot className="table-info fw-bold text-center sticky-bottom">
       <tr>
         <th scope="row">Gesamtpunkte</th>
-        {/* Add some example values to the footer */}
-        {players.map((p, i) => (
-          <td key={p.id}>{42 + Math.floor(Math.sin(i) * 15)}</td>
+        {players.map((p) => (
+          <td key={p.id}>{gu.calculateTotalScore(p.id, rounds)}</td>
         ))}
-
-        {
-          // TODO Actual total score calculation using rounds data
-        }
       </tr>
     </tfoot>
   );
