@@ -1,19 +1,22 @@
 import { Container, Row } from "react-bootstrap";
 import ScoreTable from "./ScoreTable";
 import type { Player, Round } from "./types";
+import { useLocalStorage } from "./hooks";
+import { useEffect } from "react";
 
 import { dataSet3 as demoData } from "./exampleData";
-import { useLocalStorage } from "./hooks";
 
 export default function App() {
-  const [players, _setPlayers] = useLocalStorage<Player[]>(
-    "players",
-    demoData.players,
-  );
-  const [rounds, _setRounds] = useLocalStorage<Round[]>(
-    "rounds",
-    demoData.rounds,
-  );
+  const [players, setPlayers] = useLocalStorage<Player[]>("players", []);
+  const [rounds, setRounds] = useLocalStorage<Round[]>("rounds", []);
+
+  // TODO Remove this when integrating real data input
+  // --- Initialize with demo data for testing purposes only ---
+  useEffect(() => {
+    setPlayers(demoData.players);
+    setRounds(demoData.rounds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container fluid>
