@@ -89,14 +89,9 @@ function ScoreTableFoot({ players, rounds }: ScoreTableFootProps) {
     <tfoot className="table-info fw-bold text-center sticky-bottom">
       <tr>
         <th scope="row">Gesamtpunkte</th>
-        {/* Add some example values to the footer */}
-        {players.map((p, i) => (
-          <td key={p.id}>{42 + Math.floor(Math.sin(i) * 15)}</td>
+        {players.map((p) => (
+          <td key={p.id}>{gu.calculateTotalScore(p.id, rounds)}</td>
         ))}
-
-        {
-          // TODO Actual total score calculation using rounds data
-        }
       </tr>
     </tfoot>
   );
