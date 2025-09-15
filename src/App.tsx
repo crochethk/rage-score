@@ -1,4 +1,3 @@
-import { Container, Row } from "react-bootstrap";
 import ScoreTable from "./ScoreTable";
 import type { Player, Round } from "./types";
 import { useLocalStorage } from "./hooks";
@@ -19,10 +18,8 @@ export default function App() {
   }, []);
 
   return (
-    <Container fluid>
-      <Row>
-        <ScoreTable gameData={{ players, rounds }} />
-      </Row>
-    </Container>
+    <>
+      <ScoreTable gameData={{ players, rounds }} />
+    </>
   );
 }

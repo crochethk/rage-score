@@ -1,0 +1,15 @@
+th:first-child,
+td:first-child {
+  position: sticky;
+  left: 0px;
+}
+
+.xsmall {
+  font-size: 0.75rem;
+}
+
+/** Adjusted copy-pasta of ".table-hover" to highlight individual cells */
+.cell-hover:hover {
+  --bs-table-color-state: var(--bs-table-hover-color);
+  --bs-table-bg-state: var(--bs-table-hover-bg);
+}
