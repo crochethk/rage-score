@@ -46,9 +46,7 @@ function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
 
 function RoundDataRow({ players, round }: { players: Player[]; round: Round }) {
   const cells = players.map((p) => (
-    <td key={p.id} className="cell-hover">
-      <PlayerRoundDataCell roundData={round.playerData[p.id]} />
-    </td>
+    <PlayerRoundDataCell key={p.id} roundData={round.playerData[p.id]} />
   ));
 
   return (
@@ -73,22 +71,29 @@ interface PlayerRoundDataCellProps {
 
 function PlayerRoundDataCell({ roundData }: PlayerRoundDataCellProps) {
   const { bid, tricksTaken, bonusCardPoints } = roundData;
+  const colClassName =
+    "col flex-grow-1 flex-shrink-1" +
+    " p-0" +
+    " border border-dark-subtle border-end-0" +
+    " xsmall";
   return (
     <>
-      <div className="text-center">
-        <div>W {bid ?? ""}</div>
-        <div>E {tricksTaken ?? ""}</div>
-        <div>+/- {bonusCardPoints ?? ""}</div>
-      </div>
-      <div className="text-center">
-        <div className="">
-          {gu.isCompletePlayerRoundData(roundData) ? (
-            <b>{gu.calculateRoundScore(roundData)}</b>
-          ) : (
-            "---"
-          )}
+      <td className="p-0 cell-hover">
+        <div className="d-flex flex-column w-100">
+          <div className="d-flex text-center">
+            <div className={colClassName}> {bid ?? ""}</div>
+            <div className={colClassName}> {tricksTaken ?? ""}</div>
+            <div className={colClassName}> {bonusCardPoints ?? ""}</div>
+          </div>
+          <div className="p-0 text-center">
+            <div className="fw-bold">
+              {gu.isCompletePlayerRoundData(roundData)
+                ? gu.calculateRoundScore(roundData)
+                : "---"}
+            </div>
+          </div>
         </div>
-      </div>
+      </td>
     </>
   );
 }
