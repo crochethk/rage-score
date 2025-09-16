@@ -3,6 +3,7 @@ import { Modal } from "react-bootstrap";
 import { ScoreInputDialog } from "./components/dialogs/ScoreInputDialog";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
 import { ScoreInputContext } from "./contexts/ScoreInputContext";
+import * as gu from "./gameUtils";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useScoreInputDialog } from "./hooks/useScoreInputState";
 import ScoreTable from "./ScoreTable";
@@ -45,14 +46,30 @@ export default function App() {
     [rounds, scoreInput, setRounds],
   );
 
+  const handleNextPlayer = useCallback(
+    (currentId: PlayerId) => {
+      const next = gu.getAdjacentPlayer(players, currentId, "next");
+      scoreInput.setPlayer(next);
+    },
+    [players, scoreInput],
+  );
+
+  const handlePrevPlayer = useCallback(
+    (currentId: PlayerId) => {
+      const prev = gu.getAdjacentPlayer(players, currentId, "prev");
+      scoreInput.setPlayer(prev);
+    },
+    [players, scoreInput],
+  );
+
   const scoreInputCtxValue = useMemo(
     () => ({
       onScoreInput: handleScoreInput,
-      onNextPlayer: undefined,
-      onPrevPlayer: undefined,
+      onNextPlayer: handleNextPlayer,
+      onPrevPlayer: handlePrevPlayer,
       onDone: scoreInput.close,
     }),
-    [handleScoreInput, scoreInput.close],
+    [handleNextPlayer, handlePrevPlayer, handleScoreInput, scoreInput.close],
   );
 
   // --- GameInteractionContext Value
