@@ -1,20 +1,11 @@
 import { ButtonGroup, Col, Form, Row } from "react-bootstrap";
+import { useScoreInput } from "../../contexts/ScoreInputContext";
+import * as gu from "../../gameUtils";
 import type { Player, PlayerId, PlayerRoundData, Round } from "../../types";
 import {
   PrimaryDialogButton,
   SecondaryDialogButton,
 } from "../ui/Button/DialogButton";
-import {
-  isCompletePlayerRoundData,
-  calculateRoundScore,
-} from "../../gameUtils";
-
-const range = (start: number, stop: number, step = 1) => {
-  return Array.from(
-    { length: Math.ceil((stop - start) / step) },
-    (_, i) => start + i * step,
-  );
-};
 
 interface ScoreInputDialogProps {
   /** The player whose score is being input. */
@@ -22,30 +13,19 @@ interface ScoreInputDialogProps {
 
   /** The current data of the round in question. */
   round: Round;
-
-  /** Callback invoked when the score input changes for a player in a round. */
-  onScoreInput: (
-    playerId: PlayerId,
-    newRoundData: Partial<PlayerRoundData>,
-  ) => void;
-
-  /** Callback triggered to move to the next player. */
-  onNextPlayer: (currentPlayerId: PlayerId) => void;
-
-  /** Callback triggered to move to the previous player. */
-  onPrevPlayer: (currentPlayerId: PlayerId) => void;
-
-  /** Callback called when score input is completed. */
-  onDone: () => void;
 }
 
 export function ScoreInputDialog(props: ScoreInputDialogProps) {
   const { player, round } = props;
   const roundData = round.playerData[player.id];
+  // Make sure bonusCardPoints is always defined
+  roundData.bonusCardPoints = roundData.bonusCardPoints ?? 0;
 
-  const roundScore = isCompletePlayerRoundData(roundData)
-    ? calculateRoundScore(roundData)
+  const roundScore = gu.isCompletePlayerRoundData(roundData)
+    ? gu.calculateRoundScore(roundData)
     : null;
+
+  const { onNextPlayer, onPrevPlayer, onDone } = useScoreInput();
 
   return (
     <>
@@ -57,9 +37,6 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
             playerId={player.id}
             roundData={roundData}
             maxBid={round.cardsDealt}
-            onScoreInput={(playerId, newRoundData) =>
-              props.onScoreInput(playerId, newRoundData)
-            }
           />
 
           <div id="roundPointsDisplay">
@@ -68,6 +45,7 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
         </Col>
       </Row>
 
+      {/* --- Navigation Buttons --- */}
       <Row className="mt-2 justify-content-center">
         <Col sm="8" style={{ maxWidth: "576px" }}>
           <div className="d-grid">
@@ -75,18 +53,18 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
               <ButtonGroup size="lg" aria-label="Navigations-Buttons">
                 <PrimaryDialogButton
                   aria-label="Vorheriger Spieler"
-                  onClick={() => props.onPrevPlayer(player.id)}
+                  onClick={() => onPrevPlayer(player.id)}
                 >
                   ←
                 </PrimaryDialogButton>
                 <PrimaryDialogButton
                   aria-label="Nächster Spieler"
-                  onClick={() => props.onNextPlayer(player.id)}
+                  onClick={() => onNextPlayer(player.id)}
                 >
                   →
                 </PrimaryDialogButton>
               </ButtonGroup>
-              <SecondaryDialogButton onClick={props.onDone}>
+              <SecondaryDialogButton onClick={onDone}>
                 Fertig
               </SecondaryDialogButton>
             </ButtonGroup>
@@ -106,21 +84,24 @@ interface ScoreInputFormProps {
 
   /** The largest possible bid for this round. */
   maxBid: number;
-
-  /** Callback invoked when the score input changes for a player in a round. */
-  onScoreInput: (
-    playerId: PlayerId,
-    newRoundData: Partial<PlayerRoundData>,
-  ) => void;
 }
 
 function ScoreInputForm(props: ScoreInputFormProps) {
-  const { playerId, roundData, maxBid, onScoreInput } = props;
+  const { playerId, roundData, maxBid } = props;
+  const { onScoreInput } = useScoreInput();
   const possibleBidsOptions = range(0, maxBid + 1).map((b) => (
     <option key={b} value={b}>
       {b}
     </option>
   ));
+
+  // Options -15 to +15 in steps of 5
+  const bonusPointsOptions = range(3 * -5, 3 * 5 + 1, 5).map((p) => (
+    <option key={p} value={p}>
+      {p > 0 ? "+" + p : p}
+    </option>
+  ));
+
   return (
     <Form.Floating>
       <Form.FloatingLabel
@@ -181,16 +162,16 @@ function ScoreInputForm(props: ScoreInputFormProps) {
           }
           value={roundData.bonusCardPoints ?? 0}
         >
-          {
-            // Generate option -15 to +15 in steps of 5
-            range(3 * -5, 3 * 5 + 1, 5).map((p) => (
-              <option key={p} value={p}>
-                {p > 0 ? "+" + p : p}
-              </option>
-            ))
-          }
+          {bonusPointsOptions}
         </Form.Select>
       </Form.FloatingLabel>
     </Form.Floating>
+  );
+}
+
+function range(start: number, stop: number, step = 1) {
+  return Array.from(
+    { length: Math.ceil((stop - start) / step) },
+    (_, i) => start + i * step,
   );
 }
