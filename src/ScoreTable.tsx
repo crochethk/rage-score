@@ -1,25 +1,20 @@
-import * as gu from "./gameUtils";
-import type { Player, PlayerRoundData, Round, GameData } from "./types";
 import { Table } from "react-bootstrap";
+import { useGameInteraction } from "./contexts/GameInteractionContext";
+import * as gu from "./gameUtils";
 import "./ScoreTable.style.css";
+import type { GameData, Player, PlayerRoundData, Round } from "./types";
 
 interface ScoreTableProps {
   gameData: GameData;
-  handleOpenScoreInputDialog: (player: Player, round: Round) => void;
 }
 
 export default function ScoreTable(props: ScoreTableProps) {
-  const { gameData, handleOpenScoreInputDialog } = props;
-  const { players, rounds } = gameData;
+  const { players, rounds } = props.gameData;
   return (
     <>
       <Table variant="light" className="text-nowrap" bordered>
         <ScoreTableHead players={players} />
-        <ScoreTableBody
-          players={players}
-          rounds={rounds}
-          onDataCellClick={handleOpenScoreInputDialog}
-        />
+        <ScoreTableBody players={players} rounds={rounds} />
         <ScoreTableFoot players={players} rounds={rounds} />
       </Table>
     </>
@@ -42,24 +37,13 @@ function ScoreTableHead({ players }: { players: Player[] }) {
   );
 }
 
-type ScoreTableBodyProps = GameData & {
-  onDataCellClick: (player: Player, round: Round) => void;
-};
+type ScoreTableBodyProps = GameData;
 
-function ScoreTableBody({
-  players,
-  rounds,
-  onDataCellClick,
-}: ScoreTableBodyProps) {
+function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
   return (
     <tbody className="table-group-divider">
       {rounds.map((round) => (
-        <RoundDataRow
-          key={round.roundNumber}
-          players={players}
-          round={round}
-          onDataCellClick={onDataCellClick}
-        />
+        <RoundDataRow key={round.roundNumber} players={players} round={round} />
       ))}
     </tbody>
   );
@@ -68,18 +52,16 @@ function ScoreTableBody({
 interface RoundDataRowProps {
   players: Player[];
   round: Round;
-  onDataCellClick: (player: Player, round: Round) => void;
 }
 
-function RoundDataRow({ players, round, onDataCellClick }: RoundDataRowProps) {
+function RoundDataRow({ players, round }: RoundDataRowProps) {
+  const gic = useGameInteraction();
+
   const cells = players.map((p) => (
     <PlayerRoundDataCell
       key={p.id}
       roundData={round.playerData[p.id]}
-      onClick={() => {
-        console.log(`clicked ${p.name}'s round ${round.roundNumber}`);
-        onDataCellClick(p, round);
-      }}
+      onClick={() => gic.openScoreInputDialog(p, round)}
     />
   ));
 

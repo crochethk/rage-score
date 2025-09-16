@@ -1,7 +1,8 @@
 import ScoreTable from "./ScoreTable";
-import type { Player, Round } from "./types";
+import type { Player, PlayerId, Round } from "./types";
 import { useLocalStorage } from "./hooks";
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
+import { GameInteractionContext } from "./contexts/GameInteractionContext";
 
 import { dataSet42 as demoData } from "./exampleData";
 
@@ -17,15 +18,21 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const openScoreInputDialog = useCallback((pid: PlayerId, round: Round) => {
+    console.log("Open score input dialog requested for", pid, round);
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      openScoreInputDialog,
+    }),
+    [openScoreInputDialog],
+  );
   return (
     <>
-      <ScoreTable
-        gameData={{ players, rounds }}
-        handleOpenScoreInputDialog={() => {
-          console.log("Open score input dialog");
-          return;
-        }}
-      />
+      <GameInteractionContext value={contextValue}>
+        <ScoreTable gameData={{ players, rounds }} />
+      </GameInteractionContext>
     </>
   );
 }
