@@ -1,4 +1,4 @@
-import type { PlayerId, PlayerRoundData, Round } from "./types";
+import type { Player, PlayerId, PlayerRoundData, Round } from "./types";
 
 /**
  * Type guard function to check whether `PlayerRoundData` is complete.
@@ -31,4 +31,25 @@ export function calculateTotalScore(
     return acc + (isCompletePlayerRoundData(rd) ? calculateRoundScore(rd) : 0);
   }, 0);
   return score;
+}
+
+export function getAdjacentPlayer(
+  players: Player[],
+  pid: PlayerId,
+  mode: "next" | "prev",
+): Player {
+  const currentIdx = players.findIndex((p) => p.id === pid);
+  if (currentIdx >= 0) {
+    if (mode === "next") {
+      return players[(currentIdx + 1) % players.length];
+    } else if (mode === "prev") {
+      const index = currentIdx === 0 ? players.length - 1 : currentIdx - 1;
+      const thePlayer = players[index];
+      return thePlayer;
+    } else {
+      throw new Error("Invalid mode: " + String(mode));
+    }
+  } else {
+    throw new Error("Player not found: " + pid);
+  }
 }
