@@ -1,8 +1,9 @@
-import ScoreTable from "./ScoreTable";
-import type { Player, PlayerId, Round } from "./types";
-import { useLocalStorage } from "./hooks";
 import { useCallback, useEffect, useMemo } from "react";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
+import { useLocalStorage } from "./hooks/useLocalStorage";
+import ScoreTable from "./ScoreTable";
+import type { Player, PlayerId, Round } from "./types";
+
 
 import { dataSet42 as demoData } from "./exampleData";
 
