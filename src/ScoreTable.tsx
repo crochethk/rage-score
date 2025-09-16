@@ -3,13 +3,23 @@ import type { Player, PlayerRoundData, Round, GameData } from "./types";
 import { Table } from "react-bootstrap";
 import "./ScoreTable.style.css";
 
-export default function ScoreTable({ gameData }: { gameData: GameData }) {
+interface ScoreTableProps {
+  gameData: GameData;
+  handleOpenScoreInputDialog: (player: Player, round: Round) => void;
+}
+
+export default function ScoreTable(props: ScoreTableProps) {
+  const { gameData, handleOpenScoreInputDialog } = props;
   const { players, rounds } = gameData;
   return (
     <>
       <Table variant="light" className="text-nowrap" bordered>
         <ScoreTableHead players={players} />
-        <ScoreTableBody players={players} rounds={rounds} />
+        <ScoreTableBody
+          players={players}
+          rounds={rounds}
+          onDataCellClick={handleOpenScoreInputDialog}
+        />
         <ScoreTableFoot players={players} rounds={rounds} />
       </Table>
     </>
@@ -32,21 +42,45 @@ function ScoreTableHead({ players }: { players: Player[] }) {
   );
 }
 
-type ScoreTableBodyProps = GameData;
+type ScoreTableBodyProps = GameData & {
+  onDataCellClick: (player: Player, round: Round) => void;
+};
 
-function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
+function ScoreTableBody({
+  players,
+  rounds,
+  onDataCellClick,
+}: ScoreTableBodyProps) {
   return (
     <tbody className="table-group-divider">
       {rounds.map((round) => (
-        <RoundDataRow key={round.roundNumber} players={players} round={round} />
+        <RoundDataRow
+          key={round.roundNumber}
+          players={players}
+          round={round}
+          onDataCellClick={onDataCellClick}
+        />
       ))}
     </tbody>
   );
 }
 
-function RoundDataRow({ players, round }: { players: Player[]; round: Round }) {
+interface RoundDataRowProps {
+  players: Player[];
+  round: Round;
+  onDataCellClick: (player: Player, round: Round) => void;
+}
+
+function RoundDataRow({ players, round, onDataCellClick }: RoundDataRowProps) {
   const cells = players.map((p) => (
-    <PlayerRoundDataCell key={p.id} roundData={round.playerData[p.id]} />
+    <PlayerRoundDataCell
+      key={p.id}
+      roundData={round.playerData[p.id]}
+      onClick={() => {
+        console.log(`clicked ${p.name}'s round ${round.roundNumber}`);
+        onDataCellClick(p, round);
+      }}
+    />
   ));
 
   return (
@@ -67,9 +101,13 @@ function RoundDataRow({ players, round }: { players: Player[]; round: Round }) {
 
 interface PlayerRoundDataCellProps {
   roundData: Partial<PlayerRoundData>;
+  onClick: () => void;
 }
 
-function PlayerRoundDataCell({ roundData }: PlayerRoundDataCellProps) {
+function PlayerRoundDataCell({
+  roundData,
+  onClick: onClick,
+}: PlayerRoundDataCellProps) {
   const { bid, tricksTaken, bonusCardPoints } = roundData;
   const colClassName =
     "col flex-grow-1 flex-shrink-1" +
@@ -78,7 +116,11 @@ function PlayerRoundDataCell({ roundData }: PlayerRoundDataCellProps) {
     " xsmall";
   return (
     <>
-      <td className="p-0 cell-hover">
+      <td
+        className="p-0 cell-hover"
+        onClick={onClick}
+        style={{ cursor: "pointer" }} // Indicate that the cell is clickable
+      >
         <div className="d-flex flex-column w-100">
           <div className="d-flex text-center">
             <div className={colClassName}> {bid ?? ""}</div>

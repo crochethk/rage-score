@@ -19,7 +19,13 @@ export default function App() {
 
   return (
     <>
-      <ScoreTable gameData={{ players, rounds }} />
+      <ScoreTable
+        gameData={{ players, rounds }}
+        handleOpenScoreInputDialog={() => {
+          console.log("Open score input dialog");
+          return;
+        }}
+      />
     </>
   );
 }
