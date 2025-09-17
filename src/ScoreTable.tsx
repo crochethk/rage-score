@@ -1,10 +1,15 @@
-import * as gu from "./gameUtils";
-import type { Player, PlayerRoundData, Round, GameData } from "./types";
 import { Table } from "react-bootstrap";
+import { useGameInteraction } from "./contexts/GameInteractionContext";
+import * as gu from "./gameUtils";
 import "./ScoreTable.style.css";
+import type { GameData, Player, PlayerRoundData, Round } from "./types";
 
-export default function ScoreTable({ gameData }: { gameData: GameData }) {
-  const { players, rounds } = gameData;
+interface ScoreTableProps {
+  gameData: GameData;
+}
+
+export default function ScoreTable(props: ScoreTableProps) {
+  const { players, rounds } = props.gameData;
   return (
     <>
       <Table variant="light" className="text-nowrap" bordered>
@@ -44,9 +49,20 @@ function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
   );
 }
 
-function RoundDataRow({ players, round }: { players: Player[]; round: Round }) {
+interface RoundDataRowProps {
+  players: Player[];
+  round: Round;
+}
+
+function RoundDataRow({ players, round }: RoundDataRowProps) {
+  const gic = useGameInteraction();
+
   const cells = players.map((p) => (
-    <PlayerRoundDataCell key={p.id} roundData={round.playerData[p.id]} />
+    <PlayerRoundDataCell
+      key={p.id}
+      roundData={round.playerData[p.id]}
+      onClick={() => gic.openScoreInputDialog(p, round)}
+    />
   ));
 
   return (
@@ -67,9 +83,13 @@ function RoundDataRow({ players, round }: { players: Player[]; round: Round }) {
 
 interface PlayerRoundDataCellProps {
   roundData: Partial<PlayerRoundData>;
+  onClick: () => void;
 }
 
-function PlayerRoundDataCell({ roundData }: PlayerRoundDataCellProps) {
+function PlayerRoundDataCell({
+  roundData,
+  onClick: onClick,
+}: PlayerRoundDataCellProps) {
   const { bid, tricksTaken, bonusCardPoints } = roundData;
   const colClassName =
     "col flex-grow-1 flex-shrink-1" +
@@ -78,7 +98,11 @@ function PlayerRoundDataCell({ roundData }: PlayerRoundDataCellProps) {
     " xsmall";
   return (
     <>
-      <td className="p-0 cell-hover">
+      <td
+        className="p-0 cell-hover"
+        onClick={onClick}
+        style={{ cursor: "pointer" }} // Indicate that the cell is clickable
+      >
         <div className="d-flex flex-column w-100">
           <div className="d-flex text-center">
             <div className={colClassName}> {bid ?? ""}</div>
