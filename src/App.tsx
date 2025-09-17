@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
+import { v4 as uuid } from "uuid";
 import { ScoreInputDialog } from "./components/dialogs/ScoreInputDialog";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
 import { ScoreInputContext } from "./contexts/ScoreInputContext";
@@ -9,20 +10,40 @@ import { useScoreInputDialog } from "./hooks/useScoreInputState";
 import ScoreTable from "./ScoreTable";
 import type { Player, PlayerId, PlayerRoundData, Round } from "./types";
 
-import { dataSet42 as demoData } from "./exampleData";
+const initialGameState = (() => {
+  // Create 8 players
+  const playerCount = 8;
+  const players = gu
+    .range(1, playerCount + 1)
+    .map((n) => ({ id: uuid(), name: "Spieler " + n }));
+  // Create 10 rounds with decreasing cards dealt from 10 to 1
+  const initRoundData = { bonusCardPoints: 0 };
+  const totalRounds = 10;
+  const playerData = Object.fromEntries(
+    players.map((p) => [p.id, { ...initRoundData }]),
+  );
+  const rounds = gu.range(1, totalRounds + 1).map((n) => {
+    return {
+      roundNumber: n,
+      cardsDealt: totalRounds - n + 1,
+      playerData: { ...playerData },
+    };
+  });
+  return { players, rounds };
+})();
 
 export default function App() {
-  const [players, setPlayers] = useLocalStorage<Player[]>("players", []);
-  const [rounds, setRounds] = useLocalStorage<Round[]>("rounds", []);
-
-  // TODO Remove this when integrating real data input
-  // --- Initialize with demo data for testing purposes only ---
-  useEffect(() => {
-    setPlayers(demoData.players);
-    setRounds(demoData.rounds);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  // ----------------------------------------------------------
+  // --- Main application state
+  // This automatically persists to local storage and loads from it initially
+  // TODO setPlayers removed to satisfy `vite build`
+  const [players] = useLocalStorage<Player[]>(
+    "players",
+    initialGameState.players,
+  );
+  const [rounds, setRounds] = useLocalStorage<Round[]>(
+    "rounds",
+    initialGameState.rounds,
+  );
 
   const scoreInput = useScoreInputDialog(players[0], rounds[0]);
 

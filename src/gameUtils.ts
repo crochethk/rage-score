@@ -53,3 +53,10 @@ export function getAdjacentPlayer(
     throw new Error("Player not found: " + pid);
   }
 }
+
+export function range(start: number, stop: number, step = 1) {
+  return Array.from(
+    { length: Math.ceil((stop - start) / step) },
+    (_, i) => start + i * step,
+  );
+}
