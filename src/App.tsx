@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import { ScoreInputDialog } from "./components/dialogs/ScoreInputDialog";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
 import { ScoreInputContext } from "./contexts/ScoreInputContext";
@@ -112,6 +112,24 @@ export default function App() {
           </Modal.Body>
         </Modal>
       </ScoreInputContext>
+      <ResetButton />
     </>
+  );
+}
+
+function ResetButton() {
+  return (
+    <Button
+      variant="danger"
+      className="min-vw-25 fw-bold"
+      onClick={() => {
+        if (window.confirm("Spielstand wirklich zurücksetzen?")) {
+          localStorage.clear();
+          window.location.reload();
+        }
+      }}
+    >
+      Reset
+    </Button>
   );
 }
