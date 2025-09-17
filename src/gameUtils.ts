@@ -54,6 +54,12 @@ export function getAdjacentPlayer(
   }
 }
 
+export function isEmptyColumn(playerId: PlayerId, rounds: Round[]) {
+  return rounds.every(
+    (r) => isCompletePlayerRoundData(r.playerData[playerId]) === false,
+  );
+}
+
 export function range(start: number, stop: number, step = 1) {
   return Array.from(
     { length: Math.ceil((stop - start) / step) },
