@@ -89,14 +89,14 @@ interface ScoreInputFormProps {
 function ScoreInputForm(props: ScoreInputFormProps) {
   const { playerId, roundData, maxBid } = props;
   const { onScoreInput } = useScoreInput();
-  const possibleBidsOptions = range(0, maxBid + 1).map((b) => (
+  const possibleBidsOptions = gu.range(0, maxBid + 1).map((b) => (
     <option key={b} value={b}>
       {b}
     </option>
   ));
 
   // Options -15 to +15 in steps of 5
-  const bonusPointsOptions = range(3 * -5, 3 * 5 + 1, 5).map((p) => (
+  const bonusPointsOptions = gu.range(3 * -5, 3 * 5 + 1, 5).map((p) => (
     <option key={p} value={p}>
       {p > 0 ? "+" + p : p}
     </option>
@@ -166,12 +166,5 @@ function ScoreInputForm(props: ScoreInputFormProps) {
         </Form.Select>
       </Form.FloatingLabel>
     </Form.Floating>
-  );
-}
-
-function range(start: number, stop: number, step = 1) {
-  return Array.from(
-    { length: Math.ceil((stop - start) / step) },
-    (_, i) => start + i * step,
   );
 }

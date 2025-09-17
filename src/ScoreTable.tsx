@@ -94,26 +94,38 @@ function PlayerRoundDataCell({
   const colClassName =
     "col flex-grow-1 flex-shrink-1" +
     " p-0" +
-    " border border-dark-subtle border-end-0" +
+    " border-dark-subtle" +
     " xsmall";
+
+  // Prepare values for display
+  const bonus: number = bonusCardPoints ?? 0;
+  const roundScore = gu.isCompletePlayerRoundData(roundData)
+    ? gu.calculateRoundScore(roundData)
+    : null;
+
   return (
     <>
       <td
-        className="p-0 cell-hover"
+        className="p-0 cell-hover border border-dark-subtle"
         onClick={onClick}
         style={{ cursor: "pointer" }} // Indicate that the cell is clickable
       >
         <div className="d-flex flex-column w-100">
-          <div className="d-flex text-center">
-            <div className={colClassName}> {bid ?? ""}</div>
-            <div className={colClassName}> {tricksTaken ?? ""}</div>
-            <div className={colClassName}> {bonusCardPoints ?? ""}</div>
+          <div className="d-flex text-center border border-dark-subtle border-start-0 border-end-0">
+            <div className={colClassName + " border-end"}>{bid ?? ""}</div>
+            <div className={colClassName + " border-end"}>
+              {tricksTaken ?? ""}
+            </div>
+            <div className={colClassName}>
+              {/* Non-breaking space to maintain cell height */}
+              <span className={bonus === 0 ? "invisible" : ""}>{bonus}</span>
+            </div>
           </div>
           <div className="p-0 text-center">
-            <div className="fw-bold">
-              {gu.isCompletePlayerRoundData(roundData)
-                ? gu.calculateRoundScore(roundData)
-                : "---"}
+            <div className={"fw-bold"}>
+              <span className={roundScore === null ? " invisible" : ""}>
+                {roundScore ?? "n/a"}
+              </span>
             </div>
           </div>
         </div>
@@ -129,9 +141,17 @@ function ScoreTableFoot({ players, rounds }: ScoreTableFootProps) {
     <tfoot className="table-info fw-bold text-center sticky-bottom">
       <tr>
         <th scope="row">Total</th>
-        {players.map((p) => (
-          <td key={p.id}>{gu.calculateTotalScore(p.id, rounds)}</td>
-        ))}
+        {players.map((p) => {
+          const totalScore = gu.calculateTotalScore(p.id, rounds);
+          const isEmptyColumn = gu.isEmptyColumn(p.id, rounds);
+          return (
+            <td key={p.id}>
+              <span className={isEmptyColumn ? "invisible" : ""}>
+                {totalScore}
+              </span>
+            </td>
+          );
+        })}
       </tr>
     </tfoot>
   );
