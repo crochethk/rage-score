@@ -20,3 +20,8 @@ td:first-child {
   cursor: pointer;
 }
 
+/* --- Bootstrap Extensions ---*/
+
+.table-responsive {
+  max-height: 100vh;
+}

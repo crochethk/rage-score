@@ -12,11 +12,13 @@ export default function ScoreTable(props: ScoreTableProps) {
   const { players, rounds } = props.gameData;
   return (
     <>
-      <Table variant="light" className="text-nowrap" bordered>
-        <ScoreTableHead players={players} />
-        <ScoreTableBody players={players} rounds={rounds} />
-        <ScoreTableFoot players={players} rounds={rounds} />
-      </Table>
+      <div className="table-responsive">
+        <Table variant="light" className="text-nowrap w-auto m-0" bordered>
+          <ScoreTableHead players={players} />
+          <ScoreTableBody players={players} rounds={rounds} />
+          <ScoreTableFoot players={players} rounds={rounds} />
+        </Table>
+      </div>
     </>
   );
 }
