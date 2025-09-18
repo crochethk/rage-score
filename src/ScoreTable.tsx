@@ -142,7 +142,14 @@ function ScoreTableFoot({ players, rounds }: ScoreTableFootProps) {
   return (
     <tfoot className="table-info fw-bold text-center sticky-bottom">
       <tr>
-        <th scope="row">Total</th>
+        <th scope="row">
+          <span id="totalLabel" className="d-none d-sm-inline">
+            Total
+          </span>
+          <span className="d-inline d-sm-none" aria-labelledby="totalLabel">
+            &Sigma;
+          </span>
+        </th>
         {players.map((p) => {
           const totalScore = gu.calculateTotalScore(p.id, rounds);
           const isEmptyColumn = gu.isEmptyColumn(p.id, rounds);
