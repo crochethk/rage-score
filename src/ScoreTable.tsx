@@ -12,7 +12,7 @@ export default function ScoreTable(props: ScoreTableProps) {
   const { players, rounds } = props.gameData;
   return (
     <>
-      <div className="table-responsive">
+      <div className="table-responsive" style={{ overscrollBehaviorX: "none" }}>
         <Table variant="light" className="text-nowrap w-auto h-100 m-0">
           <ScoreTableHead players={players} />
           <ScoreTableBody players={players} rounds={rounds} />
@@ -71,7 +71,7 @@ function RoundDataRow({ players, round }: RoundDataRowProps) {
     <tr key={round.roundNumber}>
       <th
         scope="row"
-        className="table-secondary text-center align-middle w-auto p-0"
+        className="table-secondary text-center align-middle w-auto"
       >
         <span className="d-none d-sm-block fs-6 fw-light">
           Runde {round.roundNumber}
