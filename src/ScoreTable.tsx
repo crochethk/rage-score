@@ -13,7 +13,7 @@ export default function ScoreTable(props: ScoreTableProps) {
   return (
     <>
       <div className="table-responsive">
-        <Table variant="light" className="text-nowrap w-auto m-0">
+        <Table variant="light" className="text-nowrap w-auto h-100 m-0">
           <ScoreTableHead players={players} />
           <ScoreTableBody players={players} rounds={rounds} />
           <ScoreTableFoot players={players} rounds={rounds} />
@@ -97,7 +97,8 @@ function PlayerRoundDataCell({
     "col flex-grow-1 flex-shrink-1" +
     " p-0" +
     " border-end border-dark-subtle" +
-    " xsmall";
+    " xsmall" +
+    " align-content-center";
 
   // Prepare values for display
   const bonus: number = bonusCardPoints ?? 0;
@@ -108,22 +109,22 @@ function PlayerRoundDataCell({
   return (
     <>
       <td
-        className="p-0 cell-hover cursor-pointer border border-dark-subtle"
+        className="p-0 cell-hover cursor-pointer border border-dark-subtle h-100"
         onClick={onClick}
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") onClick();
         }}
       >
-        <div className="d-flex flex-column w-100">
-          <div className="d-flex text-center border-top border-bottom border-dark-subtle">
+        <div className="d-flex flex-column w-100 h-100">
+          <div className="d-flex flex-grow-1 text-center border-top border-bottom border-dark-subtle">
             <div className={colClassName}>{bid ?? ""}</div>
             <div className={colClassName}>{tricksTaken ?? ""}</div>
             <div className={colClassName + " border-end-0"}>
               <span className={bonus === 0 ? "invisible" : ""}>{bonus}</span>
             </div>
           </div>
-          <div className="p-0 text-center">
+          <div className="d-flex flex-grow-1 justify-content-center align-items-center p-1 p-sm-0">
             <div className={"fw-bold"}>
               <span className={roundScore === null ? " invisible" : ""}>
                 {roundScore ?? "n/a"}
