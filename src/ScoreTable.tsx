@@ -106,9 +106,8 @@ function PlayerRoundDataCell({
   return (
     <>
       <td
-        className="p-0 cell-hover border border-dark-subtle"
+        className="p-0 cell-hover cursor-pointer border border-dark-subtle"
         onClick={onClick}
-        style={{ cursor: "pointer" }} // Indicate that the cell is clickable
       >
         <div className="d-flex flex-column w-100">
           <div className="d-flex text-center border border-dark-subtle border-start-0 border-end-0">
