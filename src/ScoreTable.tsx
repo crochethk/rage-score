@@ -13,7 +13,7 @@ export default function ScoreTable(props: ScoreTableProps) {
   return (
     <>
       <div className="table-responsive">
-        <Table variant="light" className="text-nowrap w-auto m-0" bordered>
+        <Table variant="light" className="text-nowrap w-auto m-0">
           <ScoreTableHead players={players} />
           <ScoreTableBody players={players} rounds={rounds} />
           <ScoreTableFoot players={players} rounds={rounds} />
@@ -30,7 +30,7 @@ function ScoreTableHead({ players }: { players: Player[] }) {
     </th>
   ));
   return (
-    <thead className="text-center table-dark bg-dark sticky-top">
+    <thead className="text-center table-dark sticky-top">
       <tr>
         <th scope="col">#</th>
         {names}
@@ -96,7 +96,7 @@ function PlayerRoundDataCell({
   const colClassName =
     "col flex-grow-1 flex-shrink-1" +
     " p-0" +
-    " border-dark-subtle" +
+    " border-end border-dark-subtle" +
     " xsmall";
 
   // Prepare values for display
@@ -112,13 +112,10 @@ function PlayerRoundDataCell({
         onClick={onClick}
       >
         <div className="d-flex flex-column w-100">
-          <div className="d-flex text-center border border-dark-subtle border-start-0 border-end-0">
-            <div className={colClassName + " border-end"}>{bid ?? ""}</div>
-            <div className={colClassName + " border-end"}>
-              {tricksTaken ?? ""}
-            </div>
-            <div className={colClassName}>
-              {/* Non-breaking space to maintain cell height */}
+          <div className="d-flex text-center border-top border-bottom border-dark-subtle">
+            <div className={colClassName}>{bid ?? ""}</div>
+            <div className={colClassName}>{tricksTaken ?? ""}</div>
+            <div className={colClassName + " border-end-0"}>
               <span className={bonus === 0 ? "invisible" : ""}>{bonus}</span>
             </div>
           </div>
