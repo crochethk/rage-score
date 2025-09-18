@@ -110,6 +110,10 @@ function PlayerRoundDataCell({
       <td
         className="p-0 cell-hover cursor-pointer border border-dark-subtle"
         onClick={onClick}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") onClick();
+        }}
       >
         <div className="d-flex flex-column w-100">
           <div className="d-flex text-center border-top border-bottom border-dark-subtle">
