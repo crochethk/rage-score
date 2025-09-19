@@ -35,25 +35,20 @@ Dieses Dokument spezifiziert die Anforderungen für eine digitale Punktetabelle 
 
 **FA-01:** Das System **muss** die Möglichkeit bieten, neue Spieler hinzuzufügen.
 
-- **Akzeptanzkriterium:** Ein Spieler wird durch Eingabe eines Namens (1-20 Zeichen) hinzugefügt.
+- **Akzeptanzkriterium:** Ein Spieler wird durch Eingabe eines Namens (1-20 Zeichen) hinzugefügt und bekommt vom System automatisch eine Farbe zugewiesen.
 
 **FA-02:** Das System **muss** die Möglichkeit bieten, Spieler aus dem aktuellen Spiel zu entfernen.
 
-- **Akzeptanzkriterium:** Ein Spieler kann jederzeit aus dem Spiel entfernt werden.
-
-**FA-03:** Das System **muss** zwischen 2 und 8 Spieler pro Spiel unterstützen.
+**FA-03:** Das System **muss** zwischen 3 und 8 Spieler pro Spiel unterstützen.
 
 - **Akzeptanzkriterium:**
-  - Bei Unterschreitung von 2 Spielern wird eine Fehlermeldung angezeigt.
-  - Bei Überschreitung von 8 Spielern wird eine Warnung angezeigt.
+  - Das System legt im Ursprungszustand zu Beginn 3 editierbare Spieler an.
+  - Bei Unterschreitung von 3 oder Überschreitung von 8 Spielern wird eine nicht blockierende Warnung angezeigt
+  - Es wird eine harte obere Grenze von 16 Spielern gewählt, die nicht überschritten werden darf.
 
-**FA-04:** Das System **muss** Spielernamen editierbar machen.
-
-- **Akzeptanzkriterium:** Ein Spielername kann jederzeit geändert werden.
+**FA-04:** Das System **muss** das Editieren der Spielernamen und -farben ermöglichen.
 
 **FA-18:** Das System **muss** ein nachträgliches Ändern der Spielerreihenfolge ermöglichen.
-
-- **Akzeptanzkriterium:** Die Spielerreihenfolge kann jederzeit geändert werden.
 
 ### 2.2 Rundenverwaltung
 
@@ -89,6 +84,10 @@ wobei Gebotsbonus = {
 **FA-10:** Das System **muss** die Gesamtpunktzahl jedes Spielers aktualisieren.
 
 - **Akzeptanzkriterium:** Gesamtpunktzahl = Summe aller Rundenpunkte des Spielers.
+
+**FA-19:** Das System **muss** das Starten einer neuen Partie mit den selben Spielern ermöglichen.
+
+**FA-20:** Das System **muss** das Zurücksetzen aller eingegebenen Daten für ein komplett neues Spiel ermöglichen.
 
 ### 2.3 Datenvalidierung
 
@@ -184,6 +183,10 @@ wobei Gebotsbonus = {
 **UI-03:** Der Eingabebereich **muss** je Spieler drei Eingabefelder (Gebot, Stiche, Bonus) enthalten.
 
 **UI-04:** Alle Eingabefelder **müssen** klar beschriftet und visuell gruppiert sein.
+
+**UI-08:** Die Spielernamen **sollten** entsprechend ihrer Farbwahl farblich unterlegt sein.
+
+**UI-09:** Der Eingabedialog **sollte** entsprechend des gerade betrachteten Spielers farblich unterlegt sein.
 
 ### 5.2 Interaktion
 
