@@ -28,8 +28,7 @@ export default function App() {
 
   // --- Main application state
   // This automatically persists to local storage and loads from it initially
-  // TODO setPlayers removed to satisfy `vite build`
-  const [players] = useLocalStorage<Player[]>(
+  const [players, setPlayers] = useLocalStorage<Player[]>(
     "players",
     initialState.players,
   );
@@ -104,8 +103,32 @@ export default function App() {
     [openScoreInputDialog],
   );
 
+  // --- Handlers for Game Reset ---
+  const handleFullReset = () => {
+    if (window.confirm("Sicher ALLES zurücksetzen?")) {
+      const initialState = createInitialGameState();
+      setPlayers(initialState.players);
+      setRounds(initialState.rounds);
+    }
+  };
+
+  const handleScoreReset = () => {
+    if (
+      window.confirm("Sicher alle Punkte löschen? \n(Spieler bleiben erhalten)")
+    ) {
+      const nextRounds = rounds.map((r) => ({
+        ...r,
+        playerData: Object.fromEntries(
+          players.map((p) => [p.id, { bonusCardPoints: 0 }]),
+        ),
+      }));
+      setRounds(nextRounds);
+    }
+  };
+
   return (
     <>
+      {/* --- Score Table --- */}
       <GameInteractionContext value={gameInteractionValue}>
         <ScoreTable gameData={{ players, rounds }} />
       </GameInteractionContext>
@@ -126,24 +149,22 @@ export default function App() {
           </Modal.Body>
         </Modal>
       </ScoreInputContext>
-      <ResetButton />
-    </>
-  );
-}
 
-function ResetButton() {
-  return (
-    <Button
-      variant="danger"
-      className="min-vw-25 fw-bold"
-      onClick={() => {
-        if (window.confirm("Spielstand wirklich zurücksetzen?")) {
-          localStorage.clear();
-          window.location.reload();
-        }
-      }}
-    >
-      Reset
-    </Button>
+      {/* --- Game Management Panel --- */}
+      <Button
+        variant="danger"
+        className="min-vw-25 fw-bold m-1"
+        onClick={handleFullReset}
+      >
+        Alles Löschen
+      </Button>
+      <Button
+        variant="secondary"
+        className="min-vw-25 fw-bold m-1"
+        onClick={handleScoreReset}
+      >
+        Punkte Löschen
+      </Button>
+    </>
   );
 }
