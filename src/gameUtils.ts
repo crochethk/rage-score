@@ -60,6 +60,39 @@ export function isEmptyColumn(playerId: PlayerId, rounds: Round[]) {
   );
 }
 
+/**
+ * Creates the given number of empty rounds associated with the given players.
+ * The number of cards dealt in each round decreases from `roundsCount` to 1,
+ * alike in the standard game rules.
+ */
+export function createEmptyRounds(roundsCount: number, players: Player[]) {
+  const cardsDealt = (i: number) => roundsCount - i + 1;
+  return createEmptyRoundsArbitrary(roundsCount, players, cardsDealt);
+}
+
+/**
+ * Creates the given number of empty rounds associated with the given players.
+ * The number of cards dealt in each round is determined by the provided function.
+ * @param cardsDealtFn The function to determine cardsDealt for the i-th round.
+ * i starts at 1.
+ */
+function createEmptyRoundsArbitrary(
+  roundsCount: number,
+  players: Player[],
+  cardsDealtFn: (i: number) => number,
+) {
+  const rounds = range(1, roundsCount + 1).map((i) => {
+    return {
+      roundNumber: i,
+      cardsDealt: cardsDealtFn(i),
+      playerData: Object.fromEntries(
+        players.map((p) => [p.id, { bonusCardPoints: 0 }]),
+      ),
+    };
+  });
+  return rounds;
+}
+
 export function range(start: number, stop: number, step = 1) {
   return Array.from(
     { length: Math.ceil((stop - start) / step) },
