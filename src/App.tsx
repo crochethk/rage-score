@@ -137,8 +137,9 @@ export default function App() {
     () => ({
       openScoreInputDialog,
       openEditPlayerDialog,
+      openAddPlayerDialog,
     }),
-    [openScoreInputDialog, openEditPlayerDialog],
+    [openScoreInputDialog, openEditPlayerDialog, openAddPlayerDialog],
   );
 
   // --- Handlers for Game Reset ---
@@ -167,14 +168,6 @@ export default function App() {
 
   return (
     <>
-      <Button
-        variant="primary"
-        className="fw-bold m-1"
-        onClick={openAddPlayerDialog}
-      >
-      ✚ Spieler hinzufügen
-      </Button>
-
       {/* --- Score Table --- */}
       <GameInteractionContext value={gameInteractionValue}>
         <ScoreTable gameData={{ players, rounds }} />

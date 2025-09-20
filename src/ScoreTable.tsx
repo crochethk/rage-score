@@ -41,6 +41,26 @@ function ScoreTableHead({ players }: { players: Player[] }) {
       <tr>
         <th scope="col">#</th>
         {names}
+        <th
+          scope="col"
+          className="bg-primary rounded-end-4 border-bottom-0 cursor-pointer"
+          style={{ minWidth: "3.5em", maxWidth: "3.5em" }}
+          onClick={gic.openAddPlayerDialog}
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault(); // prevent spacebar scroll
+              gic.openAddPlayerDialog();
+            }
+          }}
+          role="button"
+          title="Spieler hinzufügen"
+        >
+          <i
+            className="bi bi-person-plus-fill"
+            aria-label="Spieler hinzufügen"
+          ></i>
+        </th>
       </tr>
     </thead>
   );
@@ -50,7 +70,7 @@ type ScoreTableBodyProps = GameData;
 
 function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
   return (
-    <tbody className="table-group-divider">
+    <tbody>
       {rounds.map((round) => (
         <RoundDataRow key={round.roundNumber} players={players} round={round} />
       ))}
