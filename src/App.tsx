@@ -12,7 +12,7 @@ import type { Player, PlayerId, PlayerRoundData, Round } from "./types";
 
 const createInitialGameState = () => {
   // Create 8 players
-  const playerCount = 8;
+  const playerCount = 2;
   const players = gu
     .range(1, playerCount + 1)
     .map((n) => ({ id: uuid(), name: "Spieler " + n }));
