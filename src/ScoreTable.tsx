@@ -10,9 +10,14 @@ interface ScoreTableProps {
 
 export default function ScoreTable(props: ScoreTableProps) {
   const { players, rounds } = props.gameData;
+  const gic = useGameInteraction();
   return (
     <>
-      <div className="table-responsive" style={{ overscrollBehaviorX: "none" }}>
+      <div
+        ref={gic.tableContainerRef}
+        className="table-responsive"
+        style={{ overscrollBehaviorX: "none" }}
+      >
         <Table variant="light" className="text-nowrap w-auto h-100 m-0">
           <ScoreTableHead players={players} />
           <ScoreTableBody players={players} rounds={rounds} />

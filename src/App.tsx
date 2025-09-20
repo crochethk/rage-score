@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { v4 as uuid } from "uuid";
 import { ScoreInputDialog } from "./components/dialogs/ScoreInputDialog";
@@ -111,6 +111,20 @@ export default function App() {
     [players, setPlayers],
   );
 
+  // Scroll to horizontal end when new player has been added
+  const tableContainerRef = useRef<HTMLDivElement | null>(null);
+  const isPlayerAddedRef = useRef(false);
+
+  useEffect(() => {
+    if (!isPlayerAddedRef.current) return;
+
+    const table = tableContainerRef.current;
+    if (table) {
+      table.scrollLeft = table.scrollWidth;
+    }
+    isPlayerAddedRef.current = false;
+  }, [players]);
+
   const openAddPlayerDialog = useCallback(() => {
     const name = (window.prompt("Name eingeben:") ?? "").trim();
     if (name.length === 0) {
@@ -121,6 +135,7 @@ export default function App() {
     const newPlayer: Player = { id: uuid(), name };
     const nextPlayers = [...players, newPlayer];
     setPlayers(nextPlayers);
+    isPlayerAddedRef.current = true;
 
     // Add empty player record to all existing rounds
     const nextRounds = rounds.map((r) => ({
@@ -135,6 +150,7 @@ export default function App() {
 
   const gameInteractionValue = useMemo(
     () => ({
+      tableContainerRef,
       openScoreInputDialog,
       openEditPlayerDialog,
       openAddPlayerDialog,
