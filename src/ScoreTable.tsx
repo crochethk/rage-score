@@ -33,16 +33,17 @@ function ScoreTableHead({ players }: { players: Player[] }) {
   const names = players.map((p) => (
     <th
       key={p.id}
-      className="text-truncate" // Abbreviate long names with ellipsis
+      className="text-truncate cursor-pointer"
       scope="col"
       style={{ minWidth: "7em", maxWidth: "7em" }} // Fixate column width
       onClick={() => gic.openEditPlayerDialog(p)}
+      role="button"
     >
       {p.name}
     </th>
   ));
   return (
-    <thead className="text-center table-dark sticky-top">
+    <thead className="text-center align-middle table-dark sticky-top">
       <tr>
         <th scope="col">#</th>
         {names}
@@ -143,6 +144,7 @@ function PlayerRoundDataCell({
       <td
         className="p-0 cell-hover cursor-pointer border border-dark-subtle h-100"
         onClick={onClick}
+        role="button"
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") onClick();
@@ -187,7 +189,7 @@ function ScoreTableFoot({ players, rounds }: ScoreTableFootProps) {
           const totalScore = gu.calculateTotalScore(p.id, rounds);
           const isEmptyColumn = gu.isEmptyColumn(p.id, rounds);
           return (
-            <td key={p.id}>
+            <td key={p.id} className="border border-dark-subtle">
               <span className={isEmptyColumn ? "invisible" : ""}>
                 {totalScore}
               </span>

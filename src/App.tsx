@@ -209,17 +209,17 @@ export default function App() {
       {/* --- Game Management Panel --- */}
       <Button
         variant="danger"
-        className="min-vw-25 fw-bold m-1"
+        className="fw-bold m-1"
         onClick={handleFullReset}
       >
-        Alles Löschen
+        <i className="bi bi-trash" /> Alles Löschen
       </Button>
       <Button
-        variant="secondary"
-        className="min-vw-25 fw-bold m-1"
+        variant="danger"
+        className="fw-bold m-1"
         onClick={handleScoreReset}
       >
-        Punkte Löschen
+        <i className="bi bi-trash fw-bold" /> Punkte Löschen
       </Button>
     </>
   );
