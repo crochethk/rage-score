@@ -111,6 +111,28 @@ export default function App() {
     [players, setPlayers],
   );
 
+  const openAddPlayerDialog = useCallback(() => {
+    const name = (window.prompt("Name eingeben:") ?? "").trim();
+    if (name.length === 0) {
+      console.log("Aborted adding player: No name given");
+      return;
+    }
+
+    const newPlayer: Player = { id: uuid(), name };
+    const nextPlayers = [...players, newPlayer];
+    setPlayers(nextPlayers);
+
+    // Add empty player record to all existing rounds
+    const nextRounds = rounds.map((r) => ({
+      ...r,
+      playerData: {
+        ...r.playerData,
+        [newPlayer.id]: {},
+      },
+    }));
+    setRounds(nextRounds);
+  }, [players, rounds, setPlayers, setRounds]);
+
   const gameInteractionValue = useMemo(
     () => ({
       openScoreInputDialog,
@@ -145,6 +167,14 @@ export default function App() {
 
   return (
     <>
+      <Button
+        variant="primary"
+        className="fw-bold m-1"
+        onClick={openAddPlayerDialog}
+      >
+      ✚ Spieler hinzufügen
+      </Button>
+
       {/* --- Score Table --- */}
       <GameInteractionContext value={gameInteractionValue}>
         <ScoreTable gameData={{ players, rounds }} />
