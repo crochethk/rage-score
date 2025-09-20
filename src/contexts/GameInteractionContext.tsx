@@ -3,6 +3,7 @@ import type { Player, Round } from "../types";
 
 export interface GameInteractionContextType {
   openScoreInputDialog: (player: Player, round: Round) => void;
+  openEditPlayerDialog: (player: Player) => void;
 }
 
 export const GameInteractionContext = createContext<

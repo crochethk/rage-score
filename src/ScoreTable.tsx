@@ -24,8 +24,15 @@ export default function ScoreTable(props: ScoreTableProps) {
 }
 
 function ScoreTableHead({ players }: { players: Player[] }) {
+  const gic = useGameInteraction();
   const names = players.map((p) => (
-    <th key={p.id} scope="col" style={{ minWidth: "7em" }}>
+    <th
+      key={p.id}
+      className="text-truncate" // Abbreviate long names with ellipsis
+      scope="col"
+      style={{ minWidth: "7em", maxWidth: "7em" }} // Fixate column width
+      onClick={() => gic.openEditPlayerDialog(p)}
+    >
       {p.name}
     </th>
   ));

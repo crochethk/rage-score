@@ -96,14 +96,31 @@ export default function App() {
     [scoreInput],
   );
 
+  const openEditPlayerDialog = useCallback(
+    (player: Player) => {
+      // For now just prompt for a new name
+      const newName = (window.prompt("Name ändern:", player.name) ?? "").trim();
+      if (newName.length === 0) {
+        console.log("Aborted editing player: No name given");
+        return;
+      }
+      player = { ...player, name: newName };
+      const nextPlayers = players.map((p) => (p.id === player.id ? player : p));
+      setPlayers(nextPlayers);
+    },
+    [players, setPlayers],
+  );
+
   const gameInteractionValue = useMemo(
     () => ({
       openScoreInputDialog,
+      openEditPlayerDialog,
     }),
-    [openScoreInputDialog],
+    [openScoreInputDialog, openEditPlayerDialog],
   );
 
   // --- Handlers for Game Reset ---
+
   const handleFullReset = () => {
     if (window.confirm("Sicher ALLES zurücksetzen?")) {
       const initialState = createInitialGameState();
