@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { v4 as uuid } from "uuid";
 import { ScoreInputDialog } from "./components/dialogs/ScoreInputDialog";
@@ -12,7 +12,7 @@ import type { Player, PlayerId, PlayerRoundData, Round } from "./types";
 
 const createInitialGameState = () => {
   // Create 8 players
-  const playerCount = 8;
+  const playerCount = 2;
   const players = gu
     .range(1, playerCount + 1)
     .map((n) => ({ id: uuid(), name: "Spieler " + n }));
@@ -96,14 +96,70 @@ export default function App() {
     [scoreInput],
   );
 
+  const openEditPlayerDialog = useCallback(
+    (player: Player) => {
+      // For now just prompt for a new name
+      const newName = (window.prompt("Name ändern:", player.name) ?? "").trim();
+      if (newName.length === 0) {
+        console.log("Aborted editing player: No name given");
+        return;
+      }
+      player = { ...player, name: newName };
+      const nextPlayers = players.map((p) => (p.id === player.id ? player : p));
+      setPlayers(nextPlayers);
+    },
+    [players, setPlayers],
+  );
+
+  // Scroll to horizontal end when new player has been added
+  const tableContainerRef = useRef<HTMLDivElement | null>(null);
+  const isPlayerAddedRef = useRef(false);
+
+  useEffect(() => {
+    if (!isPlayerAddedRef.current) return;
+
+    const table = tableContainerRef.current;
+    if (table) {
+      table.scrollLeft = table.scrollWidth;
+    }
+    isPlayerAddedRef.current = false;
+  }, [players]);
+
+  const openAddPlayerDialog = useCallback(() => {
+    const name = (window.prompt("Name eingeben:") ?? "").trim();
+    if (name.length === 0) {
+      console.log("Aborted adding player: No name given");
+      return;
+    }
+
+    const newPlayer: Player = { id: uuid(), name };
+    const nextPlayers = [...players, newPlayer];
+    setPlayers(nextPlayers);
+    isPlayerAddedRef.current = true;
+
+    // Add empty player record to all existing rounds
+    const nextRounds = rounds.map((r) => ({
+      ...r,
+      playerData: {
+        ...r.playerData,
+        [newPlayer.id]: {},
+      },
+    }));
+    setRounds(nextRounds);
+  }, [players, rounds, setPlayers, setRounds]);
+
   const gameInteractionValue = useMemo(
     () => ({
+      tableContainerRef,
       openScoreInputDialog,
+      openEditPlayerDialog,
+      openAddPlayerDialog,
     }),
-    [openScoreInputDialog],
+    [openScoreInputDialog, openEditPlayerDialog, openAddPlayerDialog],
   );
 
   // --- Handlers for Game Reset ---
+
   const handleFullReset = () => {
     if (window.confirm("Sicher ALLES zurücksetzen?")) {
       const initialState = createInitialGameState();
@@ -153,17 +209,17 @@ export default function App() {
       {/* --- Game Management Panel --- */}
       <Button
         variant="danger"
-        className="min-vw-25 fw-bold m-1"
+        className="fw-bold m-1"
         onClick={handleFullReset}
       >
-        Alles Löschen
+        <i className="bi bi-trash" /> Alles Löschen
       </Button>
       <Button
-        variant="secondary"
-        className="min-vw-25 fw-bold m-1"
+        variant="danger"
+        className="fw-bold m-1"
         onClick={handleScoreReset}
       >
-        Punkte Löschen
+        <i className="bi bi-trash fw-bold" /> Punkte Löschen
       </Button>
     </>
   );

@@ -10,9 +10,14 @@ interface ScoreTableProps {
 
 export default function ScoreTable(props: ScoreTableProps) {
   const { players, rounds } = props.gameData;
+  const gic = useGameInteraction();
   return (
     <>
-      <div className="table-responsive" style={{ overscrollBehaviorX: "none" }}>
+      <div
+        ref={gic.tableContainerRef}
+        className="table-responsive"
+        style={{ overscrollBehaviorX: "none" }}
+      >
         <Table variant="light" className="text-nowrap w-auto h-100 m-0">
           <ScoreTableHead players={players} />
           <ScoreTableBody players={players} rounds={rounds} />
@@ -24,16 +29,44 @@ export default function ScoreTable(props: ScoreTableProps) {
 }
 
 function ScoreTableHead({ players }: { players: Player[] }) {
+  const gic = useGameInteraction();
   const names = players.map((p) => (
-    <th key={p.id} scope="col" style={{ minWidth: "7em" }}>
+    <th
+      key={p.id}
+      className="text-truncate cursor-pointer"
+      scope="col"
+      style={{ minWidth: "7em", maxWidth: "7em" }} // Fixate column width
+      onClick={() => gic.openEditPlayerDialog(p)}
+      role="button"
+    >
       {p.name}
     </th>
   ));
   return (
-    <thead className="text-center table-dark sticky-top">
+    <thead className="text-center align-middle table-dark sticky-top">
       <tr>
         <th scope="col">#</th>
         {names}
+        <th
+          scope="col"
+          className="bg-primary rounded-end-4 border-bottom-0 cursor-pointer"
+          style={{ minWidth: "3.5em", maxWidth: "3.5em" }}
+          onClick={gic.openAddPlayerDialog}
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault(); // prevent spacebar scroll
+              gic.openAddPlayerDialog();
+            }
+          }}
+          role="button"
+          title="Spieler hinzufügen"
+        >
+          <i
+            className="bi bi-person-plus-fill"
+            aria-label="Spieler hinzufügen"
+          ></i>
+        </th>
       </tr>
     </thead>
   );
@@ -43,7 +76,7 @@ type ScoreTableBodyProps = GameData;
 
 function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
   return (
-    <tbody className="table-group-divider">
+    <tbody>
       {rounds.map((round) => (
         <RoundDataRow key={round.roundNumber} players={players} round={round} />
       ))}
@@ -111,6 +144,7 @@ function PlayerRoundDataCell({
       <td
         className="p-0 cell-hover cursor-pointer border border-dark-subtle h-100"
         onClick={onClick}
+        role="button"
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") onClick();
@@ -155,7 +189,7 @@ function ScoreTableFoot({ players, rounds }: ScoreTableFootProps) {
           const totalScore = gu.calculateTotalScore(p.id, rounds);
           const isEmptyColumn = gu.isEmptyColumn(p.id, rounds);
           return (
-            <td key={p.id}>
+            <td key={p.id} className="border border-dark-subtle">
               <span className={isEmptyColumn ? "invisible" : ""}>
                 {totalScore}
               </span>
