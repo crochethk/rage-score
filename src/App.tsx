@@ -174,9 +174,7 @@ export default function App() {
     ) {
       const nextRounds = rounds.map((r) => ({
         ...r,
-        playerData: Object.fromEntries(
-          players.map((p) => [p.id, { bonusCardPoints: 0 }]),
-        ),
+        playerData: gu.createEmptyPlayerDataRecords(players),
       }));
       setRounds(nextRounds);
     }

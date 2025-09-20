@@ -53,7 +53,7 @@ export function getAdjacentPlayer(
 
 export function isEmptyColumn(playerId: PlayerId, rounds: Round[]) {
   return rounds.every(
-    (r) => isCompletePlayerRoundData(r.playerData[playerId]) === false,
+    (r) => !isCompletePlayerRoundData(r.playerData[playerId]),
   );
 }
 
@@ -82,12 +82,20 @@ function createEmptyRoundsArbitrary(
     return {
       roundNumber: i,
       cardsDealt: cardsDealtFn(i),
-      playerData: Object.fromEntries(
-        players.map((p) => [p.id, { bonusCardPoints: 0 }]),
-      ),
+      playerData: createEmptyPlayerDataRecords(players),
     };
   });
   return rounds;
+}
+
+/**
+ * Utility to create empty partial `PlayerRoundData` records for the given players.
+ * This is useful as a starting point for the `Round.playerData` property.
+ */
+export function createEmptyPlayerDataRecords(
+  players: Player[],
+): Record<PlayerId, Partial<PlayerRoundData>> {
+  return Object.fromEntries(players.map((p) => [p.id, {}]));
 }
 
 export function range(start: number, stop: number, step = 1) {
