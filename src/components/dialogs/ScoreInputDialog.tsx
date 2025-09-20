@@ -18,8 +18,6 @@ interface ScoreInputDialogProps {
 export function ScoreInputDialog(props: ScoreInputDialogProps) {
   const { player, round } = props;
   const roundData = round.playerData[player.id];
-  // Make sure bonusCardPoints is always defined
-  roundData.bonusCardPoints = roundData.bonusCardPoints ?? 0;
 
   const roundScore = gu.isCompletePlayerRoundData(roundData)
     ? gu.calculateRoundScore(roundData)

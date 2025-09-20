@@ -10,9 +10,14 @@ interface ScoreTableProps {
 
 export default function ScoreTable(props: ScoreTableProps) {
   const { players, rounds } = props.gameData;
+  const gic = useGameInteraction();
   return (
     <>
-      <div className="table-responsive" style={{ overscrollBehaviorX: "none" }}>
+      <div
+        ref={gic.tableContainerRef}
+        className="table-responsive"
+        style={{ overscrollBehaviorX: "none" }}
+      >
         <Table variant="light" className="text-nowrap w-auto h-100 m-0">
           <ScoreTableHead players={players} />
           <ScoreTableBody players={players} rounds={rounds} />
@@ -28,7 +33,7 @@ function ScoreTableHead({ players }: { players: Player[] }) {
   const names = players.map((p) => (
     <th
       key={p.id}
-      className="text-truncate" // Abbreviate long names with ellipsis
+      className="text-truncate cursor-pointer"
       scope="col"
       style={{ minWidth: "7em", maxWidth: "7em" }} // Fixate column width
       onClick={() => gic.openEditPlayerDialog(p)}
@@ -37,10 +42,21 @@ function ScoreTableHead({ players }: { players: Player[] }) {
     </th>
   ));
   return (
-    <thead className="text-center table-dark sticky-top">
+    <thead className="text-center align-middle table-dark sticky-top">
       <tr>
         <th scope="col">#</th>
         {names}
+        <th
+          scope="row"
+          className="bg-primary rounded-end-4 border-bottom-0 cursor-pointer"
+          style={{ minWidth: "3.5em", maxWidth: "3.5em" }}
+          onClick={gic.openAddPlayerDialog}
+        >
+          <i
+            className="bi bi-person-plus-fill"
+            aria-label="Spieler hinzufügen"
+          ></i>
+        </th>
       </tr>
     </thead>
   );
@@ -50,7 +66,7 @@ type ScoreTableBodyProps = GameData;
 
 function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
   return (
-    <tbody className="table-group-divider">
+    <tbody>
       {rounds.map((round) => (
         <RoundDataRow key={round.roundNumber} players={players} round={round} />
       ))}
@@ -95,23 +111,21 @@ interface PlayerRoundDataCellProps {
   onClick: () => void;
 }
 
-function PlayerRoundDataCell({
-  roundData,
-  onClick: onClick,
-}: PlayerRoundDataCellProps) {
-  const { bid, tricksTaken, bonusCardPoints } = roundData;
+//----------------- ↓↓↓ SOLLTE SAVE SEIN ↓↓↓ -----------------
+
+function PlayerRoundDataCell(props: PlayerRoundDataCellProps) {
+  const { roundData, onClick } = props;
+  const { bid, tricksTaken, bonusCardPoints = 0 } = roundData;
+  const roundScore = gu.isCompletePlayerRoundData(roundData)
+    ? gu.calculateRoundScore(roundData)
+    : null;
+
   const colClassName =
     "col flex-grow-1 flex-shrink-1" +
     " p-0" +
     " border-end border-dark-subtle" +
     " xsmall" +
     " align-content-center";
-
-  // Prepare values for display
-  const bonus: number = bonusCardPoints ?? 0;
-  const roundScore = gu.isCompletePlayerRoundData(roundData)
-    ? gu.calculateRoundScore(roundData)
-    : null;
 
   return (
     <>
@@ -128,7 +142,9 @@ function PlayerRoundDataCell({
             <div className={colClassName}>{bid ?? ""}</div>
             <div className={colClassName}>{tricksTaken ?? ""}</div>
             <div className={colClassName + " border-end-0"}>
-              <span className={bonus === 0 ? "invisible" : ""}>{bonus}</span>
+              <span className={bonusCardPoints === 0 ? "invisible" : ""}>
+                {bonusCardPoints}
+              </span>
             </div>
           </div>
           <div className="d-flex flex-grow-1 justify-content-center align-items-center p-1 p-sm-0">
@@ -143,6 +159,7 @@ function PlayerRoundDataCell({
     </>
   );
 }
+//----------------- ↑↑↑ SOLLTE SAVE SEIN ↑↑↑ -----------------
 
 type ScoreTableFootProps = GameData;
 
@@ -162,7 +179,7 @@ function ScoreTableFoot({ players, rounds }: ScoreTableFootProps) {
           const totalScore = gu.calculateTotalScore(p.id, rounds);
           const isEmptyColumn = gu.isEmptyColumn(p.id, rounds);
           return (
-            <td key={p.id}>
+            <td key={p.id} className="border border-dark-subtle">
               <span className={isEmptyColumn ? "invisible" : ""}>
                 {totalScore}
               </span>

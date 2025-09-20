@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { v4 as uuid } from "uuid";
 import { ScoreInputDialog } from "./components/dialogs/ScoreInputDialog";
@@ -12,7 +12,7 @@ import type { Player, PlayerId, PlayerRoundData, Round } from "./types";
 
 const createInitialGameState = () => {
   // Create 8 players
-  const playerCount = 8;
+  const playerCount = 2;
   const players = gu
     .range(1, playerCount + 1)
     .map((n) => ({ id: uuid(), name: "Spieler " + n }));
@@ -86,7 +86,6 @@ export default function App() {
   );
 
   // --- GameInteractionContext Value
-
   const openScoreInputDialog = useCallback(
     (player: Player, round: Round) => {
       scoreInput.setPlayer(player);
@@ -111,6 +110,21 @@ export default function App() {
     [players, setPlayers],
   );
 
+  const tableContainerRef = useRef<HTMLDivElement | null>(null);
+  const isPlayerAddedRef = useRef(false);
+
+  // Scroll to end when new player has been added
+  useEffect(() => {
+    if (!isPlayerAddedRef.current) return;
+
+    const table = tableContainerRef.current;
+    if (table) {
+      table.scrollLeft = table.scrollWidth;
+    }
+    console.log("1234");
+    isPlayerAddedRef.current = false;
+  }, [players]);
+
   const openAddPlayerDialog = useCallback(() => {
     const name = (window.prompt("Name eingeben:") ?? "").trim();
     if (name.length === 0) {
@@ -121,6 +135,7 @@ export default function App() {
     const newPlayer: Player = { id: uuid(), name };
     const nextPlayers = [...players, newPlayer];
     setPlayers(nextPlayers);
+    isPlayerAddedRef.current = true;
 
     // Add empty player record to all existing rounds
     const nextRounds = rounds.map((r) => ({
@@ -135,10 +150,12 @@ export default function App() {
 
   const gameInteractionValue = useMemo(
     () => ({
+      tableContainerRef,
       openScoreInputDialog,
       openEditPlayerDialog,
+      openAddPlayerDialog,
     }),
-    [openScoreInputDialog, openEditPlayerDialog],
+    [openScoreInputDialog, openEditPlayerDialog, openAddPlayerDialog],
   );
 
   // --- Handlers for Game Reset ---
@@ -172,7 +189,7 @@ export default function App() {
         className="fw-bold m-1"
         onClick={openAddPlayerDialog}
       >
-      ✚ Spieler hinzufügen
+        ✚ Spieler hinzufügen
       </Button>
 
       {/* --- Score Table --- */}
@@ -200,17 +217,17 @@ export default function App() {
       {/* --- Game Management Panel --- */}
       <Button
         variant="danger"
-        className="min-vw-25 fw-bold m-1"
+        className="fw-bold m-1"
         onClick={handleFullReset}
       >
-        Alles Löschen
+        <i className="bi bi-trash" /> Alles Löschen
       </Button>
       <Button
-        variant="secondary"
-        className="min-vw-25 fw-bold m-1"
+        variant="danger"
+        className="fw-bold m-1"
         onClick={handleScoreReset}
       >
-        Punkte Löschen
+        <i className="bi bi-trash fw-bold" /> Punkte Löschen
       </Button>
     </>
   );
