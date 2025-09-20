@@ -1,23 +1,20 @@
 import type { Player, PlayerId, PlayerRoundData, Round } from "./types";
 
 /**
- * Type guard function to check whether `PlayerRoundData` is complete.
+ * Type guard function to check whether `PlayerRoundData` has all required
+ * fields.
  */
 export function isCompletePlayerRoundData(
   data: Partial<PlayerRoundData>,
 ): data is PlayerRoundData {
-  return (
-    data.bid !== undefined &&
-    data.tricksTaken !== undefined &&
-    data.bonusCardPoints !== undefined
-  );
+  return data.bid !== undefined && data.tricksTaken !== undefined;
 }
 
 /**
  * Calculates a player's points of a round based on the provided data.
  */
 export function calculateRoundScore(roundData: PlayerRoundData): number {
-  const { bid, tricksTaken, bonusCardPoints } = roundData;
+  const { bid, tricksTaken, bonusCardPoints = 0 } = roundData;
   const bidBonus = tricksTaken === bid ? 10 : -5;
   return tricksTaken + bidBonus + bonusCardPoints;
 }

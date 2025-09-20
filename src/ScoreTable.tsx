@@ -121,23 +121,19 @@ interface PlayerRoundDataCellProps {
   onClick: () => void;
 }
 
-function PlayerRoundDataCell({
-  roundData,
-  onClick: onClick,
-}: PlayerRoundDataCellProps) {
-  const { bid, tricksTaken, bonusCardPoints } = roundData;
+function PlayerRoundDataCell(props: PlayerRoundDataCellProps) {
+  const { roundData, onClick } = props;
+  const { bid, tricksTaken, bonusCardPoints = 0 } = roundData;
+  const roundScore = gu.isCompletePlayerRoundData(roundData)
+    ? gu.calculateRoundScore(roundData)
+    : null;
+
   const colClassName =
     "col flex-grow-1 flex-shrink-1" +
     " p-0" +
     " border-end border-dark-subtle" +
     " xsmall" +
     " align-content-center";
-
-  // Prepare values for display
-  const bonus: number = bonusCardPoints ?? 0;
-  const roundScore = gu.isCompletePlayerRoundData(roundData)
-    ? gu.calculateRoundScore(roundData)
-    : null;
 
   return (
     <>
@@ -155,7 +151,9 @@ function PlayerRoundDataCell({
             <div className={colClassName}>{bid ?? ""}</div>
             <div className={colClassName}>{tricksTaken ?? ""}</div>
             <div className={colClassName + " border-end-0"}>
-              <span className={bonus === 0 ? "invisible" : ""}>{bonus}</span>
+              <span className={bonusCardPoints === 0 ? "invisible" : ""}>
+                {bonusCardPoints}
+              </span>
             </div>
           </div>
           <div className="d-flex flex-grow-1 justify-content-center align-items-center p-1 p-sm-0">

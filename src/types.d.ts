@@ -33,7 +33,7 @@ export interface PlayerRoundData {
   /**
    * The bonus/penalty points earned from special cards in this round.
    */
-  bonusCardPoints: number;
+  bonusCardPoints?: number;
 }
 
 /**
