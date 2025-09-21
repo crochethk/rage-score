@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Col, Container, Modal, Row } from "react-bootstrap";
 import { v4 as uuid } from "uuid";
 import { ScoreInputDialog } from "./components/dialogs/ScoreInputDialog";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
@@ -181,10 +181,35 @@ export default function App() {
 
   return (
     <>
-      {/* --- Score Table --- */}
-      <GameInteractionContext value={gameInteractionValue}>
-        <ScoreTable gameData={{ players, rounds }} />
-      </GameInteractionContext>
+      <Container fluid className="container-md mx-0 px-0 mx-md-3 px-md-2">
+        <Row>
+          <Col>
+            {/* --- Score Table --- */}
+            <GameInteractionContext value={gameInteractionValue}>
+              <ScoreTable gameData={{ players, rounds }} />
+            </GameInteractionContext>
+          </Col>
+        </Row>
+        <Row>
+          <Col className="">
+            {/* --- Game Management Panel --- */}
+            <Button
+              variant="danger"
+              className="fw-bold m-1 ms-0"
+              onClick={handleFullReset}
+            >
+              <i className="bi bi-trash" /> Alles Löschen
+            </Button>
+            <Button
+              variant="danger"
+              className="fw-bold m-1"
+              onClick={handleScoreReset}
+            >
+              <i className="bi bi-trash fw-bold" /> Punkte Löschen
+            </Button>
+          </Col>
+        </Row>
+      </Container>
 
       {/* --- ScoreInputDialog Modal --- */}
       <ScoreInputContext value={scoreInputCtxValue}>
@@ -202,22 +227,6 @@ export default function App() {
           </Modal.Body>
         </Modal>
       </ScoreInputContext>
-
-      {/* --- Game Management Panel --- */}
-      <Button
-        variant="danger"
-        className="fw-bold m-1"
-        onClick={handleFullReset}
-      >
-        <i className="bi bi-trash" /> Alles Löschen
-      </Button>
-      <Button
-        variant="danger"
-        className="fw-bold m-1"
-        onClick={handleScoreReset}
-      >
-        <i className="bi bi-trash fw-bold" /> Punkte Löschen
-      </Button>
     </>
   );
 }
