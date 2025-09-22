@@ -1,6 +1,25 @@
 import type { Player, PlayerId, PlayerRoundData, Round } from "./types";
 
 /**
+ * Creates an array with possible bid values from 0 to `cardsDealt` (including).
+ */
+export function getPossibleBids(cardsDealt: number): number[] {
+  return range(0, cardsDealt + 1);
+}
+
+/**
+ * Creates an array with bonus point values according to the amount of
+ * `bonusCards` in the game.
+ * Example: `bonusCards=3` creates an array witch -15 to +15 in steps of 5.
+ */
+export function getBonusPointsValues(bonusCards = 3): number[] {
+  const bonusPerCard = 5;
+  const min = bonusCards * -bonusPerCard;
+  const max = bonusCards * bonusPerCard;
+  return range(min, max + 1, bonusPerCard);
+}
+
+/**
  * Type guard function to check whether `PlayerRoundData` has all required
  * fields.
  */

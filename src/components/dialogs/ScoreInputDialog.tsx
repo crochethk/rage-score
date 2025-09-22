@@ -87,14 +87,13 @@ interface ScoreInputFormProps {
 function ScoreInputForm(props: ScoreInputFormProps) {
   const { playerId, roundData, cardsDealt } = props;
   const { onScoreInput } = useScoreInput();
-  const possibleBidsOptions = gu.range(0, cardsDealt + 1).map((b) => (
+  const possibleBidsOptions = gu.getPossibleBids(cardsDealt).map((b) => (
     <option key={b} value={b}>
       {b}
     </option>
   ));
 
-  // Options -15 to +15 in steps of 5
-  const bonusPointsOptions = gu.range(3 * -5, 3 * 5 + 1, 5).map((p) => (
+  const bonusPointsOptions = gu.getBonusPointsValues().map((p) => (
     <option key={p} value={p}>
       {p > 0 ? "+" + p : p}
     </option>
