@@ -34,7 +34,7 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
           <ScoreInputForm
             playerId={player.id}
             roundData={roundData}
-            maxBid={round.cardsDealt}
+            cardsDealt={round.cardsDealt}
           />
 
           <div id="roundPointsDisplay">
@@ -81,13 +81,13 @@ interface ScoreInputFormProps {
   roundData: Partial<PlayerRoundData>;
 
   /** The largest possible bid for this round. */
-  maxBid: number;
+  cardsDealt: number;
 }
 
 function ScoreInputForm(props: ScoreInputFormProps) {
-  const { playerId, roundData, maxBid } = props;
+  const { playerId, roundData, cardsDealt } = props;
   const { onScoreInput } = useScoreInput();
-  const possibleBidsOptions = gu.range(0, maxBid + 1).map((b) => (
+  const possibleBidsOptions = gu.range(0, cardsDealt + 1).map((b) => (
     <option key={b} value={b}>
       {b}
     </option>
