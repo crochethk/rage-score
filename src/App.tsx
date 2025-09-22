@@ -6,7 +6,7 @@ import { GameInteractionContext } from "./contexts/GameInteractionContext";
 import { ScoreInputContext } from "./contexts/ScoreInputContext";
 import * as gu from "./gameUtils";
 import { useLocalStorage } from "./hooks/useLocalStorage";
-import { useScoreInputDialog } from "./hooks/useScoreInputState";
+import { useScoreInputDialog } from "./hooks/useScoreInputDialog";
 import ScoreTable from "./ScoreTable";
 import type { Player, PlayerId, PlayerRoundData, Round } from "./types";
 
