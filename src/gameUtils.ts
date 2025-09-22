@@ -70,7 +70,7 @@ export function getAdjacentPlayer(
   }
 }
 
-export function isEmptyColumn(playerId: PlayerId, rounds: Round[]) {
+export function isEmptyColumn(playerId: PlayerId, rounds: Round[]): boolean {
   return rounds.every(
     (r) => !isCompletePlayerRoundData(r.playerData[playerId]),
   );
@@ -81,7 +81,10 @@ export function isEmptyColumn(playerId: PlayerId, rounds: Round[]) {
  * The number of cards dealt in each round decreases from `roundsCount` to 1,
  * alike in the standard game rules.
  */
-export function createEmptyRounds(roundsCount: number, players: Player[]) {
+export function createEmptyRounds(
+  roundsCount: number,
+  players: Player[],
+): Round[] {
   const cardsDealt = (i: number) => roundsCount - i + 1;
   return createEmptyRoundsArbitrary(roundsCount, players, cardsDealt);
 }
@@ -96,7 +99,7 @@ function createEmptyRoundsArbitrary(
   roundsCount: number,
   players: Player[],
   cardsDealtFn: (i: number) => number,
-) {
+): Round[] {
   const rounds = range(1, roundsCount + 1).map((i) => {
     return {
       roundNumber: i,
