@@ -181,21 +181,22 @@ export default function App() {
 
   return (
     <>
-      <Container fluid className="container-md mx-0 px-0 mx-md-3 px-md-2">
+      <Container fluid="lg">
         <Row>
-          <Col>
+          <Col className="px-0 px-sm-3 col-lg-auto mx-lg-auto">
             {/* --- Score Table --- */}
             <GameInteractionContext value={gameInteractionValue}>
               <ScoreTable gameData={{ players, rounds }} />
             </GameInteractionContext>
           </Col>
         </Row>
-        <Row>
-          <Col className="">
-            {/* --- Game Management Panel --- */}
+
+        {/* --- Game Management Panel --- */}
+        <Row className="mt-2">
+          <Col className="col-12 mx-auto text-start text-lg-center">
             <Button
               variant="danger"
-              className="fw-bold m-1 ms-0"
+              className="fw-bold m-1"
               onClick={handleFullReset}
             >
               <i className="bi bi-trash" /> Alles Löschen
