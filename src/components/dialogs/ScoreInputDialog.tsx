@@ -111,7 +111,6 @@ function ScoreInputForm(props: ScoreInputFormProps) {
           className="text-center"
           onChange={(ev) =>
             onScoreInput(playerId, {
-              ...roundData,
               bid: ev.target.value === "" ? undefined : Number(ev.target.value),
             })
           }
@@ -132,7 +131,6 @@ function ScoreInputForm(props: ScoreInputFormProps) {
           className="text-center"
           onChange={(ev) =>
             onScoreInput(playerId, {
-              ...roundData,
               tricksTaken:
                 ev.target.value === "" ? undefined : Number(ev.target.value),
             })
@@ -153,7 +151,6 @@ function ScoreInputForm(props: ScoreInputFormProps) {
           className="text-center"
           onChange={(ev) =>
             onScoreInput(playerId, {
-              ...roundData,
               bonusCardPoints: Number(ev.target.value),
             })
           }
