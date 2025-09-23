@@ -1,77 +1,51 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
-import { v4 as uuid } from "uuid";
 import { ScoreInputDialog } from "./components/dialogs/ScoreInputDialog";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
 import { ScoreInputContext } from "./contexts/ScoreInputContext";
 import * as gu from "./gameUtils";
-import { useLocalStorage } from "./hooks/useLocalStorage";
+import { useGameState, type PlayerRoundDataUpdate } from "./hooks/useGameState";
 import { useScoreInputDialog } from "./hooks/useScoreInputDialog";
 import ScoreTable from "./ScoreTable";
-import type { Player, PlayerId, PlayerRoundData, Round } from "./types";
-
-const createInitialGameState = () => {
-  const playerCount = 2;
-  const players = gu
-    .range(1, playerCount + 1)
-    .map((n) => ({ id: uuid(), name: "Spieler " + n }));
-
-  // Create 10 rounds with decreasing cards dealt from 10 to 1
-  const totalRounds = 10;
-  const rounds = gu.createEmptyRounds(totalRounds, players);
-  return { players, rounds };
-};
+import type { Player, PlayerId, Round } from "./types";
 
 export default function App() {
-  const initialState = useMemo(() => createInitialGameState(), []);
-
-  // --- Main application state
-  // This automatically persists to local storage and loads from it initially
-  const [players, setPlayers] = useLocalStorage<Player[]>(
-    "players",
-    initialState.players,
-  );
-  const [rounds, setRounds] = useLocalStorage<Round[]>(
-    "rounds",
-    initialState.rounds,
-  );
-
-  const scoreInput = useScoreInputDialog(players[0], rounds[0]);
+  const gs = useGameState();
 
   // --- Handlers for ScoreInputContext ---
 
+  /* ---✓--- */
+  const scoreInput = useScoreInputDialog(gs.players[0], gs.rounds[0]);
+
+  /* ---✓--- */
   const handleScoreInput = useCallback(
-    (pid: PlayerId, newPlayerRoundData: Partial<PlayerRoundData>) => {
-      const updatedRound = { ...scoreInput.round };
-      updatedRound.playerData[pid] = newPlayerRoundData;
-      scoreInput.setRound(updatedRound);
-      const roundIndex = rounds.findIndex(
-        (r) => r.roundNumber === updatedRound.roundNumber,
+    (pid: PlayerId, newPlayerRoundData: PlayerRoundDataUpdate) => {
+      gs.updatePlayerRoundData(
+        pid,
+        scoreInput.round.roundNumber,
+        newPlayerRoundData,
       );
-      if (roundIndex !== -1) {
-        // Update existing round
-        const updatedRounds = [...rounds];
-        updatedRounds[roundIndex] = updatedRound;
-        setRounds(updatedRounds);
-      }
+      // ...
+      // scoreInput.setRound(updatedRound); // no need to set/change this if only round number is used
+      // ...
     },
-    [rounds, scoreInput, setRounds],
+    [gs, scoreInput.round.roundNumber],
   );
 
   const handleNextPlayer = useCallback(
     (currentId: PlayerId) => {
-      const next = gu.getAdjacentPlayer(players, currentId, "next");
+      const next = gu.getAdjacentPlayer(gs.players, currentId, "next");
       scoreInput.setPlayer(next);
     },
-    [players, scoreInput],
+    [gs.players, scoreInput],
   );
 
   const handlePrevPlayer = useCallback(
     (currentId: PlayerId) => {
-      const prev = gu.getAdjacentPlayer(players, currentId, "prev");
+      const prev = gu.getAdjacentPlayer(gs.players, currentId, "prev");
       scoreInput.setPlayer(prev);
     },
-    [players, scoreInput],
+    [gs.players, scoreInput],
   );
 
   const scoreInputCtxValue = useMemo(
@@ -95,6 +69,7 @@ export default function App() {
     [scoreInput],
   );
 
+  /* ---✓--- */
   const openEditPlayerDialog = useCallback(
     (player: Player) => {
       // For now just prompt for a new name
@@ -103,11 +78,10 @@ export default function App() {
         console.log("Aborted editing player: No name given");
         return;
       }
-      player = { ...player, name: newName };
-      const nextPlayers = players.map((p) => (p.id === player.id ? player : p));
-      setPlayers(nextPlayers);
+
+      gs.updatePlayer(player.id, { name: newName });
     },
-    [players, setPlayers],
+    [gs],
   );
 
   // Scroll to horizontal end when new player has been added
@@ -122,8 +96,9 @@ export default function App() {
       table.scrollLeft = table.scrollWidth;
     }
     isPlayerAddedRef.current = false;
-  }, [players]);
+  }, [gs.players]);
 
+  /* ---✓--- */
   const openAddPlayerDialog = useCallback(() => {
     const name = (window.prompt("Name eingeben:") ?? "").trim();
     if (name.length === 0) {
@@ -131,21 +106,9 @@ export default function App() {
       return;
     }
 
-    const newPlayer: Player = { id: uuid(), name };
-    const nextPlayers = [...players, newPlayer];
-    setPlayers(nextPlayers);
+    gs.addPlayer(name);
     isPlayerAddedRef.current = true;
-
-    // Add empty player record to all existing rounds
-    const nextRounds = rounds.map((r) => ({
-      ...r,
-      playerData: {
-        ...r.playerData,
-        [newPlayer.id]: {},
-      },
-    }));
-    setRounds(nextRounds);
-  }, [players, rounds, setPlayers, setRounds]);
+  }, [gs]);
 
   const gameInteractionValue = useMemo(
     () => ({
@@ -157,28 +120,24 @@ export default function App() {
     [openScoreInputDialog, openEditPlayerDialog, openAddPlayerDialog],
   );
 
-  // --- Handlers for Game Reset ---
+  // --- Handlers for Game Management Panel ---
 
+  /* ---✓--- */
   const handleFullReset = () => {
     if (window.confirm("Sicher ALLES zurücksetzen?")) {
-      const initialState = createInitialGameState();
-      setPlayers(initialState.players);
-      setRounds(initialState.rounds);
+      gs.resetGame();
     }
   };
 
+  /* ---✓--- */
   const handleScoreReset = () => {
     if (
       window.confirm("Sicher alle Punkte löschen? \n(Spieler bleiben erhalten)")
-    ) {
-      const nextRounds = rounds.map((r) => ({
-        ...r,
-        playerData: gu.createEmptyPlayerDataRecords(players),
-      }));
-      setRounds(nextRounds);
-    }
+    )
+      gs.resetScores();
   };
 
+  const { players, rounds } = gs;
   return (
     <>
       <Container fluid="lg">
