@@ -152,7 +152,7 @@ function PlayerRoundDataCell(props: PlayerRoundDataCellProps) {
             <div className={colClassName}>{tricksTaken ?? ""}</div>
             <div className={colClassName + " border-end-0"}>
               <span className={bonusCardPoints === 0 ? "invisible" : ""}>
-                {bonusCardPoints}
+                {bonusCardPoints > 0 ? "+" + bonusCardPoints : bonusCardPoints}
               </span>
             </div>
           </div>
