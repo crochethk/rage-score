@@ -2,8 +2,8 @@
 type PlayerId = string;
 
 export interface GameData {
-  players: Player[];
-  rounds: Round[];
+  players: readonly Player[];
+  rounds: readonly Round[];
 }
 
 /** Represents a player in the game. */

@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid";
 import type { Player, PlayerId, PlayerRoundData, Round } from "./types";
 
 /**
@@ -40,7 +41,7 @@ export function calculateRoundScore(roundData: PlayerRoundData): number {
 
 export function calculateTotalScore(
   playerId: PlayerId,
-  rounds: Round[],
+  rounds: readonly Round[],
 ): number {
   const playerRoundsData = rounds.map((r) => r.playerData[playerId]);
   const score = playerRoundsData.reduce((acc, rd) => {
@@ -50,12 +51,12 @@ export function calculateTotalScore(
 }
 
 export function getAdjacentPlayer(
-  players: Player[],
+  players: readonly Player[],
   pid: PlayerId,
   mode: "next" | "prev",
 ): Player {
-  const currentIdx = players.findIndex((p) => p.id === pid);
-  if (currentIdx >= 0) {
+  const currentIdx = findPlayerIndex(players, pid);
+  if (currentIdx !== -1) {
     if (mode === "next") {
       return players[(currentIdx + 1) % players.length];
     } else if (mode === "prev") {
@@ -70,7 +71,30 @@ export function getAdjacentPlayer(
   }
 }
 
-export function isEmptyColumn(playerId: PlayerId, rounds: Round[]): boolean {
+/**
+ * Returns the index of the player identified by `pid`. Returns -1 if not found.
+ */
+export function findPlayerIndex(
+  players: readonly Player[],
+  pid: PlayerId,
+): number {
+  return players.findIndex((p) => p.id === pid);
+}
+
+/**
+ * Returns the index of the round identified by `roundNumber`. Returns -1 if not found.
+ */
+export function findRoundIndex(
+  rounds: readonly Round[],
+  roundNumber: number,
+): number {
+  return rounds.findIndex((r) => r.roundNumber === roundNumber);
+}
+
+export function isEmptyColumn(
+  playerId: PlayerId,
+  rounds: readonly Round[],
+): boolean {
   return rounds.every(
     (r) => !isCompletePlayerRoundData(r.playerData[playerId]),
   );
@@ -83,7 +107,7 @@ export function isEmptyColumn(playerId: PlayerId, rounds: Round[]): boolean {
  */
 export function createEmptyRounds(
   roundsCount: number,
-  players: Player[],
+  players: readonly Player[],
 ): Round[] {
   const cardsDealt = (i: number) => roundsCount - i + 1;
   return createEmptyRoundsArbitrary(roundsCount, players, cardsDealt);
@@ -97,7 +121,7 @@ export function createEmptyRounds(
  */
 function createEmptyRoundsArbitrary(
   roundsCount: number,
-  players: Player[],
+  players: readonly Player[],
   cardsDealtFn: (i: number) => number,
 ): Round[] {
   const rounds = range(1, roundsCount + 1).map((i) => {
@@ -115,7 +139,7 @@ function createEmptyRoundsArbitrary(
  * This is useful as a starting point for the `Round.playerData` property.
  */
 export function createEmptyPlayerDataRecords(
-  players: Player[],
+  players: readonly Player[],
 ): Record<PlayerId, Partial<PlayerRoundData>> {
   return Object.fromEntries(players.map((p) => [p.id, {}]));
 }
@@ -125,4 +149,8 @@ export function range(start: number, stop: number, step = 1) {
     { length: Math.ceil((stop - start) / step) },
     (_, i) => start + i * step,
   );
+}
+
+export function createPlayer(name: string): Player {
+  return { id: uuid(), name };
 }

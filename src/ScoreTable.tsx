@@ -28,7 +28,7 @@ export default function ScoreTable(props: ScoreTableProps) {
   );
 }
 
-function ScoreTableHead({ players }: { players: Player[] }) {
+function ScoreTableHead({ players }: { players: readonly Player[] }) {
   const gic = useGameInteraction();
   const names = players.map((p) => (
     <th
@@ -85,7 +85,7 @@ function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
 }
 
 interface RoundDataRowProps {
-  players: Player[];
+  players: readonly Player[];
   round: Round;
 }
 

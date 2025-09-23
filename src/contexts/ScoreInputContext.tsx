@@ -1,11 +1,12 @@
 import { createContext, use } from "react";
-import type { PlayerId, PlayerRoundData } from "../types";
+import type { PlayerId } from "../types";
+import type { PlayerRoundDataUpdate } from "../hooks/useGameState";
 
 export interface ScoreInputContextType {
   /** Callback invoked when the score input changes for a player in a round. */
   onScoreInput: (
     playerId: PlayerId,
-    newRoundData: Partial<PlayerRoundData>,
+    newRoundData: PlayerRoundDataUpdate,
   ) => void;
 
   /** Callback triggered to move to the next player. */
