@@ -87,6 +87,7 @@ interface ScoreInputFormProps {
 function ScoreInputForm(props: ScoreInputFormProps) {
   const { playerId, roundData, cardsDealt } = props;
   const { onScoreInput } = useScoreInput();
+
   const possibleBidsOptions = gu.getPossibleBids(cardsDealt).map((b) => (
     <option key={b} value={b}>
       {b}
@@ -99,66 +100,74 @@ function ScoreInputForm(props: ScoreInputFormProps) {
     </option>
   ));
 
+  const parseTricksValue = (v: string) => (v === "" ? undefined : Number(v));
   return (
     <Form.Floating>
-      <Form.FloatingLabel
+      <ScoreSelect
         label="Gewettet"
         controlId="bidInput"
-        className="my-2"
+        required
+        value={roundData.bid ?? ""}
+        onChange={(val) =>
+          onScoreInput(playerId, { bid: parseTricksValue(val) })
+        }
       >
-        <Form.Select
-          required
-          className="text-center"
-          onChange={(ev) =>
-            onScoreInput(playerId, {
-              bid: ev.target.value === "" ? undefined : Number(ev.target.value),
-            })
-          }
-          value={roundData.bid ?? ""}
-        >
-          <option value="">---</option>
-          {possibleBidsOptions}
-        </Form.Select>
-      </Form.FloatingLabel>
-
-      <Form.FloatingLabel
+        <option value="">---</option>
+        {possibleBidsOptions}
+      </ScoreSelect>
+      <ScoreSelect
         label="Bekommen"
         controlId="tricksInput"
-        className="my-2"
+        required
+        value={roundData.tricksTaken ?? ""}
+        onChange={(val) =>
+          onScoreInput(playerId, { tricksTaken: parseTricksValue(val) })
+        }
       >
-        <Form.Select
-          required
-          className="text-center"
-          onChange={(ev) =>
-            onScoreInput(playerId, {
-              tricksTaken:
-                ev.target.value === "" ? undefined : Number(ev.target.value),
-            })
-          }
-          value={roundData.tricksTaken ?? ""}
-        >
-          <option value="">---</option>
-          {possibleBidsOptions}
-        </Form.Select>
-      </Form.FloatingLabel>
-
-      <Form.FloatingLabel
+        <option value="">---</option>
+        {possibleBidsOptions}
+      </ScoreSelect>
+      <ScoreSelect
         label="Bonus/Malus aus Karten"
-        controlId="cardPointsInput"
-        className="my-2"
+        controlId="bonusPointsInput"
+        value={roundData.bonusCardPoints ?? 0}
+        onChange={(val) =>
+          onScoreInput(playerId, { bonusCardPoints: Number(val) })
+        }
       >
-        <Form.Select
-          className="text-center"
-          onChange={(ev) =>
-            onScoreInput(playerId, {
-              bonusCardPoints: Number(ev.target.value),
-            })
-          }
-          value={roundData.bonusCardPoints ?? 0}
-        >
-          {bonusPointsOptions}
-        </Form.Select>
-      </Form.FloatingLabel>
+        {bonusPointsOptions}
+      </ScoreSelect>
     </Form.Floating>
+  );
+}
+
+interface ScoreSelectProps {
+  label: string;
+  controlId: string;
+  required?: boolean;
+  value: number | "";
+  onChange: (val: string) => void;
+  children: React.ReactNode;
+}
+
+function ScoreSelect({
+  label,
+  controlId,
+  required,
+  value,
+  onChange,
+  children: options,
+}: ScoreSelectProps) {
+  return (
+    <Form.FloatingLabel label={label} controlId={controlId} className={"my-2"}>
+      <Form.Select
+        required={required}
+        className="text-center"
+        onChange={(ev) => onChange(ev.target.value)}
+        value={value}
+      >
+        {options}
+      </Form.Select>
+    </Form.FloatingLabel>
   );
 }
