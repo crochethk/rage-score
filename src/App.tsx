@@ -95,13 +95,21 @@ export default function App() {
     gs.addPlayer(name);
   }, [gs]);
 
+  const reverseRounds = useCallback(() => gs.reverseRounds(), [gs]);
+
   const gameInteractionValue = useMemo(
     () => ({
       openScoreInputDialog,
       openEditPlayerDialog,
       openAddPlayerDialog,
+      reverseRounds,
     }),
-    [openScoreInputDialog, openEditPlayerDialog, openAddPlayerDialog],
+    [
+      openScoreInputDialog,
+      openEditPlayerDialog,
+      openAddPlayerDialog,
+      reverseRounds,
+    ],
   );
 
   // --- Handlers for Game Management Panel ---

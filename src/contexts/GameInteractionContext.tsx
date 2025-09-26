@@ -5,6 +5,7 @@ export interface GameInteractionContextType {
   openScoreInputDialog: (player: Player, round: Round) => void;
   openEditPlayerDialog: (player: Player) => void;
   openAddPlayerDialog: () => void;
+  reverseRounds: () => void;
 }
 
 export const GameInteractionContext = createContext<

@@ -20,6 +20,7 @@ export interface GameState {
   resetGame: () => void;
   /** Resets all scores, but keeps players and rounds. */
   resetScores: () => void;
+  reverseRounds: () => void;
 }
 
 export type PlayerUpdate = Partial<Omit<Player, "id">>;
@@ -116,6 +117,11 @@ export function useGameState(): GameState {
     setRounds(nextRounds);
   };
 
+  const reverseRounds = () => {
+    const nextRounds = [...rounds].reverse();
+    setRounds(nextRounds);
+  };
+
   return {
     players,
     rounds,
@@ -124,6 +130,7 @@ export function useGameState(): GameState {
     updatePlayerRoundData,
     resetGame,
     resetScores,
+    reverseRounds,
   };
 }
 

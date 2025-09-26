@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from "react";
-import { Table } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import { useGameInteraction } from "./contexts/GameInteractionContext";
 import * as gu from "./gameUtils";
 import "./ScoreTable.style.css";
@@ -49,7 +49,17 @@ function ScoreTableHead({ players }: { players: readonly Player[] }) {
   return (
     <thead className="text-center align-middle table-dark sticky-top">
       <tr>
-        <th scope="col">#</th>
+        <th scope="col">
+          <Button
+            className="p-1"
+            variant="secondary"
+            size="sm"
+            aria-label="Rundenreihenfolge umkehren"
+            onClick={() => gic.reverseRounds()}
+          >
+            <i className="bi bi-arrow-down-up"></i>
+          </Button>
+        </th>
         {names}
         <th
           scope="col"
