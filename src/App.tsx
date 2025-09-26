@@ -8,6 +8,7 @@ import { useGameState, type PlayerRoundDataUpdate } from "./hooks/useGameState";
 import { useScoreInputDialog } from "./hooks/useScoreInputDialog";
 import ScoreTable from "./ScoreTable";
 import type { Player, PlayerId, Round } from "./types";
+import { toPlayerThemeBg } from "./gameUtils";
 
 export default function App() {
   const gs = useGameState();
@@ -110,14 +111,22 @@ export default function App() {
     isPlayerAddedRef.current = true;
   }, [gs]);
 
+  const reverseRounds = useCallback(() => gs.reverseRounds(), [gs]);
+
   const gameInteractionValue = useMemo(
     () => ({
       tableContainerRef,
       openScoreInputDialog,
       openEditPlayerDialog,
       openAddPlayerDialog,
+      reverseRounds,
     }),
-    [openScoreInputDialog, openEditPlayerDialog, openAddPlayerDialog],
+    [
+      openScoreInputDialog,
+      openEditPlayerDialog,
+      openAddPlayerDialog,
+      reverseRounds,
+    ],
   );
 
   // --- Handlers for Game Management Panel ---
@@ -179,7 +188,11 @@ export default function App() {
           fullscreen="xs-down"
           onHide={scoreInput.close}
         >
-          <Modal.Body>
+          <Modal.Body
+            style={{
+              backgroundColor: toPlayerThemeBg(scoreInput.player.color),
+            }}
+          >
             <ScoreInputDialog
               player={scoreInput.player}
               round={scoreInput.round}

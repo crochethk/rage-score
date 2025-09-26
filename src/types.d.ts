@@ -1,6 +1,7 @@
 /** Unique identifier for a player. */
 type PlayerId = string;
 
+// TODO remove interface because unnecessary indirection
 export interface GameData {
   players: readonly Player[];
   rounds: readonly Round[];
@@ -16,6 +17,17 @@ export interface Player {
    * The display name of the player.
    */
   name: string;
+  /**
+   * The player's color, used for UI theming.
+   */
+  color: ColorRgb;
+}
+
+/** Represents an RGB color. Each component should be in the range 0-255. */
+export interface ColorRgb {
+  r: number;
+  g: number;
+  b: number;
 }
 
 /**

@@ -5,14 +5,17 @@ interface ScoreTableMockData {
   rounds: Round[];
 }
 
+const _black = { r: 0, g: 0, b: 0 };
+
 export const dataSet1: ScoreTableMockData = {
   players: [
     {
       id: "p1-uuid", // generated upon player creation
       name: "Toni", // user input
+      color: _black,
     },
-    { id: "p2-uuid", name: "Alex" },
-    { id: "p3-uuid", name: "Charlie" },
+    { id: "p2-uuid", name: "Alex", color: _black },
+    { id: "p3-uuid", name: "Charlie", color: _black },
   ],
 
   rounds: [
@@ -52,14 +55,14 @@ export const dataSet1: ScoreTableMockData = {
 
 export const dataSet2: ScoreTableMockData = {
   players: [
-    { id: "p1-uuid", name: "Toni" },
-    { id: "p2-uuid", name: "Alex" },
-    { id: "p3-uuid", name: "Charlie" },
-    { id: "p4-uuid", name: "Morgan" },
-    { id: "p5-uuid", name: "Sam" },
-    { id: "p6-uuid", name: "Jordan" },
-    { id: "p7-uuid", name: "Taylor" },
-    { id: "p8-uuid", name: "Riley" },
+    { id: "p1-uuid", name: "Toni", color: _black },
+    { id: "p2-uuid", name: "Alex", color: _black },
+    { id: "p3-uuid", name: "Charlie", color: _black },
+    { id: "p4-uuid", name: "Morgan", color: _black },
+    { id: "p5-uuid", name: "Sam", color: _black },
+    { id: "p6-uuid", name: "Jordan", color: _black },
+    { id: "p7-uuid", name: "Taylor", color: _black },
+    { id: "p8-uuid", name: "Riley", color: _black },
   ],
   rounds: [
     {
@@ -109,14 +112,14 @@ export const dataSet2: ScoreTableMockData = {
 
 export const dataSet3: ScoreTableMockData = {
   players: [
-    { id: "p1-uuid", name: "Toni" },
-    { id: "p2-uuid", name: "Alex" },
-    { id: "p3-uuid", name: "Charlie" },
-    { id: "p4-uuid", name: "Morgan" },
-    { id: "p5-uuid", name: "Sam" },
-    { id: "p6-uuid", name: "Jordan" },
-    { id: "p7-uuid", name: "Taylor" },
-    { id: "p8-uuid", name: "Riley" },
+    { id: "p1-uuid", name: "Toni", color: _black },
+    { id: "p2-uuid", name: "Alex", color: _black },
+    { id: "p3-uuid", name: "Charlie", color: _black },
+    { id: "p4-uuid", name: "Morgan", color: _black },
+    { id: "p5-uuid", name: "Sam", color: _black },
+    { id: "p6-uuid", name: "Jordan", color: _black },
+    { id: "p7-uuid", name: "Taylor", color: _black },
+    { id: "p8-uuid", name: "Riley", color: _black },
   ],
   rounds: [
     {
@@ -265,9 +268,9 @@ export const dataSet3: ScoreTableMockData = {
 /** Typical situation with partial round data at the beginning of a game.  */
 export const dataSet4: ScoreTableMockData = {
   players: [
-    { id: "p1-uuid", name: "Toni" },
-    { id: "p2-uuid", name: "Alex" },
-    { id: "p3-uuid", name: "Charlie" },
+    { id: "p1-uuid", name: "Toni", color: _black },
+    { id: "p2-uuid", name: "Alex", color: _black },
+    { id: "p3-uuid", name: "Charlie", color: _black },
   ],
 
   rounds: [
@@ -288,9 +291,9 @@ export const dataSet4: ScoreTableMockData = {
 
 export const dataSet5: ScoreTableMockData = {
   players: [
-    { id: "p1-uuid", name: "Toni" },
-    { id: "p2-uuid", name: "Alex" },
-    { id: "p3-uuid", name: "Charlie" },
+    { id: "p1-uuid", name: "Toni", color: _black },
+    { id: "p2-uuid", name: "Alex", color: _black },
+    { id: "p3-uuid", name: "Charlie", color: _black },
   ],
 
   rounds: [
@@ -316,11 +319,11 @@ export const dataSet5: ScoreTableMockData = {
 /** Data imported from an actual partie. */
 export const dataSet42: ScoreTableMockData = {
   players: [
-    { id: "ef8fcd7e-3f5a-41b3-80bb-31abd9c4203d", name: "J" },
-    { id: "9f5469e7-4bd0-41b4-a10b-8f826ea48b5f", name: "K" },
-    { id: "0fb22e83-e610-4757-b623-d8d60c60c206", name: "M" },
-    { id: "269145df-5fa7-409b-a212-05ae9b3ed56f", name: "A" },
-    { id: "208b249f-aeb4-40dd-a769-f69b8c7a542b", name: "E" },
+    { id: "ef8fcd7e-3f5a-41b3-80bb-31abd9c4203d", name: "J", color: _black },
+    { id: "9f5469e7-4bd0-41b4-a10b-8f826ea48b5f", name: "K", color: _black },
+    { id: "0fb22e83-e610-4757-b623-d8d60c60c206", name: "M", color: _black },
+    { id: "269145df-5fa7-409b-a212-05ae9b3ed56f", name: "A", color: _black },
+    { id: "208b249f-aeb4-40dd-a769-f69b8c7a542b", name: "E", color: _black },
   ],
 
   rounds: [

@@ -20,23 +20,30 @@ export interface GameState {
   resetGame: () => void;
   /** Resets all scores, but keeps players and rounds. */
   resetScores: () => void;
+  reverseRounds: () => void;
 }
 
 export type PlayerUpdate = Partial<Omit<Player, "id">>;
 export type PlayerRoundDataUpdate = Partial<PlayerRoundData>;
 
 export function useGameState(): GameState {
-  const initialState = useMemo(() => createInitialGameState(), []);
+  const defaultState = useMemo(() => createDefaultGameState(), []);
 
   // --- Main application state
+
+  // Migration from old state
+  const sanitizePlayers = (players: Player[]) =>
+    players.map((p) => (p.color ? p : { ...p, color: gu.randomRgb() }));
+
   // This automatically persists to local storage and loads from it initially
   const [players, setPlayers] = useLocalStorage<Player[]>(
     "players",
-    initialState.players,
+    defaultState.players,
+    sanitizePlayers,
   );
   const [rounds, setRounds] = useLocalStorage<Round[]>(
     "rounds",
-    initialState.rounds,
+    defaultState.rounds,
   );
 
   // --- State modification API ---
@@ -103,7 +110,7 @@ export function useGameState(): GameState {
   };
 
   const resetGame = () => {
-    const initialState = createInitialGameState();
+    const initialState = createDefaultGameState();
     setPlayers(initialState.players);
     setRounds(initialState.rounds);
   };
@@ -116,6 +123,11 @@ export function useGameState(): GameState {
     setRounds(nextRounds);
   };
 
+  const reverseRounds = () => {
+    const nextRounds = [...rounds].reverse();
+    setRounds(nextRounds);
+  };
+
   return {
     players,
     rounds,
@@ -124,10 +136,11 @@ export function useGameState(): GameState {
     updatePlayerRoundData,
     resetGame,
     resetScores,
+    reverseRounds,
   };
 }
 
-function createInitialGameState() {
+function createDefaultGameState() {
   const playerCount = 2;
   const players = gu
     .range(1, playerCount + 1)
