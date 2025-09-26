@@ -30,10 +30,16 @@ export function useGameState(): GameState {
   const defaultState = useMemo(() => createDefaultGameState(), []);
 
   // --- Main application state
+
+  const sanitizePlayers = (players: Player[]) =>
+    // Migration from state yet missing player colors
+    players.map((p) => (p.color ? p : { ...p, color: gu.randomRgb() }));
+
   // This automatically persists to local storage and loads from it initially
   const [players, setPlayers] = useLocalStorage<Player[]>(
     "players",
     defaultState.players,
+    sanitizePlayers,
   );
   const [rounds, setRounds] = useLocalStorage<Round[]>(
     "rounds",

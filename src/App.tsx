@@ -171,7 +171,11 @@ export default function App() {
           fullscreen="xs-down"
           onHide={scoreInput.close}
         >
-          <Modal.Body>
+          <Modal.Body
+            style={{
+              backgroundColor: gu.toPlayerThemeBg(scoreInput.player.color),
+            }}
+          >
             <ScoreInputDialog
               player={scoreInput.player}
               round={scoreInput.round}

@@ -1,5 +1,11 @@
 import { v4 as uuid } from "uuid";
-import type { Player, PlayerId, PlayerRoundData, Round } from "./types";
+import type {
+  ColorRgb,
+  Player,
+  PlayerId,
+  PlayerRoundData,
+  Round,
+} from "./types";
 
 /**
  * Creates an array with possible bid values from 0 to `cardsDealt` (including).
@@ -151,6 +157,19 @@ export function range(start: number, stop: number, step = 1) {
   );
 }
 
-export function createPlayer(name: string): Player {
-  return { id: uuid(), name };
+export function createPlayer(name: string, color?: ColorRgb): Player {
+  return { id: uuid(), name, color: color ?? randomRgb() };
+}
+
+export function randomRgb(): ColorRgb {
+  return {
+    r: Math.floor(Math.random() * 256),
+    g: Math.floor(Math.random() * 256),
+    b: Math.floor(Math.random() * 256),
+  };
+}
+
+/** Creates a CSS string which computes the background color given a player's theme color. */
+export function toPlayerThemeBg(color: ColorRgb): string {
+  return `color-mix(in srgb-linear, rgb(${color.r}, ${color.g}, ${color.b}) 50%, var(--bs-gray-900) 100%)`;
 }

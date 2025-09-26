@@ -39,13 +39,19 @@ function ScoreTableHead({ players }: { players: readonly Player[] }) {
       key={p.id}
       className="text-truncate cursor-pointer"
       scope="col"
-      style={{ minWidth: "7em", maxWidth: "7em" }} // Fixate column width
+      style={{
+        backgroundColor: gu.toPlayerThemeBg(p.color),
+        // Fixate column width
+        minWidth: "7em",
+        maxWidth: "7em",
+      }}
       onClick={() => gic.openEditPlayerDialog(p)}
       role="button"
     >
       {p.name}
     </th>
   ));
+
   return (
     <thead className="text-center align-middle table-dark sticky-top">
       <tr>
