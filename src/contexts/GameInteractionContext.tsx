@@ -2,7 +2,6 @@ import { createContext, use } from "react";
 import type { Player, Round } from "../types";
 
 export interface GameInteractionContextType {
-  tableContainerRef: React.RefObject<HTMLDivElement | null>;
   openScoreInputDialog: (player: Player, round: Round) => void;
   openEditPlayerDialog: (player: Player) => void;
   openAddPlayerDialog: () => void;

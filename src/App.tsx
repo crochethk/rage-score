@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
 import { ScoreInputDialog } from "./components/dialogs/ScoreInputDialog";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
@@ -84,20 +84,6 @@ export default function App() {
     [gs],
   );
 
-  // Scroll to horizontal end when new player has been added
-  const tableContainerRef = useRef<HTMLDivElement | null>(null);
-  const isPlayerAddedRef = useRef(false);
-
-  useEffect(() => {
-    if (!isPlayerAddedRef.current) return;
-
-    const table = tableContainerRef.current;
-    if (table) {
-      table.scrollLeft = table.scrollWidth;
-    }
-    isPlayerAddedRef.current = false;
-  }, [gs.players]);
-
   /* ---✓--- */
   const openAddPlayerDialog = useCallback(() => {
     const name = (window.prompt("Name eingeben:") ?? "").trim();
@@ -107,12 +93,10 @@ export default function App() {
     }
 
     gs.addPlayer(name);
-    isPlayerAddedRef.current = true;
   }, [gs]);
 
   const gameInteractionValue = useMemo(
     () => ({
-      tableContainerRef,
       openScoreInputDialog,
       openEditPlayerDialog,
       openAddPlayerDialog,

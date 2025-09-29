@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef } from "react";
 import { Table } from "react-bootstrap";
 import { useGameInteraction } from "./contexts/GameInteractionContext";
 import * as gu from "./gameUtils";
@@ -10,11 +11,14 @@ interface ScoreTableProps {
 
 export default function ScoreTable(props: ScoreTableProps) {
   const { players, rounds } = props.gameData;
-  const gic = useGameInteraction();
+  const scrollToEndRef = useScrollToXEndOnLengthChange<HTMLDivElement, Player>(
+    players,
+  );
+
   return (
     <>
       <div
-        ref={gic.tableContainerRef}
+        ref={scrollToEndRef}
         className="table-responsive"
         style={{ overscrollBehaviorX: "none" }}
       >
@@ -197,4 +201,34 @@ function ScoreTableFoot({ players, rounds }: ScoreTableFootProps) {
       </tr>
     </tfoot>
   );
+}
+
+interface ScrollableElement {
+  scrollLeft: number;
+  scrollWidth: number;
+}
+
+/**
+ * Custom hook to auto-scroll a scrollable element to its horizontal end when the length of a monitored array changes.
+ * @param arr Array to monitor for length changes. Should be a stable reference (e.g. from `useState`).
+ * @returns A `ref` to be attached to the scrollable element.
+ */
+function useScrollToXEndOnLengthChange<E extends ScrollableElement, T>(
+  arr: readonly T[],
+) {
+  // Scroll to horizontal end when new player has been added
+  const scrollElementRef = useRef<E | null>(null);
+  const prevArrLengthRef = useRef(arr.length);
+
+  useLayoutEffect(() => {
+    // Check to prevent scrolling on page reload
+    if (prevArrLengthRef.current !== arr.length) {
+      const elem = scrollElementRef.current;
+      if (elem) {
+        elem.scrollLeft = elem.scrollWidth;
+      }
+      prevArrLengthRef.current = arr.length;
+    }
+  }, [arr.length]);
+  return scrollElementRef;
 }
