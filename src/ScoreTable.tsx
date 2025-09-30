@@ -22,7 +22,7 @@ export default function ScoreTable(props: ScoreTableProps) {
         className="table-responsive"
         style={{ overscrollBehaviorX: "none" }}
       >
-        <Table variant="light" className="text-nowrap w-auto h-100 m-0">
+        <Table className="text-nowrap w-auto h-100 m-0 bg-body-tertiary rounded-end-4">
           <ScoreTableHead players={players} />
           <ScoreTableBody players={players} rounds={rounds} />
           <ScoreTableFoot players={players} rounds={rounds} />
@@ -37,7 +37,7 @@ function ScoreTableHead({ players }: { players: readonly Player[] }) {
   const names = players.map((p) => (
     <th
       key={p.id}
-      className="text-truncate cursor-pointer"
+      className="text-truncate cursor-pointer text-light"
       scope="col"
       style={{
         backgroundColor: gu.toPlayerThemeBg(p.color),
@@ -53,9 +53,9 @@ function ScoreTableHead({ players }: { players: readonly Player[] }) {
   ));
 
   return (
-    <thead className="text-center align-middle table-dark sticky-top">
+    <thead className="text-center align-middle sticky-top">
       <tr>
-        <th scope="col">
+        <th className="table-secondary" scope="col">
           <Button
             className="p-1"
             variant="secondary"
@@ -69,7 +69,7 @@ function ScoreTableHead({ players }: { players: readonly Player[] }) {
         {names}
         <th
           scope="col"
-          className="bg-primary rounded-end-4 border-bottom-0 cursor-pointer"
+          className="bg-primary rounded-end-4 border-bottom-0 cursor-pointer text-light"
           style={{ minWidth: "3.5em", maxWidth: "3.5em" }}
           onClick={gic.openAddPlayerDialog}
           tabIndex={0}
@@ -96,7 +96,7 @@ type ScoreTableBodyProps = GameData;
 
 function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
   return (
-    <tbody>
+    <tbody className="table-light">
       {rounds.map((round) => (
         <RoundDataRow key={round.roundNumber} players={players} round={round} />
       ))}

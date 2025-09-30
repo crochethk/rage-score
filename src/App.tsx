@@ -132,9 +132,9 @@ export default function App() {
   const { players, rounds } = gs;
   return (
     <>
-      <Container fluid="lg">
+      <Container fluid>
         <Row>
-          <Col className="px-0 px-sm-3 col-lg-auto mx-lg-auto">
+          <Col className="px-0 px-sm-3 col-sm-auto mx-sm-auto">
             {/* --- Score Table --- */}
             <GameInteractionContext value={gameInteractionValue}>
               <ScoreTable gameData={{ players, rounds }} />
@@ -144,7 +144,7 @@ export default function App() {
 
         {/* --- Game Management Panel --- */}
         <Row className="mt-2">
-          <Col className="col-12 mx-auto text-start text-lg-center">
+          <Col className="col-12 mx-auto text-start text-sm-center">
             <Button
               variant="danger"
               className="fw-bold m-1"
