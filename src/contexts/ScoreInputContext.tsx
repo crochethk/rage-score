@@ -1,8 +1,10 @@
-import { createContext, use } from "react";
+import { createContext, use, useCallback, useMemo } from "react";
+import * as gu from "../gameUtils";
+import type { GameState, PlayerRoundDataUpdate } from "../hooks/useGameState";
+import type { ScoreInputDialogState } from "../hooks/useScoreInputDialog";
 import type { PlayerId } from "../types";
-import type { PlayerRoundDataUpdate } from "../hooks/useGameState";
 
-export interface ScoreInputContextType {
+export interface ScoreInputContextValue {
   /** Callback invoked when the score input changes for a player in a round. */
   onScoreInput: (
     playerId: PlayerId,
@@ -19,9 +21,68 @@ export interface ScoreInputContextType {
   onDone: () => void;
 }
 
-export const ScoreInputContext = createContext<
-  ScoreInputContextType | undefined
->(undefined);
+const ScoreInputContext = createContext<ScoreInputContextValue | undefined>(
+  undefined,
+);
+
+interface StateArgs {
+  gs: GameState;
+  scoreInput: ScoreInputDialogState;
+}
+
+export function ScoreInputProvider({
+  state,
+  children,
+}: {
+  state: StateArgs;
+  children: React.ReactNode;
+}) {
+  return (
+    <ScoreInputContext value={useContextValue(state)}>
+      {children}
+    </ScoreInputContext>
+  );
+}
+
+function useContextValue(stateArgs: StateArgs) {
+  const { gs, scoreInput } = stateArgs;
+  const handleScoreInput = useCallback(
+    (pid: PlayerId, newPlayerRoundData: PlayerRoundDataUpdate) => {
+      gs.updatePlayerRoundData(
+        pid,
+        scoreInput.round.roundNumber,
+        newPlayerRoundData,
+      );
+    },
+    [gs, scoreInput.round.roundNumber],
+  );
+
+  const handleNextPlayer = useCallback(
+    (currentId: PlayerId) => {
+      const next = gu.getAdjacentPlayer(gs.players, currentId, "next");
+      scoreInput.setPlayer(next);
+    },
+    [gs.players, scoreInput],
+  );
+
+  const handlePrevPlayer = useCallback(
+    (currentId: PlayerId) => {
+      const prev = gu.getAdjacentPlayer(gs.players, currentId, "prev");
+      scoreInput.setPlayer(prev);
+    },
+    [gs.players, scoreInput],
+  );
+
+  return useMemo(
+    () => ({
+      onScoreInput: handleScoreInput,
+      onNextPlayer: handleNextPlayer,
+      onPrevPlayer: handlePrevPlayer,
+      onDone: scoreInput.close,
+    }),
+    [handleNextPlayer, handlePrevPlayer, handleScoreInput, scoreInput.close],
+  );
+}
 
 export function useScoreInput() {
   const ctx = use(ScoreInputContext);

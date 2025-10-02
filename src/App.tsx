@@ -2,61 +2,16 @@ import { useCallback, useMemo } from "react";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
 import { ScoreInputDialog } from "./components/dialogs/ScoreInputDialog";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
-import { ScoreInputContext } from "./contexts/ScoreInputContext";
+import { ScoreInputProvider } from "./contexts/ScoreInputContext";
 import * as gu from "./gameUtils";
-import { useGameState, type PlayerRoundDataUpdate } from "./hooks/useGameState";
+import { useGameState } from "./hooks/useGameState";
 import { useScoreInputDialog } from "./hooks/useScoreInputDialog";
 import ScoreTable from "./ScoreTable";
-import type { Player, PlayerId, Round } from "./types";
+import type { Player, Round } from "./types";
 
 export default function App() {
   const gs = useGameState();
-
-  // --- Handlers for ScoreInputContext ---
-
-  /* ---✓--- */
   const scoreInput = useScoreInputDialog(gs.players[0], gs.rounds[0]);
-
-  /* ---✓--- */
-  const handleScoreInput = useCallback(
-    (pid: PlayerId, newPlayerRoundData: PlayerRoundDataUpdate) => {
-      gs.updatePlayerRoundData(
-        pid,
-        scoreInput.round.roundNumber,
-        newPlayerRoundData,
-      );
-      // ...
-      // scoreInput.setRound(updatedRound); // no need to set/change this if only round number is used
-      // ...
-    },
-    [gs, scoreInput.round.roundNumber],
-  );
-
-  const handleNextPlayer = useCallback(
-    (currentId: PlayerId) => {
-      const next = gu.getAdjacentPlayer(gs.players, currentId, "next");
-      scoreInput.setPlayer(next);
-    },
-    [gs.players, scoreInput],
-  );
-
-  const handlePrevPlayer = useCallback(
-    (currentId: PlayerId) => {
-      const prev = gu.getAdjacentPlayer(gs.players, currentId, "prev");
-      scoreInput.setPlayer(prev);
-    },
-    [gs.players, scoreInput],
-  );
-
-  const scoreInputCtxValue = useMemo(
-    () => ({
-      onScoreInput: handleScoreInput,
-      onNextPlayer: handleNextPlayer,
-      onPrevPlayer: handlePrevPlayer,
-      onDone: scoreInput.close,
-    }),
-    [handleNextPlayer, handlePrevPlayer, handleScoreInput, scoreInput.close],
-  );
 
   // --- GameInteractionContext Value
 
@@ -164,14 +119,16 @@ export default function App() {
       </Container>
 
       {/* --- ScoreInputDialog Modal --- */}
-      <ScoreInputContext value={scoreInputCtxValue}>
+      <ScoreInputProvider state={{ gs, scoreInput }}>
         <Modal
           show={scoreInput.isOpen}
           centered
           fullscreen="xs-down"
           onHide={scoreInput.close}
+          contentClassName="border-0 rounded-4"
         >
           <Modal.Body
+            className="rounded-4"
             style={{
               backgroundColor: gu.toPlayerThemeBg(scoreInput.player.color),
             }}
@@ -182,7 +139,7 @@ export default function App() {
             />
           </Modal.Body>
         </Modal>
-      </ScoreInputContext>
+      </ScoreInputProvider>
     </>
   );
 }
