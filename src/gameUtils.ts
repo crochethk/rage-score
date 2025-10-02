@@ -58,17 +58,13 @@ export function calculateTotalScore(
 
 /**
  * Tries to get the next or previous player in the given players array.
- * @throws if the player with `pid` is not found.
  */
 export function getAdjacentPlayer(
   players: readonly Player[],
   pid: PlayerId,
   mode: "next" | "prev",
 ): Player {
-  const currentIdx = findPlayerIndex(players, pid);
-  if (currentIdx === -1) {
-    throw new Error(`Player with ID '${pid}' not found`);
-  }
+  const currentIdx = findPlayerIndexOrThrow(players, pid);
   switch (mode) {
     case "next":
       return players[(currentIdx + 1) % players.length];
@@ -80,23 +76,61 @@ export function getAdjacentPlayer(
 }
 
 /**
- * Returns the index of the player identified by `pid`. Returns -1 if not found.
+ * Returns the player identified by `pid`.
+ * @throws {Error} When `pid` is undefined or when no player with the given ID exists.
  */
-export function findPlayerIndex(
+export function findPlayerOrThrow(
   players: readonly Player[],
-  pid: PlayerId,
-): number {
-  return players.findIndex((p) => p.id === pid);
+  pid: PlayerId | undefined,
+): Player {
+  return players[findPlayerIndexOrThrow(players, pid)];
 }
 
 /**
- * Returns the index of the round identified by `roundNumber`. Returns -1 if not found.
+ * Returns the index of the player identified by `pid`.
+ * @throws {Error} When `pid` is undefined or when no player with the given ID exists.
  */
-export function findRoundIndex(
-  rounds: readonly Round[],
-  roundNumber: number,
+export function findPlayerIndexOrThrow(
+  players: readonly Player[],
+  pid: PlayerId | undefined,
 ): number {
-  return rounds.findIndex((r) => r.roundNumber === roundNumber);
+  if (pid === undefined) {
+    throw new Error("Player ID is undefined");
+  }
+  const index = players.findIndex((p) => p.id === pid);
+  if (index === -1) {
+    throw new Error(`Player with ID '${pid}' not found`);
+  }
+  return index;
+}
+
+/**
+ * Returns the round identified by `roundNumber`.
+ * @throws {Error} When `roundNumber` is undefined or when no such round exists.
+ */
+export function findRoundOrThrow(
+  rounds: readonly Round[],
+  roundNumber: number | undefined,
+): Round {
+  return rounds[findRoundIndexOrThrow(rounds, roundNumber)];
+}
+
+/**
+ * Returns the index of the round identified by `roundNumber`.
+ * @throws {Error} When `roundNumber` is undefined or when no such round exists.
+ */
+export function findRoundIndexOrThrow(
+  rounds: readonly Round[],
+  roundNumber: number | undefined,
+): number {
+  if (roundNumber === undefined) {
+    throw new Error("Round number is undefined");
+  }
+  const index = rounds.findIndex((r) => r.roundNumber === roundNumber);
+  if (index === -1) {
+    throw new Error(`Round with roundNumber '${roundNumber}' not found`);
+  }
+  return index;
 }
 
 export function isEmptyColumn(

@@ -45,7 +45,7 @@ function ScoreTableHead({ players }: { players: readonly Player[] }) {
         minWidth: "7em",
         maxWidth: "7em",
       }}
-      onClick={() => gic.openEditPlayerDialog(p)}
+      onClick={() => gic.openEditPlayerDialog(p.id)}
       role="button"
     >
       {p.name}
@@ -116,7 +116,7 @@ function RoundDataRow({ players, round }: RoundDataRowProps) {
     <PlayerRoundDataCell
       key={p.id}
       roundData={round.playerData[p.id]}
-      onClick={() => gic.openScoreInputDialog(p, round)}
+      onClick={() => gic.openScoreInputDialog(p.id, round.roundNumber)}
     />
   ));
 

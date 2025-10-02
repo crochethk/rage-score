@@ -47,4 +47,10 @@ export default tseslint.config([
     },
   },
   eslintConfigPrettier,
+  {
+    files: ["**/contexts/**/*.tsx", "**/contexts/**/*.ts"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
 ]);

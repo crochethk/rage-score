@@ -1,9 +1,9 @@
 import { createContext, use } from "react";
-import type { Player, Round } from "../types";
+import type { PlayerId } from "../types";
 
 export interface GameInteractionContextType {
-  openScoreInputDialog: (player: Player, round: Round) => void;
-  openEditPlayerDialog: (player: Player) => void;
+  openScoreInputDialog: (playerId: PlayerId, roundNumber: number) => void;
+  openEditPlayerDialog: (playerId: PlayerId) => void;
   openAddPlayerDialog: () => void;
   reverseRounds: () => void;
 }

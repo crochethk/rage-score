@@ -66,10 +66,7 @@ export function useGameState(): GameState {
   };
 
   const updatePlayer = (pid: PlayerId, updateData: PlayerUpdate) => {
-    const playerIndex = gu.findPlayerIndex(players, pid);
-    if (playerIndex === -1) {
-      throw new Error(`Invariant violation: Player with id ${pid} not found`);
-    }
+    const playerIndex = gu.findPlayerIndexOrThrow(players, pid);
     const updatedPlayer = { ...players[playerIndex], ...updateData };
     const nextPlayers = [...players];
     nextPlayers[playerIndex] = updatedPlayer;
@@ -81,13 +78,7 @@ export function useGameState(): GameState {
     roundNumber: number,
     updateData: PlayerRoundDataUpdate,
   ) => {
-    // --- Get old round
-    const roundIndex = gu.findRoundIndex(rounds, roundNumber);
-    if (roundIndex === -1) {
-      throw new Error(
-        `Invariant violation: Round with number ${roundNumber} not found`,
-      );
-    }
+    const roundIndex = gu.findRoundIndexOrThrow(rounds, roundNumber);
     const oldRound = rounds[roundIndex];
 
     // --- Get old round data for player

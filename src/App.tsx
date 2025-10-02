@@ -2,72 +2,30 @@ import { useCallback, useMemo } from "react";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
 import { ScoreInputDialog } from "./components/dialogs/ScoreInputDialog";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
-import { ScoreInputContext } from "./contexts/ScoreInputContext";
+import { ScoreInputProvider } from "./contexts/ScoreInputContext";
 import * as gu from "./gameUtils";
-import { useGameState, type PlayerRoundDataUpdate } from "./hooks/useGameState";
+import { useGameState } from "./hooks/useGameState";
 import { useScoreInputDialog } from "./hooks/useScoreInputDialog";
 import ScoreTable from "./ScoreTable";
-import type { Player, PlayerId, Round } from "./types";
+import type { PlayerId } from "./types";
 
 export default function App() {
   const gs = useGameState();
+  const scoreInput = useScoreInputDialog();
 
-  // --- Handlers for ScoreInputContext ---
-
-  const scoreInput = useScoreInputDialog(gs.players[0], gs.rounds[0]);
-
-  const handleScoreInput = useCallback(
-    (pid: PlayerId, newPlayerRoundData: PlayerRoundDataUpdate) => {
-      gs.updatePlayerRoundData(
-        pid,
-        scoreInput.round.roundNumber,
-        newPlayerRoundData,
-      );
-      // ...
-      // scoreInput.setRound(updatedRound); // no need to set/change this if only round number is used
-      // ...
-    },
-    [gs, scoreInput.round.roundNumber],
-  );
-
-  const handleNextPlayer = useCallback(
-    (currentId: PlayerId) => {
-      const next = gu.getAdjacentPlayer(gs.players, currentId, "next");
-      scoreInput.setPlayer(next);
-    },
-    [gs.players, scoreInput],
-  );
-
-  const handlePrevPlayer = useCallback(
-    (currentId: PlayerId) => {
-      const prev = gu.getAdjacentPlayer(gs.players, currentId, "prev");
-      scoreInput.setPlayer(prev);
-    },
-    [gs.players, scoreInput],
-  );
-
-  const scoreInputCtxValue = useMemo(
-    () => ({
-      onScoreInput: handleScoreInput,
-      onNextPlayer: handleNextPlayer,
-      onPrevPlayer: handlePrevPlayer,
-      onDone: scoreInput.close,
-    }),
-    [handleNextPlayer, handlePrevPlayer, handleScoreInput, scoreInput.close],
-  );
+  // --- GameInteractionContext Value
 
   const openScoreInputDialog = useCallback(
-    (player: Player, round: Round) => {
-      scoreInput.setPlayer(player);
-      scoreInput.setRound(round);
-      scoreInput.open();
+    (playerId: PlayerId, roundNumber: number) => {
+      scoreInput.open(playerId, roundNumber);
     },
     [scoreInput],
   );
 
   const openEditPlayerDialog = useCallback(
-    (player: Player) => {
-      // For now just prompt for a new name
+    (playerId: PlayerId) => {
+      const player = gu.findPlayerOrThrow(gs.players, playerId);
+
       const newName = (window.prompt("Name ändern:", player.name) ?? "").trim();
       if (newName.length === 0) {
         console.log("Aborted editing player: No name given");
@@ -111,6 +69,7 @@ export default function App() {
   const handleFullReset = () => {
     if (window.confirm("Sicher ALLES zurücksetzen?")) {
       gs.resetGame();
+      scoreInput.close();
     }
   };
 
@@ -122,6 +81,17 @@ export default function App() {
   };
 
   const { players, rounds } = gs;
+
+  // TODO this will be removed in a future refactor, when Modal creation is moved to ScoreInputDialog
+  const temp_scoreInputPlayer = gu.findPlayerOrThrow(
+    gs.players,
+    scoreInput.playerId,
+  );
+  const temp_scoreInputRound = gu.findRoundOrThrow(
+    gs.rounds,
+    scoreInput.roundNumber,
+  );
+
   return (
     <>
       <Container fluid>
@@ -156,7 +126,7 @@ export default function App() {
       </Container>
 
       {/* --- ScoreInputDialog Modal --- */}
-      <ScoreInputContext value={scoreInputCtxValue}>
+      <ScoreInputProvider state={{ gs, scoreInput }}>
         <Modal
           show={scoreInput.isOpen}
           centered
@@ -165,16 +135,16 @@ export default function App() {
         >
           <Modal.Body
             style={{
-              backgroundColor: gu.toPlayerThemeBg(scoreInput.player.color),
+              backgroundColor: gu.toPlayerThemeBg(temp_scoreInputPlayer.color),
             }}
           >
             <ScoreInputDialog
-              player={scoreInput.player}
-              round={scoreInput.round}
+              player={temp_scoreInputPlayer}
+              round={temp_scoreInputRound}
             />
           </Modal.Body>
         </Modal>
-      </ScoreInputContext>
+      </ScoreInputProvider>
     </>
   );
 }
