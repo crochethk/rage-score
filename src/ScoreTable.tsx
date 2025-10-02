@@ -22,7 +22,7 @@ export default function ScoreTable(props: ScoreTableProps) {
         className="table-responsive"
         style={{ overscrollBehaviorX: "none" }}
       >
-        <Table className="text-nowrap w-auto h-100 m-0 bg-body-tertiary rounded-end-4">
+        <Table className="text-nowrap w-auto h-100 m-0 bg-body-tertiary bg-opacity-50 rounded-end-4">
           <ScoreTableHead players={players} />
           <ScoreTableBody players={players} rounds={rounds} />
           <ScoreTableFoot players={players} rounds={rounds} />
