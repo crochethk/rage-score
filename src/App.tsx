@@ -14,10 +14,8 @@ export default function App() {
 
   // --- Handlers for ScoreInputContext ---
 
-  /* ---✓--- */
   const scoreInput = useScoreInputDialog(gs.players[0], gs.rounds[0]);
 
-  /* ---✓--- */
   const handleScoreInput = useCallback(
     (pid: PlayerId, newPlayerRoundData: PlayerRoundDataUpdate) => {
       gs.updatePlayerRoundData(
@@ -58,8 +56,6 @@ export default function App() {
     [handleNextPlayer, handlePrevPlayer, handleScoreInput, scoreInput.close],
   );
 
-  // --- GameInteractionContext Value
-
   const openScoreInputDialog = useCallback(
     (player: Player, round: Round) => {
       scoreInput.setPlayer(player);
@@ -69,7 +65,6 @@ export default function App() {
     [scoreInput],
   );
 
-  /* ---✓--- */
   const openEditPlayerDialog = useCallback(
     (player: Player) => {
       // For now just prompt for a new name
@@ -84,7 +79,6 @@ export default function App() {
     [gs],
   );
 
-  /* ---✓--- */
   const openAddPlayerDialog = useCallback(() => {
     const name = (window.prompt("Name eingeben:") ?? "").trim();
     if (name.length === 0) {
@@ -114,14 +108,12 @@ export default function App() {
 
   // --- Handlers for Game Management Panel ---
 
-  /* ---✓--- */
   const handleFullReset = () => {
     if (window.confirm("Sicher ALLES zurücksetzen?")) {
       gs.resetGame();
     }
   };
 
-  /* ---✓--- */
   const handleScoreReset = () => {
     if (
       window.confirm("Sicher alle Punkte löschen? \n(Spieler bleiben erhalten)")
