@@ -10,6 +10,13 @@ td:first-child {
   --bs-table-bg-state: var(--bs-table-hover-bg);
 }
 
+.score-table > thead {
+  filter: drop-shadow(0 0.3rem 0.3rem rgba(0, 0, 0, 0.15));
+}
+.score-table > tfoot {
+  filter: drop-shadow(0 -0.3rem 0.6rem rgba(0, 0, 0, 0.15));
+}
+
 /* --- Custom Utilities --- */
 
 .xsmall {
