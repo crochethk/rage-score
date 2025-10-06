@@ -56,24 +56,26 @@ export function calculateTotalScore(
   return score;
 }
 
+/**
+ * Tries to get the next or previous player in the given players array.
+ * @throws if the player with `pid` is not found.
+ */
 export function getAdjacentPlayer(
   players: readonly Player[],
   pid: PlayerId,
   mode: "next" | "prev",
 ): Player {
   const currentIdx = findPlayerIndex(players, pid);
-  if (currentIdx !== -1) {
-    if (mode === "next") {
+  if (currentIdx === -1) {
+    throw new Error(`Player with ID '${pid}' not found`);
+  }
+  switch (mode) {
+    case "next":
       return players[(currentIdx + 1) % players.length];
-    } else if (mode === "prev") {
-      const index = currentIdx === 0 ? players.length - 1 : currentIdx - 1;
-      const thePlayer = players[index];
-      return thePlayer;
-    } else {
+    case "prev":
+      return players[currentIdx === 0 ? players.length - 1 : currentIdx - 1];
+    default:
       throw new Error("Invalid mode: " + String(mode));
-    }
-  } else {
-    throw new Error("Player not found: " + pid);
   }
 }
 
