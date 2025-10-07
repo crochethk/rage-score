@@ -80,8 +80,6 @@ export default function App() {
       gs.resetScores();
   };
 
-  const { players, rounds } = gs;
-
   // TODO this will be removed in a future refactor, when Modal creation is moved to ScoreInputDialog
   const temp_scoreInputPlayer = gu.findPlayerOrThrow(
     gs.players,
@@ -99,7 +97,7 @@ export default function App() {
           <Col className="px-0 px-sm-3 col-sm-auto mx-sm-auto">
             {/* --- Score Table --- */}
             <GameInteractionContext value={gameInteractionValue}>
-              <ScoreTable gameData={{ players, rounds }} />
+              <ScoreTable gameData={gs} />
             </GameInteractionContext>
           </Col>
         </Row>
