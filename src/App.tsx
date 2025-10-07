@@ -1,8 +1,7 @@
 import { useCallback, useMemo } from "react";
-import { Button, Col, Container, Modal, Row } from "react-bootstrap";
-import { ScoreInputDialog } from "./components/dialogs/ScoreInputDialog";
+import { Button, Col, Container, Row } from "react-bootstrap";
+import { ScoreInputModal } from "./components/dialogs/ScoreInputModal";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
-import { ScoreInputProvider } from "./contexts/ScoreInputContext";
 import * as gu from "./gameUtils";
 import { useGameState } from "./hooks/useGameState";
 import { useScoreInputDialog } from "./hooks/useScoreInputDialog";
@@ -80,16 +79,6 @@ export default function App() {
       gs.resetScores();
   };
 
-  // TODO this will be removed in a future refactor, when Modal creation is moved to ScoreInputDialog
-  const temp_scoreInputPlayer = gu.findPlayerOrThrow(
-    gs.players,
-    scoreInput.playerId,
-  );
-  const temp_scoreInputRound = gu.findRoundOrThrow(
-    gs.rounds,
-    scoreInput.roundNumber,
-  );
-
   return (
     <>
       <Container fluid>
@@ -123,26 +112,8 @@ export default function App() {
         </Row>
       </Container>
 
-      {/* --- ScoreInputDialog Modal --- */}
-      <ScoreInputProvider state={{ gs, scoreInput }}>
-        <Modal
-          show={scoreInput.isOpen}
-          centered
-          fullscreen="xs-down"
-          onHide={scoreInput.close}
-        >
-          <Modal.Body
-            style={{
-              backgroundColor: gu.toPlayerThemeBg(temp_scoreInputPlayer.color),
-            }}
-          >
-            <ScoreInputDialog
-              player={temp_scoreInputPlayer}
-              round={temp_scoreInputRound}
-            />
-          </Modal.Body>
-        </Modal>
-      </ScoreInputProvider>
+      {/* --- Modals --- */}
+      {scoreInput.isOpen && <ScoreInputModal gs={gs} scoreInput={scoreInput} />}
     </>
   );
 }
