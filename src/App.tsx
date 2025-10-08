@@ -2,23 +2,24 @@ import { useCallback, useMemo } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { ScoreInputModal } from "./components/dialogs/ScoreInputModal";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
+import type { ScoreInputData } from "./contexts/ScoreInputContext";
 import * as gu from "./gameUtils";
+import { useDialogState } from "./hooks/useDialogState";
 import { useGameState } from "./hooks/useGameState";
-import { useScoreInputDialog } from "./hooks/useScoreInputDialog";
 import ScoreTable from "./ScoreTable";
 import type { PlayerId } from "./types";
 
 export default function App() {
   const gs = useGameState();
-  const scoreInput = useScoreInputDialog();
+  const scoreInputState = useDialogState<ScoreInputData>();
 
   // --- GameInteractionContext Value
 
   const openScoreInputDialog = useCallback(
     (playerId: PlayerId, roundNumber: number) => {
-      scoreInput.open(playerId, roundNumber);
+      scoreInputState.open({ playerId, roundNumber });
     },
-    [scoreInput],
+    [scoreInputState],
   );
 
   const openEditPlayerDialog = useCallback(
@@ -68,7 +69,7 @@ export default function App() {
   const handleFullReset = () => {
     if (window.confirm("Sicher ALLES zurücksetzen?")) {
       gs.resetGame();
-      scoreInput.close();
+      scoreInputState.close();
     }
   };
 
@@ -113,7 +114,9 @@ export default function App() {
       </Container>
 
       {/* --- Modals --- */}
-      {scoreInput.isOpen && <ScoreInputModal gs={gs} scoreInput={scoreInput} />}
+      {scoreInputState.isOpen && (
+        <ScoreInputModal gs={gs} scoreInputState={scoreInputState} />
+      )}
     </>
   );
 }

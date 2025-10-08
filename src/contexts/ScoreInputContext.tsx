@@ -1,8 +1,18 @@
 import { createContext, use, useCallback, useMemo } from "react";
 import * as gu from "../gameUtils";
+import type { DialogState } from "../hooks/useDialogState";
 import type { GameState, PlayerRoundDataUpdate } from "../hooks/useGameState";
-import type { ScoreInputDialogState } from "../hooks/useScoreInputDialog";
 import type { PlayerId } from "../types";
+
+export interface StateArgs {
+  gs: GameState;
+  scoreInputState: DialogState<ScoreInputData>;
+}
+
+export interface ScoreInputData {
+  playerId: PlayerId;
+  roundNumber: number;
+}
 
 export interface ScoreInputContextValue {
   /** Callback invoked when the score input changes for a player in a round. */
@@ -25,11 +35,6 @@ const ScoreInputContext = createContext<ScoreInputContextValue | undefined>(
   undefined,
 );
 
-interface StateArgs {
-  gs: GameState;
-  scoreInput: ScoreInputDialogState;
-}
-
 export function ScoreInputProvider({
   state,
   children,
@@ -45,28 +50,33 @@ export function ScoreInputProvider({
 }
 
 function useContextValue(stateArgs: StateArgs) {
-  const { gs, scoreInput } = stateArgs;
+  const { gs, scoreInputState } = stateArgs;
   const handleScoreInput = useCallback(
     (pid: PlayerId, newPlayerRoundData: PlayerRoundDataUpdate) => {
-      gs.updatePlayerRoundData(pid, scoreInput.roundNumber!, newPlayerRoundData);
+      gs.updatePlayerRoundData(
+        pid,
+        scoreInputState.data!.roundNumber,
+        newPlayerRoundData,
+      );
     },
-    [gs, scoreInput.roundNumber],
+    [gs, scoreInputState.data],
   );
 
   const handleNextPlayer = useCallback(
     (currentId: PlayerId) => {
       const next = gu.getAdjacentPlayer(gs.players, currentId, "next");
-      scoreInput.open(next.id, scoreInput.roundNumber!);
+
+      scoreInputState.open({ ...scoreInputState.data!, playerId: next.id });
     },
-    [gs.players, scoreInput],
+    [gs.players, scoreInputState],
   );
 
   const handlePrevPlayer = useCallback(
     (currentId: PlayerId) => {
       const prev = gu.getAdjacentPlayer(gs.players, currentId, "prev");
-      scoreInput.open(prev.id, scoreInput.roundNumber!);
+      scoreInputState.open({ ...scoreInputState.data!, playerId: prev.id });
     },
-    [gs.players, scoreInput],
+    [gs.players, scoreInputState],
   );
 
   return useMemo(
@@ -74,9 +84,14 @@ function useContextValue(stateArgs: StateArgs) {
       onScoreInput: handleScoreInput,
       onNextPlayer: handleNextPlayer,
       onPrevPlayer: handlePrevPlayer,
-      onDone: scoreInput.close,
+      onDone: scoreInputState.close,
     }),
-    [handleNextPlayer, handlePrevPlayer, handleScoreInput, scoreInput.close],
+    [
+      handleNextPlayer,
+      handlePrevPlayer,
+      handleScoreInput,
+      scoreInputState.close,
+    ],
   );
 }
 

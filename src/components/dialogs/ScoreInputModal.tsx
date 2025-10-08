@@ -1,29 +1,31 @@
 import { Modal } from "react-bootstrap";
-import { ScoreInputProvider } from "../../contexts/ScoreInputContext";
+import {
+  ScoreInputProvider,
+  type StateArgs,
+} from "../../contexts/ScoreInputContext";
 import * as gu from "../../gameUtils";
-import type { GameState } from "../../hooks/useGameState";
-import { type ScoreInputDialogState } from "../../hooks/useScoreInputDialog";
 import { ScoreInputDialog } from "./ScoreInputDialog";
 
-interface ScoreInputModalProps {
-  gs: GameState;
-  scoreInput: ScoreInputDialogState;
-}
-
-export function ScoreInputModal({ gs, scoreInput }: ScoreInputModalProps) {
+export function ScoreInputModal({ gs, scoreInputState }: StateArgs) {
   // playerId and roundNumber must be defined here if dialog isOpen
-  const currentPlayer = gu.findPlayerOrThrow(gs.players, scoreInput.playerId);
-  const currentRound = gu.findRoundOrThrow(gs.rounds, scoreInput.roundNumber);
+  const currentPlayer = gu.findPlayerOrThrow(
+    gs.players,
+    scoreInputState.data!.playerId,
+  );
+  const currentRound = gu.findRoundOrThrow(
+    gs.rounds,
+    scoreInputState.data!.roundNumber,
+  );
 
   //TODO memoize literal object passed to provider
   return (
     <>
-      <ScoreInputProvider state={{ gs, scoreInput }}>
+      <ScoreInputProvider state={{ gs, scoreInputState }}>
         <Modal
-          show={scoreInput.isOpen}
+          show={scoreInputState.isOpen}
           centered
           fullscreen="xs-down"
-          onHide={scoreInput.close}
+          onHide={scoreInputState.close}
         >
           <Modal.Body
             style={{
