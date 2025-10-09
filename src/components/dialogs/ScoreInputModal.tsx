@@ -26,8 +26,10 @@ export function ScoreInputModal({ gs, scoreInputState }: StateArgs) {
           centered
           fullscreen="xs-down"
           onHide={scoreInputState.close}
+          contentClassName="border-0 rounded-4"
         >
           <Modal.Body
+            className="rounded-4"
             style={{
               backgroundColor: gu.toPlayerThemeBg(currentPlayer.color),
             }}

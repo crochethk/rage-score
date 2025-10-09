@@ -37,8 +37,12 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
             cardsDealt={round.cardsDealt}
           />
 
-          <div id="roundPointsDisplay">
-            {roundScore ?? <i>Warte auf Eingaben...</i>}
+          <div>
+            {roundScore ? (
+              <span className="fw-bold">{roundScore}</span>
+            ) : (
+              <span className="fst-italic fw-light">Warte auf Eingaben...</span>
+            )}
           </div>
         </Col>
       </Row>
