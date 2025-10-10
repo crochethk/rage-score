@@ -18,11 +18,6 @@ interface ScoreInputDialogProps {
 export function ScoreInputDialog(props: ScoreInputDialogProps) {
   const { player, round } = props;
   const roundData = round.playerData[player.id];
-
-  const roundScore = gu.isCompletePlayerRoundData(roundData)
-    ? gu.calculateRoundScore(roundData)
-    : null;
-
   const { onNextPlayer, onPrevPlayer, onDone } = useScoreInput();
 
   return (
@@ -36,14 +31,7 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
             roundData={roundData}
             cardsDealt={round.cardsDealt}
           />
-
-          <div>
-            {roundScore ? (
-              <span className="fw-bold">{roundScore}</span>
-            ) : (
-              <span className="fst-italic fw-light">Warte auf Eingaben...</span>
-            )}
-          </div>
+          <RoundResultDisplay roundData={roundData} />
         </Col>
       </Row>
 
@@ -173,5 +161,24 @@ function ScoreSelect({
         {options}
       </Form.Select>
     </Form.FloatingLabel>
+  );
+}
+
+interface RoundResultDisplayProps {
+  roundData: Partial<PlayerRoundData>;
+}
+
+function RoundResultDisplay({ roundData }: RoundResultDisplayProps) {
+  const roundScore = gu.isCompletePlayerRoundData(roundData)
+    ? gu.calculateRoundScore(roundData)
+    : null;
+  return (
+    <div>
+      {roundScore ? (
+        <span className="fw-bold">{roundScore}</span>
+      ) : (
+        <span className="fst-italic fw-light">Warte auf Eingaben...</span>
+      )}
+    </div>
   );
 }
