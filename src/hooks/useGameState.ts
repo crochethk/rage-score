@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import * as gu from "../gameUtils";
 import type { Player, PlayerId, PlayerRoundData, Round } from "../types";
 import { useLocalStorage } from "./useLocalStorage";
@@ -48,87 +48,103 @@ export function useGameState(): GameState {
 
   // --- State modification API ---
 
-  const addPlayer = (name: string) => {
-    const newPlayer: Player = gu.createPlayer(name);
-    const nextPlayers = [...players, newPlayer];
-    setPlayers(nextPlayers);
+  const addPlayer = useCallback(
+    (name: string) => {
+      const newPlayer: Player = gu.createPlayer(name);
+      const nextPlayers = [...players, newPlayer];
+      setPlayers(nextPlayers);
 
-    // Add empty player record to all existing rounds
-    const nextRounds = rounds.map((r) => ({
-      ...r,
-      playerData: {
-        ...r.playerData,
-        [newPlayer.id]: {},
-      },
-    }));
-    setRounds(nextRounds);
-    return newPlayer.id;
-  };
+      // Add empty player record to all existing rounds
+      const nextRounds = rounds.map((r) => ({
+        ...r,
+        playerData: {
+          ...r.playerData,
+          [newPlayer.id]: {},
+        },
+      }));
+      setRounds(nextRounds);
+      return newPlayer.id;
+    },
+    [players, rounds, setPlayers, setRounds],
+  );
 
-  const updatePlayer = (pid: PlayerId, updateData: PlayerUpdate) => {
-    const playerIndex = gu.findPlayerIndexOrThrow(players, pid);
-    const updatedPlayer = { ...players[playerIndex], ...updateData };
-    const nextPlayers = [...players];
-    nextPlayers[playerIndex] = updatedPlayer;
-    setPlayers(nextPlayers);
-  };
+  const updatePlayer = useCallback(
+    (pid: PlayerId, updateData: PlayerUpdate) => {
+      const playerIndex = gu.findPlayerIndexOrThrow(players, pid);
+      const updatedPlayer = { ...players[playerIndex], ...updateData };
+      const nextPlayers = [...players];
+      nextPlayers[playerIndex] = updatedPlayer;
+      setPlayers(nextPlayers);
+    },
+    [players, setPlayers],
+  );
 
-  const updatePlayerRoundData = (
-    pid: PlayerId,
-    roundNumber: number,
-    updateData: PlayerRoundDataUpdate,
-  ) => {
-    const roundIndex = gu.findRoundIndexOrThrow(rounds, roundNumber);
-    const oldRound = rounds[roundIndex];
+  const updatePlayerRoundData = useCallback(
+    (pid: PlayerId, roundNumber: number, updateData: PlayerRoundDataUpdate) => {
+      const roundIndex = gu.findRoundIndexOrThrow(rounds, roundNumber);
+      const oldRound = rounds[roundIndex];
 
-    // --- Get old round data for player
-    const oldRoundData = oldRound.playerData[pid];
-    if (!oldRoundData) {
-      throw new Error(
-        `Invariant violation: No PlayerRoundData exists for player ${pid} in round ${roundNumber}`,
-      );
-    }
+      // --- Get old round data for player
+      const oldRoundData = oldRound.playerData[pid];
+      if (!oldRoundData) {
+        throw new Error(
+          `Invariant violation: No PlayerRoundData exists for player ${pid} in round ${roundNumber}`,
+        );
+      }
 
-    // --- Create updated playerRoundData and accordingly updated round
-    const newPlayerRoundData = { ...oldRoundData, ...updateData };
-    const updatedRound = { ...oldRound };
-    updatedRound.playerData[pid] = newPlayerRoundData;
+      // --- Create updated playerRoundData and accordingly updated round
+      const newPlayerRoundData = { ...oldRoundData, ...updateData };
+      const updatedRound = { ...oldRound };
+      updatedRound.playerData[pid] = newPlayerRoundData;
 
-    // --- Update rounds array
-    const nextRounds = [...rounds];
-    nextRounds[roundIndex] = updatedRound;
-    setRounds(nextRounds);
-  };
+      // --- Update rounds array
+      const nextRounds = [...rounds];
+      nextRounds[roundIndex] = updatedRound;
+      setRounds(nextRounds);
+    },
+    [rounds, setRounds],
+  );
 
-  const resetGame = () => {
+  const resetGame = useCallback(() => {
     const initialState = createDefaultGameState();
     setPlayers(initialState.players);
     setRounds(initialState.rounds);
-  };
+  }, [setPlayers, setRounds]);
 
-  const resetScores = () => {
+  const resetScores = useCallback(() => {
     const nextRounds = rounds.map((r) => ({
       ...r,
       playerData: gu.createEmptyPlayerDataRecords(players),
     }));
     setRounds(nextRounds);
-  };
+  }, [players, rounds, setRounds]);
 
-  const reverseRounds = () => {
+  const reverseRounds = useCallback(() => {
     const nextRounds = [...rounds].reverse();
     setRounds(nextRounds);
-  };
-
-  return {
-    players,
-    rounds,
-    addPlayer,
-    updatePlayer,
-    updatePlayerRoundData,
-    resetGame,
-    resetScores,
-    reverseRounds,
-  };
+  }, [rounds, setRounds]);
+  return useMemo(
+    () => ({
+      players,
+      rounds,
+      addPlayer,
+      updatePlayer,
+      updatePlayerRoundData,
+      resetGame,
+      resetScores,
+      reverseRounds,
+    }),
+    [
+      players,
+      rounds,
+      addPlayer,
+      updatePlayer,
+      updatePlayerRoundData,
+      resetGame,
+      resetScores,
+      reverseRounds,
+    ],
+  );
 }
 
 function createDefaultGameState() {
