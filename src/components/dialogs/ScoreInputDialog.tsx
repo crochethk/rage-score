@@ -18,8 +18,6 @@ interface ScoreInputDialogProps {
 export function ScoreInputDialog(props: ScoreInputDialogProps) {
   const { player, round } = props;
   const roundData = round.playerData[player.id];
-  const { onNextPlayer, onPrevPlayer, onDone } = useScoreInput();
-
   return (
     <>
       <Row className="text-center justify-content-center">
@@ -39,25 +37,7 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
       <Row className="mt-2 justify-content-center">
         <Col sm="8" style={{ maxWidth: "576px" }}>
           <div className="d-grid">
-            <ButtonGroup vertical>
-              <ButtonGroup size="lg" aria-label="Navigations-Buttons">
-                <PrimaryDialogButton
-                  aria-label="Vorheriger Spieler"
-                  onClick={() => onPrevPlayer(player.id)}
-                >
-                  ←
-                </PrimaryDialogButton>
-                <PrimaryDialogButton
-                  aria-label="Nächster Spieler"
-                  onClick={() => onNextPlayer(player.id)}
-                >
-                  →
-                </PrimaryDialogButton>
-              </ButtonGroup>
-              <SecondaryDialogButton onClick={onDone}>
-                Fertig
-              </SecondaryDialogButton>
-            </ButtonGroup>
+            <ScoreInputNavigation playerId={player.id} />
           </div>
         </Col>
       </Row>
@@ -180,5 +160,28 @@ function RoundResultDisplay({ roundData }: RoundResultDisplayProps) {
         <span className="fst-italic fw-light">Warte auf Eingaben...</span>
       )}
     </div>
+  );
+}
+
+function ScoreInputNavigation({ playerId }: { playerId: PlayerId }) {
+  const { onNextPlayer, onPrevPlayer, onDone } = useScoreInput();
+  return (
+    <ButtonGroup vertical>
+      <ButtonGroup size="lg" aria-label="Navigations-Buttons">
+        <PrimaryDialogButton
+          aria-label="Vorheriger Spieler"
+          onClick={() => onPrevPlayer(playerId)}
+        >
+          ←
+        </PrimaryDialogButton>
+        <PrimaryDialogButton
+          aria-label="Nächster Spieler"
+          onClick={() => onNextPlayer(playerId)}
+        >
+          →
+        </PrimaryDialogButton>
+      </ButtonGroup>
+      <SecondaryDialogButton onClick={onDone}>Fertig</SecondaryDialogButton>
+    </ButtonGroup>
   );
 }
