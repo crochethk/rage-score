@@ -6,7 +6,8 @@ import {
 import * as gu from "../../gameUtils";
 import { ScoreInputDialog } from "./ScoreInputDialog";
 
-export function ScoreInputModal({ gs, scoreInputState }: StateArgs) {
+export function ScoreInputModal(stateArgs: StateArgs) {
+  const { gs, scoreInputState } = stateArgs;
   // playerId and roundNumber must be defined here if dialog isOpen
   const currentPlayer = gu.findPlayerOrThrow(
     gs.players,
@@ -17,10 +18,9 @@ export function ScoreInputModal({ gs, scoreInputState }: StateArgs) {
     scoreInputState.data!.roundNumber,
   );
 
-  //TODO memoize literal object passed to provider
   return (
     <>
-      <ScoreInputProvider state={{ gs, scoreInputState }}>
+      <ScoreInputProvider state={stateArgs}>
         <Modal
           show={scoreInputState.isOpen}
           centered
