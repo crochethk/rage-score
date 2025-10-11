@@ -34,7 +34,7 @@ export function ScoreInputModal(stateArgs: StateArgs) {
           >
             <Modal.Title className="text-center">
               <h1 className="h6 text-muted mb-1">
-                Runde {currentRound.roundNumber}
+                Angaben für Runde {currentRound.roundNumber}
               </h1>
               <h2 className="h4 m-0">{currentPlayer.name}</h2>
             </Modal.Title>
