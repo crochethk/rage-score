@@ -26,13 +26,22 @@ export function ScoreInputModal(stateArgs: StateArgs) {
           centered
           fullscreen="xs-down"
           onHide={scoreInputState.close}
-          contentClassName="border-0 rounded-4"
+          contentClassName="border-0 rounded-4 bg-transparent"
         >
+          <Modal.Header
+            className="border-0 rounded-top-4 justify-content-center pb-2"
+            style={{ backgroundColor: gu.toPlayerThemeBg(currentPlayer.color) }}
+          >
+            <Modal.Title className="text-center">
+              <h1 className="h6 text-muted mb-1">
+                Runde {currentRound.roundNumber}
+              </h1>
+              <h2 className="h4 m-0">{currentPlayer.name}</h2>
+            </Modal.Title>
+          </Modal.Header>
           <Modal.Body
-            className="rounded-4"
-            style={{
-              backgroundColor: gu.toPlayerThemeBg(currentPlayer.color),
-            }}
+            className="rounded-bottom-4 pt-1"
+            style={{ backgroundColor: gu.toPlayerThemeBg(currentPlayer.color) }}
           >
             <ScoreInputDialog player={currentPlayer} round={currentRound} />
           </Modal.Body>

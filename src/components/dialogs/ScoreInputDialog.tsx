@@ -22,8 +22,6 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
     <>
       <Row className="text-center justify-content-center">
         <Col sm="8" style={{ maxWidth: "576px" }}>
-          <h5>Runde {round.roundNumber}</h5>
-          <h3>{player.name}</h3>
           <ScoreInputForm
             playerId={player.id}
             roundData={roundData}
