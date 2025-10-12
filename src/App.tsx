@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { ScoreInputModal } from "./components/dialogs/ScoreInputModal";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
@@ -7,6 +7,7 @@ import * as gu from "./gameUtils";
 import { useDialogState } from "./hooks/useDialogState";
 import { useGameState } from "./hooks/useGameState";
 import ScoreTable from "./ScoreTable";
+import { HexHex } from "./troll/HexHex";
 import type { PlayerId } from "./types";
 
 export default function App() {
@@ -33,6 +34,10 @@ export default function App() {
       }
 
       gs.updatePlayer(player.id, { name: newName });
+
+      if (trollJolaDetector(newName)) {
+        runHexHex();
+      }
     },
     [gs],
   );
@@ -45,6 +50,9 @@ export default function App() {
     }
 
     gs.addPlayer(name);
+    if (trollJolaDetector(name)) {
+      runHexHex();
+    }
   }, [gs]);
 
   const reverseRounds = useCallback(() => gs.reverseRounds(), [gs]);
@@ -80,8 +88,19 @@ export default function App() {
       gs.resetScores();
   };
 
+  const [showHexHex, setShowHexHex] = useState(false);
+  const runHexHex = () => {
+    if (!showHexHex) {
+      setShowHexHex(true);
+      setTimeout(() => {
+        setShowHexHex(false);
+      }, 10000);
+    }
+  };
+
   return (
     <>
+      <HexHex show={showHexHex} />
       <Container fluid>
         <Row>
           <Col className="px-0 px-sm-3 col-sm-auto mx-sm-auto">
@@ -119,4 +138,8 @@ export default function App() {
       )}
     </>
   );
+}
+
+function trollJolaDetector(name: string): boolean {
+  return /^(jol.*|j)$/gim.test(name);
 }
