@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -9,9 +9,13 @@ import { ScoreInputModal } from "./components/dialogs/ScoreInputModal";
 import type { EditPlayerDialogData } from "./contexts/EditPlayerContext";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
 import type { ScoreInputData } from "./contexts/ScoreInputContext";
+import * as gu from "./gameUtils";
 import { useDialogState } from "./hooks/useDialogState";
 import { useGameState } from "./hooks/useGameState";
 import ScoreTable from "./ScoreTable";
+import * as troll from "./troll";
+import { HexHex } from "./troll/HexHex";
+import { useHexHex } from "./troll/useHexHex";
 import type { PlayerId } from "./types";
 
 export default function App() {
@@ -19,6 +23,33 @@ export default function App() {
   const scoreInputState = useDialogState<ScoreInputData>();
   const editPlayerState = useDialogState<EditPlayerDialogData>();
   const addPlayerState = useDialogState<null>();
+
+  const [hexHexActive, runHexHex] = useHexHex();
+  const trollCandidatePlayerId = useRef<undefined | PlayerId>(undefined);
+
+  useEffect(() => {
+    if (editPlayerState.isOpen) {
+      trollCandidatePlayerId.current = editPlayerState.data?.playerId;
+      return;
+    }
+    if (trollCandidatePlayerId.current === undefined) {
+      return;
+    }
+
+    try {
+      const player = gu.findPlayerOrThrow(
+        gs.players,
+        trollCandidatePlayerId.current,
+      );
+      if (troll.jolaDetector(player.name)) {
+        runHexHex();
+        trollCandidatePlayerId.current = undefined;
+      }
+    } catch {
+      // -> stale PlayerId (e.g. player was removed during edit)
+      trollCandidatePlayerId.current = undefined;
+    }
+  }, [editPlayerState.data, editPlayerState.isOpen, gs.players, runHexHex]);
 
   // --- GameInteractionContext Value
 
@@ -49,12 +80,14 @@ export default function App() {
       openEditPlayerDialog,
       openAddPlayerDialog,
       reverseRounds,
+      runHexHex,
     }),
     [
       openScoreInputDialog,
       openEditPlayerDialog,
       openAddPlayerDialog,
       reverseRounds,
+      runHexHex,
     ],
   );
 
@@ -76,6 +109,7 @@ export default function App() {
 
   return (
     <>
+      <HexHex show={hexHexActive} />
       <Container fluid>
         <Row>
           <Col className="px-0 px-sm-3 col-sm-auto mx-sm-auto">
