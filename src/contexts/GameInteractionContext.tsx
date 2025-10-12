@@ -6,6 +6,7 @@ export interface GameInteractionContextType {
   openEditPlayerDialog: (playerId: PlayerId) => void;
   openAddPlayerDialog: () => void;
   reverseRounds: () => void;
+  runHexHex: () => void;
 }
 
 export const GameInteractionContext = createContext<
