@@ -94,6 +94,14 @@ function ModalBody(props: ModalBodyProps) {
   return <BsModal.Body className="p-0 my-1">{props.children}</BsModal.Body>;
 }
 
+type ModalFooterProps = React.ComponentProps<typeof BsModal.Footer>;
+
+function ModalFooter(props: ModalFooterProps) {
+  return (
+    <BsModal.Footer className="border-0 p-0 mt-1">{props.children}</BsModal.Footer>
+  );
+}
+
 export function ModalCloseButton(props: { onClick?: () => void }) {
   return (
     <Button
@@ -108,4 +116,5 @@ export function ModalCloseButton(props: { onClick?: () => void }) {
 
 Modal.Header = ModalHeader;
 Modal.Body = ModalBody;
+Modal.Footer = ModalFooter;
 Modal.CloseButton = ModalCloseButton;
