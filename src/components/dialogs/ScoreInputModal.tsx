@@ -1,4 +1,4 @@
-import { Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import {
   ScoreInputProvider,
   type StateArgs,
@@ -38,6 +38,13 @@ export function ScoreInputModal(stateArgs: StateArgs) {
               </h1>
               <h2 className="h4 m-0">{currentPlayer.name}</h2>
             </Modal.Title>
+            <Button
+              variant="close"
+              aria-label="Schließen"
+              className="position-absolute top-0 end-0 m-3"
+              data-bs-dismiss="modal"
+              onClick={scoreInputState.close}
+            />
           </Modal.Header>
           <Modal.Body
             className="rounded-bottom-4 pt-1"
