@@ -1,4 +1,4 @@
-import { ButtonGroup, Col, Form, Row } from "react-bootstrap";
+import { ButtonGroup, Col, Container, Form, Row } from "react-bootstrap";
 import { useScoreInput } from "../../contexts/ScoreInputContext";
 import * as gu from "../../gameUtils";
 import type { Player, PlayerId, PlayerRoundData, Round } from "../../types";
@@ -20,25 +20,27 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
   const roundData = round.playerData[player.id];
   return (
     <>
-      <Row className="text-center justify-content-center">
-        <Col sm="8" style={{ maxWidth: "576px" }}>
-          <ScoreInputForm
-            playerId={player.id}
-            roundData={roundData}
-            cardsDealt={round.cardsDealt}
-          />
-          <RoundResultDisplay roundData={roundData} />
-        </Col>
-      </Row>
+      <Container fluid className="p-0">
+        <Row className="text-center justify-content-center">
+          <Col sm="8">
+            <ScoreInputForm
+              playerId={player.id}
+              roundData={roundData}
+              cardsDealt={round.cardsDealt}
+            />
+            <RoundResultDisplay roundData={roundData} />
+          </Col>
+        </Row>
 
-      {/* --- Navigation Buttons --- */}
-      <Row className="mt-2 justify-content-center">
-        <Col sm="8" style={{ maxWidth: "576px" }}>
-          <div className="d-grid">
-            <ScoreInputNavigation playerId={player.id} />
-          </div>
-        </Col>
-      </Row>
+        {/* --- Navigation Buttons --- */}
+        <Row className="mt-2 justify-content-center">
+          <Col sm="8" style={{ maxWidth: "576px" }}>
+            <div className="d-grid">
+              <ScoreInputNavigation playerId={player.id} />
+            </div>
+          </Col>
+        </Row>
+      </Container>
     </>
   );
 }

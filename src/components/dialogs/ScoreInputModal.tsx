@@ -1,9 +1,9 @@
-import { Button, Modal } from "react-bootstrap";
 import {
   ScoreInputProvider,
   type StateArgs,
 } from "../../contexts/ScoreInputContext";
 import * as gu from "../../gameUtils";
+import { Modal } from "./Modal";
 import { ScoreInputDialog } from "./ScoreInputDialog";
 
 export function ScoreInputModal(stateArgs: StateArgs) {
@@ -23,33 +23,13 @@ export function ScoreInputModal(stateArgs: StateArgs) {
       <ScoreInputProvider state={stateArgs}>
         <Modal
           show={scoreInputState.isOpen}
-          centered
-          fullscreen="xs-down"
+          label={`Angaben für Runde ${currentRound.roundNumber}`}
+          title={currentPlayer.name}
+          bgColor={gu.toPlayerThemeBg(currentPlayer.color)}
+          closeButton
           onHide={scoreInputState.close}
-          contentClassName="border-0 rounded-4 bg-transparent"
         >
-          <Modal.Header
-            className="border-0 rounded-top-4 justify-content-center pb-2"
-            style={{ backgroundColor: gu.toPlayerThemeBg(currentPlayer.color) }}
-          >
-            <Modal.Title className="text-center">
-              <h1 className="h6 text-muted mb-1">
-                Angaben für Runde {currentRound.roundNumber}
-              </h1>
-              <h2 className="h4 m-0">{currentPlayer.name}</h2>
-            </Modal.Title>
-            <Button
-              variant="close"
-              aria-label="Schließen"
-              className="position-absolute top-0 end-0 m-3"
-              data-bs-dismiss="modal"
-              onClick={scoreInputState.close}
-            />
-          </Modal.Header>
-          <Modal.Body
-            className="rounded-bottom-4 pt-1"
-            style={{ backgroundColor: gu.toPlayerThemeBg(currentPlayer.color) }}
-          >
+          <Modal.Body>
             <ScoreInputDialog player={currentPlayer} round={currentRound} />
           </Modal.Body>
         </Modal>
