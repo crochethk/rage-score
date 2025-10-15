@@ -1,11 +1,7 @@
-import { ButtonGroup, Col, Container, Form, Row } from "react-bootstrap";
+import { Col, Container, Form, Row } from "react-bootstrap";
 import { useScoreInput } from "../../contexts/ScoreInputContext";
 import * as gu from "../../gameUtils";
 import type { Player, PlayerId, PlayerRoundData, Round } from "../../types";
-import {
-  PrimaryDialogButton,
-  SecondaryDialogButton,
-} from "../ui/Button/DialogButton";
 
 interface ScoreInputDialogProps {
   /** The player whose score is being input. */
@@ -29,15 +25,6 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
               cardsDealt={round.cardsDealt}
             />
             <RoundResultDisplay roundData={roundData} />
-          </Col>
-        </Row>
-
-        {/* --- Navigation Buttons --- */}
-        <Row className="mt-2 justify-content-center">
-          <Col sm="8" style={{ maxWidth: "576px" }}>
-            <div className="d-grid">
-              <ScoreInputNavigation playerId={player.id} />
-            </div>
           </Col>
         </Row>
       </Container>
@@ -160,28 +147,5 @@ function RoundResultDisplay({ roundData }: RoundResultDisplayProps) {
         <span className="fst-italic fw-light">Warte auf Eingaben...</span>
       )}
     </div>
-  );
-}
-
-function ScoreInputNavigation({ playerId }: { playerId: PlayerId }) {
-  const { onNextPlayer, onPrevPlayer, onDone } = useScoreInput();
-  return (
-    <ButtonGroup vertical>
-      <ButtonGroup size="lg" aria-label="Navigations-Buttons">
-        <PrimaryDialogButton
-          aria-label="Vorheriger Spieler"
-          onClick={() => onPrevPlayer(playerId)}
-        >
-          ←
-        </PrimaryDialogButton>
-        <PrimaryDialogButton
-          aria-label="Nächster Spieler"
-          onClick={() => onNextPlayer(playerId)}
-        >
-          →
-        </PrimaryDialogButton>
-      </ButtonGroup>
-      <SecondaryDialogButton onClick={onDone}>Fertig</SecondaryDialogButton>
-    </ButtonGroup>
   );
 }
