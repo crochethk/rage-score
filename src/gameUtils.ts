@@ -209,3 +209,55 @@ export function randomRgb(): ColorRgb {
 export function toPlayerThemeBg(color: ColorRgb): string {
   return `color-mix(in srgb-linear, rgb(${color.r}, ${color.g}, ${color.b}) 50%, var(--bs-gray-900) 100%)`;
 }
+
+/**
+ * Performs validity check of the specified round.
+ */
+export function isValidRound(
+  rounds: readonly Round[],
+  roundIndex: number,
+  players: readonly Player[],
+): boolean {
+  const round = rounds[roundIndex];
+
+  // Empty rounds are valid
+  if (isEmptyRound(round, players)) {
+    return true;
+  }
+
+  let pendingBids = 0;
+  let pendingTricksTaken = 0;
+  let tricksSum = 0;
+  for (const p of players) {
+    const playerRoundData = round.playerData[p.id];
+    pendingBids += playerRoundData.bid === undefined ? 1 : 0;
+    pendingTricksTaken += playerRoundData.tricksTaken === undefined ? 1 : 0;
+    tricksSum += playerRoundData.tricksTaken ?? 0;
+  }
+
+  // Check whether bids are incomplete but any tricksTaken is already specified
+  const bidsPlausible =
+    pendingBids === 0 || pendingTricksTaken === players.length;
+
+  const tricksTakenPlausible =
+    tricksSum === round.cardsDealt ||
+    // allow incomplete tricks when correct sum still could be achieved
+    (tricksSum < round.cardsDealt && pendingTricksTaken > 0);
+
+  return bidsPlausible && tricksTakenPlausible;
+}
+
+function isEmptyRound(round: Round, players: readonly Player[]): boolean {
+  return players.every((p) => isEmptyPlayerRoundData(round.playerData[p.id]));
+}
+
+/**
+ * Check whether `PlayerRoundData` has none of its fields set.
+ */
+function isEmptyPlayerRoundData(data: Partial<PlayerRoundData>): boolean {
+  return (
+    data.bid === undefined &&
+    data.tricksTaken === undefined &&
+    data.bonusCardPoints === undefined
+  );
+}

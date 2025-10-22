@@ -97,9 +97,17 @@ type ScoreTableBodyProps = GameData;
 function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
   return (
     <tbody className="table-light">
-      {rounds.map((round) => (
-        <RoundDataRow key={round.roundNumber} players={players} round={round} />
-      ))}
+      {rounds.map((round, idx) => {
+        const isValidRound = gu.isValidRound(rounds, idx, players);
+        return (
+          <RoundDataRow
+            key={round.roundNumber}
+            players={players}
+            round={round}
+            isValid={isValidRound}
+          />
+        );
+      })}
     </tbody>
   );
 }
@@ -107,9 +115,10 @@ function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
 interface RoundDataRowProps {
   players: readonly Player[];
   round: Round;
+  isValid: boolean;
 }
 
-function RoundDataRow({ players, round }: RoundDataRowProps) {
+function RoundDataRow({ players, round, isValid }: RoundDataRowProps) {
   const gic = useGameInteraction();
 
   const cells = players.map((p) => (
@@ -120,11 +129,16 @@ function RoundDataRow({ players, round }: RoundDataRowProps) {
     />
   ));
 
+  const invalidRoundClass = "table-error";
+
   return (
-    <tr key={round.roundNumber}>
+    <tr key={round.roundNumber} className={isValid ? "" : invalidRoundClass}>
       <th
         scope="row"
-        className="table-secondary text-center align-middle w-auto"
+        className={
+          (isValid ? "table-secondary" : invalidRoundClass) +
+          " text-center align-middle w-auto"
+        }
       >
         <span className="d-none d-sm-block fs-6 fw-light">
           Runde {round.roundNumber}
