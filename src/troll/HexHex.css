@@ -6,8 +6,10 @@ body::after {
 }
 
 .hexhex {
+  & > img {
+    width: 350px;
+  }
   z-index: 1000;
-  width: 350px;
   position: absolute;
   top: 50%;
   left: 0%;
