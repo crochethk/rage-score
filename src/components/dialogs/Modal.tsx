@@ -16,15 +16,25 @@ export type ModalProps = Required<Pick<BsModalProps, "show">> &
     label?: string;
     /** Title to use for the default modal header. */
     title?: string;
-    /** Background color for the modal. Must be a CSS color string. */
+    /** Background color for the modal. Must be a valid CSS color string. */
     bgColor?: string;
     /** Whether to create an "X" close button which will trigger the `onHide` handler. */
     closeButton?: boolean;
   };
 type BsModalProps = React.ComponentProps<typeof BsModal>;
 
-export function Modal(props: ModalProps) {
-  const { show, label, title, bgColor, closeButton, ...bsModalProps } = props;
+export function Modal({
+  show,
+  label,
+  title,
+  bgColor,
+  closeButton,
+  contentClassName,
+  style,
+  onHide,
+  children,
+  ...bsModalProps
+}: ModalProps) {
   const bgStyle: React.CSSProperties = bgColor
     ? { "--bs-modal-bg": bgColor }
     : {};
@@ -33,17 +43,18 @@ export function Modal(props: ModalProps) {
     <BsModal
       show={show}
       centered
-      contentClassName="border-0 rounded-4 p-3"
       {...bsModalProps}
-      style={{ ...bgStyle, ...bsModalProps.style }}
+      contentClassName={"border-0 rounded-4 p-3 " + (contentClassName ?? "")}
+      style={{ ...bgStyle, ...style }}
+      onHide={onHide}
     >
       <Modal.Header
         label={label}
         title={title}
         closeButton={closeButton}
-        onHide={props.onHide}
+        onHide={onHide}
       />
-      {props.children}
+      {children}
     </BsModal>
   );
 }
@@ -90,14 +101,22 @@ function ModalHeader(props: ModalHeaderProps) {
 type ModalBodyProps = React.ComponentProps<typeof BsModal.Body>;
 
 function ModalBody(props: ModalBodyProps) {
-  return <BsModal.Body className="p-0 my-1">{props.children}</BsModal.Body>;
+  return (
+    <BsModal.Body
+      {...props}
+      className={"p-0 my-1 " + (props.className ?? "")}
+    />
+  );
 }
 
 type ModalFooterProps = React.ComponentProps<typeof BsModal.Footer>;
 
 function ModalFooter(props: ModalFooterProps) {
   return (
-    <BsModal.Footer className="border-0 p-0 mt-1">{props.children}</BsModal.Footer>
+    <BsModal.Footer
+      {...props}
+      className={"border-0 p-0 mt-1 " + (props.className ?? "")}
+    />
   );
 }
 
