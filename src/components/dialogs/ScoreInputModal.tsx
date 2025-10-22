@@ -6,10 +6,7 @@ import {
 } from "../../contexts/ScoreInputContext";
 import * as gu from "../../gameUtils";
 import type { PlayerId } from "../../types";
-import {
-  PrimaryDialogButton,
-  SecondaryDialogButton,
-} from "../ui/Button/DialogButton";
+import { PrimaryDialogButton } from "../ui/Button/DialogButton";
 import { Modal } from "./Modal";
 import { ScoreInputDialog } from "./ScoreInputDialog";
 
@@ -49,7 +46,7 @@ export function ScoreInputModal(stateArgs: StateArgs) {
 }
 
 function ScoreInputNavigation({ playerId }: { playerId: PlayerId }) {
-  const { onNextPlayer, onPrevPlayer, onDone } = useScoreInput();
+  const { onNextPlayer, onPrevPlayer } = useScoreInput();
   return (
     <Container fluid className="px-0 mx-0">
       <Row className="justify-content-center">
@@ -70,9 +67,6 @@ function ScoreInputNavigation({ playerId }: { playerId: PlayerId }) {
                   →
                 </PrimaryDialogButton>
               </ButtonGroup>
-              <SecondaryDialogButton onClick={onDone}>
-                Fertig
-              </SecondaryDialogButton>
             </ButtonGroup>
           </div>
         </Col>
