@@ -33,7 +33,6 @@ export function Modal(props: ModalProps) {
     <BsModal
       show={show}
       centered
-      fullscreen="xs-down"
       contentClassName="border-0 rounded-4 p-3"
       {...bsModalProps}
       style={{ ...bgStyle, ...bsModalProps.style }}
