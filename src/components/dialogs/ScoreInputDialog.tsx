@@ -158,10 +158,12 @@ function RoundInfoDisplay({ playerId, round }: RoundInfoDisplayProps) {
       <dl className="kv info-box rounded-2">
         <dt className="fw-light">Gebote gesamt</dt>
         <dd>{totalBids}</dd>
-        <dt className="fw-light">Ergebnis (Runde)</dt>
+        <dt className="fw-normal">Ergebnis (Runde)</dt>
         <dd className="text-truncate">
           {roundScore ?? (
-            <span className="fst-italic fw-light">Warte auf Eingaben...</span>
+            <span className="fw-light" aria-label="Warte auf Eingaben">
+              ---
+            </span>
           )}
         </dd>
       </dl>
