@@ -2,6 +2,7 @@ import { Col, Container, Form, Row } from "react-bootstrap";
 import { useScoreInput } from "../../contexts/ScoreInputContext";
 import * as gu from "../../gameUtils";
 import type { Player, PlayerId, PlayerRoundData, Round } from "../../types";
+import "./ScoreInputDialog.css";
 
 interface ScoreInputDialogProps {
   /** The player whose score is being input. */
@@ -16,15 +17,17 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
   const roundData = round.playerData[player.id];
   return (
     <>
-      <Container fluid className="p-0">
+      <Container fluid className="p-0 pt-md-2">
         <Row className="text-center justify-content-center">
-          <Col sm="8">
+          <Col xs="12" sm="6" className="mb-2 mb-sm-0">
             <ScoreInputForm
               playerId={player.id}
               roundData={roundData}
               cardsDealt={round.cardsDealt}
             />
-            <RoundResultDisplay roundData={roundData} />
+          </Col>
+          <Col>
+            <RoundInfoDisplay playerId={player.id} round={round} />
           </Col>
         </Row>
       </Container>
@@ -63,7 +66,7 @@ function ScoreInputForm(props: ScoreInputFormProps) {
   return (
     <Form.Floating>
       <ScoreSelect
-        label="Gewettet"
+        label="Geboten"
         controlId="bidInput"
         required
         value={roundData.bid ?? ""}
@@ -121,7 +124,7 @@ function ScoreSelect({
   children: options,
 }: ScoreSelectProps) {
   return (
-    <Form.FloatingLabel label={label} controlId={controlId} className={"my-2"}>
+    <Form.FloatingLabel label={label} controlId={controlId} className={"mb-2"}>
       <Form.Select
         required={required}
         className="text-center"
@@ -135,21 +138,33 @@ function ScoreSelect({
   );
 }
 
-interface RoundResultDisplayProps {
-  roundData: Partial<PlayerRoundData>;
+interface RoundInfoDisplayProps {
+  playerId: PlayerId;
+  round: Round;
 }
 
-function RoundResultDisplay({ roundData }: RoundResultDisplayProps) {
-  const roundScore = gu.isCompletePlayerRoundData(roundData)
-    ? gu.calculateRoundScore(roundData)
+function RoundInfoDisplay({ playerId, round }: RoundInfoDisplayProps) {
+  const playerRoundData = round.playerData[playerId];
+  const roundScore = gu.isCompletePlayerRoundData(playerRoundData)
+    ? gu.calculateRoundScore(playerRoundData)
     : null;
+  const totalBids = Object.values(round.playerData).reduce(
+    (sum, prd) => sum + (prd.bid ?? 0),
+    0,
+  );
+
   return (
-    <div>
-      {roundScore ? (
-        <span className="fw-bold">{roundScore}</span>
-      ) : (
-        <span className="fst-italic fw-light">Warte auf Eingaben...</span>
-      )}
-    </div>
+    <>
+      <dl className="kv info-box rounded-2">
+        <dt className="fw-light">Gebote gesamt</dt>
+        <dd>{totalBids}</dd>
+        <dt className="fw-light">Ergebnis (Runde)</dt>
+        <dd className="text-truncate">
+          {roundScore ?? (
+            <span className="fst-italic fw-light">Warte auf Eingaben...</span>
+          )}
+        </dd>
+      </dl>
+    </>
   );
 }

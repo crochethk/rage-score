@@ -51,7 +51,7 @@ export function ScoreInputModal(stateArgs: StateArgs) {
 function ScoreInputNavigation({ playerId }: { playerId: PlayerId }) {
   const { onNextPlayer, onPrevPlayer, onDone } = useScoreInput();
   return (
-    <Container fluid>
+    <Container fluid className="px-0 mx-0">
       <Row className="justify-content-center">
         <Col>
           <div className="d-grid">
