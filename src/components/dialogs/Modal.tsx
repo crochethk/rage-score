@@ -86,7 +86,7 @@ function ModalHeader(props: ModalHeaderProps) {
       {
         // Omit title section if there is no title nor label
         (label ?? title) && (
-          <BsModal.Title className="text-center">
+          <BsModal.Title className="text-center text-truncate">
             {label && <h1 className="h6 text-muted mb-1">{label}</h1>}
             {title && <h2 className="h4 m-0">{title}</h2>}
           </BsModal.Title>
