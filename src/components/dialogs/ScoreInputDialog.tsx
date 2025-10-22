@@ -63,6 +63,10 @@ function ScoreInputForm(props: ScoreInputFormProps) {
   ));
 
   const parseTricksValue = (v: string) => (v === "" ? undefined : Number(v));
+  const parseBonusValue = (v: string) => {
+    const b = Number(v);
+    return b === 0 ? undefined : b;
+  };
   return (
     <Form.Floating>
       <ScoreSelect
@@ -94,7 +98,7 @@ function ScoreInputForm(props: ScoreInputFormProps) {
         controlId="bonusPointsInput"
         value={roundData.bonusCardPoints ?? 0}
         onChange={(val) =>
-          onScoreInput(playerId, { bonusCardPoints: Number(val) })
+          onScoreInput(playerId, { bonusCardPoints: parseBonusValue(val) })
         }
         disabled={!roundData.tricksTaken}
       >
