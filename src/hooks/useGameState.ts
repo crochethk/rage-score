@@ -198,7 +198,7 @@ export function useGameState(): GameState {
 }
 
 function createDefaultGameData(): GameData {
-  const playerCount = 2;
+  const playerCount = 0;
   const players = gu
     .range(1, playerCount + 1)
     .map((n) => gu.createPlayer("Spieler " + n));
