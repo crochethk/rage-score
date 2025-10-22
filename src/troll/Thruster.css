@@ -1,0 +1,141 @@
+:root {
+  --flame-length: 40px; /* how far particles travel vertically */
+  --flame-spread: 20px; /* horizontal spread */
+  --particle-size: 180px;
+  --particle-duration: 700ms;
+  --core-color: #fff7a8;
+  --mid-color: #ffb24d;
+  --outer-color: #ff4b2b;
+  --glow-color: rgba(255, 90, 20, 0.25);
+}
+
+.thruster {
+  position: absolute;
+  left: 25%;
+  bottom: 10%;
+  transform: translateX(-50%) rotate(245deg);
+  width: calc(var(--particle-size) * 2);
+  height: calc(var(--flame-length) + 12px);
+  pointer-events: none;
+  overflow: visible;
+  mix-blend-mode: screen;
+}
+
+/* soft glowing cone behind the particles */
+.thruster::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: calc(var(--flame-spread) * 1.6);
+  height: calc(var(--flame-length) * 0.85);
+  background: radial-gradient(closest-side, var(--glow-color), transparent);
+  filter: blur(6px);
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* each particle */
+.particle {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  border-radius: 50%;
+  transform-origin: center;
+  z-index: 1;
+  /* gradient look per particle */
+  background: radial-gradient(
+    circle at 30% 30%,
+    var(--core-color) 0%,
+    var(--mid-color) 35%,
+    var(--outer-color) 70%
+  );
+  filter: blur(0.4px) saturate(1.2);
+  opacity: 0;
+  animation-name: thrusterParticle;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation-iteration-count: infinite;
+}
+
+/* core particle motion: rise, spread, shrink, fade */
+@keyframes thrusterParticle {
+  0% {
+    transform: translate(-50%, 0) scale(0.2) rotate(0deg);
+    opacity: 1;
+    filter: blur(0.2px) brightness(1.6);
+  }
+  60% {
+    opacity: 0.9;
+    filter: blur(0.8px) brightness(1.1);
+  }
+  100% {
+    /* var(--tx) and var(--ty) are set per particle to randomize spread */
+    transform: translate(calc(-50% + var(--tx, 0px)), calc(var(--ty, -40px)))
+      scale(0.08) rotate(180deg);
+    opacity: 0;
+    filter: blur(1.6px) brightness(0.9);
+  }
+}
+
+/* stagger, vary duration and set each particle's custom properties using nth-child */
+.thruster .particle:nth-child(1) {
+  --tx: -6px;
+  --ty: -28px;
+  animation-duration: calc(var(--particle-duration) * 0.9);
+  animation-delay: -120ms;
+}
+.thruster .particle:nth-child(2) {
+  --tx: 6px;
+  --ty: -36px;
+  animation-duration: calc(var(--particle-duration) * 1);
+  animation-delay: -240ms;
+}
+.thruster .particle:nth-child(3) {
+  --tx: -12px;
+  --ty: -44px;
+  animation-duration: calc(var(--particle-duration) * 1.1);
+  animation-delay: -60ms;
+}
+.thruster .particle:nth-child(4) {
+  --tx: 12px;
+  --ty: -30px;
+  animation-duration: calc(var(--particle-duration) * 0.85);
+  animation-delay: -180ms;
+}
+.thruster .particle:nth-child(5) {
+  --tx: -4px;
+  --ty: -20px;
+  animation-duration: calc(var(--particle-duration) * 0.95);
+  animation-delay: -10ms;
+}
+.thruster .particle:nth-child(6) {
+  --tx: 4px;
+  --ty: -42px;
+  animation-duration: calc(var(--particle-duration) * 1.15);
+  animation-delay: -210ms;
+}
+.thruster .particle:nth-child(7) {
+  --tx: -18px;
+  --ty: -34px;
+  animation-duration: calc(var(--particle-duration) * 1.05);
+  animation-delay: -150ms;
+}
+.thruster .particle:nth-child(8) {
+  --tx: 18px;
+  --ty: -38px;
+  animation-duration: calc(var(--particle-duration) * 0.9);
+  animation-delay: -90ms;
+}
+
+/* optional: reduce opacity/size to simulate low thrust mode */
+.ship.low-thrust .particle {
+  opacity: 0.6;
+  transform-origin: center;
+  animation-duration: calc(var(--particle-duration) * 1.3);
+  width: calc(var(--particle-size) * 0.7);
+  height: calc(var(--particle-size) * 0.7);
+}
