@@ -10,10 +10,24 @@
 
   /* Header and footer shadows */
   > thead {
-    filter: drop-shadow(0 0.3rem 0.3rem rgba(0, 0, 0, 0.15));
+    filter: drop-shadow(0 0.3rem 0.4rem rgba(0, 0, 0, 0.25));
   }
   > tfoot {
-    filter: drop-shadow(0 -0.3rem 0.6rem rgba(0, 0, 0, 0.15));
+    filter: drop-shadow(0 -0.3rem 0.4rem rgba(0, 0, 0, 0.25));
+  }
+
+  > tbody tr:not(:first-child) {
+    border-top-width: 2px;
+    border-color: var(--bs-body-bg);
+  }
+
+  > tbody tr:first-child > :last-child {
+    border-bottom-width: 0;
+    background-color: transparent;
+  }
+
+  > tfoot td {
+    background-clip: padding-box;
   }
 }
 

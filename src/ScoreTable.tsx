@@ -105,6 +105,7 @@ function ScoreTableBody({ players, rounds }: ScoreTableBodyProps) {
             players={players}
             round={round}
             isValid={isValidRound}
+            isFirst={idx === 0}
           />
         );
       })}
@@ -116,9 +117,10 @@ interface RoundDataRowProps {
   players: readonly Player[];
   round: Round;
   isValid: boolean;
+  isFirst: boolean;
 }
 
-function RoundDataRow({ players, round, isValid }: RoundDataRowProps) {
+function RoundDataRow({ players, round, isValid, isFirst }: RoundDataRowProps) {
   const gic = useGameInteraction();
 
   const cells = players.map((p) => (
@@ -146,6 +148,7 @@ function RoundDataRow({ players, round, isValid }: RoundDataRowProps) {
         {round.cardsDealt}
       </th>
       {cells}
+      {isFirst && <td rowSpan={0}></td>}
     </tr>
   );
 }
@@ -165,14 +168,14 @@ function PlayerRoundDataCell(props: PlayerRoundDataCellProps) {
   const colClassName =
     "col flex-grow-1 flex-shrink-1" +
     " p-0" +
-    " border-end border-dark-subtle" +
+    " border-end border-dark border-opacity-25" +
     " xsmall" +
     " align-content-center";
 
   return (
     <>
       <td
-        className="p-0 cell-hover cursor-pointer border border-dark-subtle h-100"
+        className="p-0 cell-hover cursor-pointer border border-secondary h-100"
         onClick={onClick}
         role="button"
         tabIndex={0}
@@ -181,7 +184,7 @@ function PlayerRoundDataCell(props: PlayerRoundDataCellProps) {
         }}
       >
         <div className="d-flex flex-column w-100 h-100">
-          <div className="d-flex flex-grow-1 text-center border-top border-bottom border-dark-subtle">
+          <div className="d-flex flex-grow-1 text-center border-bottom border-dark border-opacity-25">
             <div className={colClassName}>{bid ?? ""}</div>
             <div className={colClassName}>{tricksTaken ?? ""}</div>
             <div className={colClassName + " border-end-0"}>
@@ -209,7 +212,7 @@ function ScoreTableFoot({ players, rounds }: ScoreTableFootProps) {
   return (
     <tfoot className="table-info fw-bold text-center sticky-bottom">
       <tr>
-        <th scope="row">
+        <th scope="row" className="table-secondary">
           <span id="totalLabel" className="d-none d-sm-inline">
             Total
           </span>
@@ -221,7 +224,7 @@ function ScoreTableFoot({ players, rounds }: ScoreTableFootProps) {
           const totalScore = gu.calculateTotalScore(p.id, rounds);
           const isEmptyColumn = gu.isEmptyColumn(p.id, rounds);
           return (
-            <td key={p.id} className="border border-dark-subtle">
+            <td key={p.id} className="border border-secondary">
               <span className={isEmptyColumn ? "invisible" : ""}>
                 {totalScore}
               </span>
