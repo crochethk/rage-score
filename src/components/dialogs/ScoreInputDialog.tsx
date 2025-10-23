@@ -160,6 +160,8 @@ function RoundInfoDisplay({ playerId, round }: RoundInfoDisplayProps) {
   return (
     <>
       <dl className="kv info-box rounded-2">
+        <dt className="fw-light">Karten</dt>
+        <dd>{round.cardsDealt}</dd>
         <dt className="fw-light">Gebote gesamt</dt>
         <dd>{totalBids}</dd>
         <dt className="fw-normal">Ergebnis (Runde)</dt>
