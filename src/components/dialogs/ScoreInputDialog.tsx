@@ -152,10 +152,13 @@ function RoundInfoDisplay({ playerId, round }: RoundInfoDisplayProps) {
   const roundScore = gu.isCompletePlayerRoundData(playerRoundData)
     ? gu.calculateRoundScore(playerRoundData)
     : null;
-  const totalBids = Object.values(round.playerData).reduce(
-    (sum, prd) => sum + (prd.bid ?? 0),
-    0,
-  );
+
+  let totalBids = 0;
+  let totalTricks = 0;
+  for (const data of Object.values(round.playerData)) {
+    totalBids += data.bid ?? 0;
+    totalTricks += data.tricksTaken ?? 0;
+  }
 
   return (
     <>
@@ -164,6 +167,10 @@ function RoundInfoDisplay({ playerId, round }: RoundInfoDisplayProps) {
         <dd>{round.cardsDealt}</dd>
         <dt className="fw-light">Gebote gesamt</dt>
         <dd>{totalBids}</dd>
+        <dt className="fw-light">Stiche eingetragen</dt>
+        <dd>
+          {totalTricks}/{round.cardsDealt}
+        </dd>
         <dt className="fw-normal">Ergebnis (Runde)</dt>
         <dd className="text-truncate">
           {roundScore ?? (
