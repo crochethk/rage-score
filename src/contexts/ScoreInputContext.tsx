@@ -52,11 +52,11 @@ export function ScoreInputProvider({
 function useContextValue(stateArgs: StateArgs) {
   const { gs, scoreInputState } = stateArgs;
   const handleScoreInput = useCallback(
-    (pid: PlayerId, newPlayerRoundData: PlayerRoundDataUpdate) => {
+    (pid: PlayerId, updateData: PlayerRoundDataUpdate) => {
       gs.updatePlayerRoundData(
         pid,
         scoreInputState.data!.roundNumber,
-        newPlayerRoundData,
+        updateData,
       );
     },
     [gs, scoreInputState.data],
