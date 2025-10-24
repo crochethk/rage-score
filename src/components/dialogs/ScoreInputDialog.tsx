@@ -93,6 +93,7 @@ function ScoreInputForm(props: ScoreInputFormProps) {
         onChange={(val) =>
           onScoreInput(playerId, { bonusCardPoints: Number(val) })
         }
+        disabled={!roundData.tricksTaken}
       >
         {bonusPointsOptions}
       </ScoreSelect>
@@ -105,6 +106,7 @@ interface ScoreSelectProps {
   controlId: string;
   required?: boolean;
   value: number | "";
+  disabled?: boolean;
   onChange: (val: string) => void;
   children: React.ReactNode;
 }
@@ -114,6 +116,7 @@ function ScoreSelect({
   controlId,
   required,
   value,
+  disabled,
   onChange,
   children: options,
 }: ScoreSelectProps) {
@@ -124,6 +127,7 @@ function ScoreSelect({
         className="text-center"
         onChange={(ev) => onChange(ev.target.value)}
         value={value}
+        disabled={disabled}
       >
         {options}
       </Form.Select>

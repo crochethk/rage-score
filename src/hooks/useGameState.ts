@@ -92,10 +92,21 @@ export function useGameState(): GameState {
         );
       }
 
-      // --- Create updated playerRoundData and accordingly updated round
-      const newPlayerRoundData = { ...oldRoundData, ...updateData };
+      // --- Create updated PlayerRoundData
+      const newRoundData = { ...oldRoundData, ...updateData };
+
+      // Reset bonus points if tricks taken is zero or undefined
+      if (
+        newRoundData.bonusCardPoints &&
+        (newRoundData.tricksTaken === undefined ||
+          newRoundData.tricksTaken === 0)
+      ) {
+        newRoundData.bonusCardPoints = undefined;
+      }
+
+      // --- Create updated updated round object
       const updatedRound = { ...oldRound };
-      updatedRound.playerData[pid] = newPlayerRoundData;
+      updatedRound.playerData[pid] = newRoundData;
 
       // --- Update rounds array
       const nextRounds = [...rounds];
