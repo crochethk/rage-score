@@ -17,17 +17,17 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
   const roundData = round.playerData[player.id];
   return (
     <>
-      <Container fluid className="p-0 pt-md-2">
+      <Container fluid className="p-0">
         <Row className="text-center justify-content-center">
-          <Col xs="12" sm="6" className="mb-2 mb-sm-0">
+          <Col className="pt-2 pb-sm-1 pe-sm-2">
+            <RoundInfoDisplay playerId={player.id} round={round} />
+          </Col>
+          <Col xs="12" sm="6" className="ps-sm-2">
             <ScoreInputForm
               playerId={player.id}
               roundData={roundData}
               cardsDealt={round.cardsDealt}
             />
-          </Col>
-          <Col>
-            <RoundInfoDisplay playerId={player.id} round={round} />
           </Col>
         </Row>
       </Container>
@@ -128,7 +128,7 @@ function ScoreSelect({
   children: options,
 }: ScoreSelectProps) {
   return (
-    <Form.FloatingLabel label={label} controlId={controlId} className={"mb-2"}>
+    <Form.FloatingLabel label={label} controlId={controlId} className="my-2">
       <Form.Select
         required={required}
         className="text-center"
