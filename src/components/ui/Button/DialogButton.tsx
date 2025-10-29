@@ -1,5 +1,5 @@
-import { Button } from "react-bootstrap";
 import type { ReactNode } from "react";
+import Button from "react-bootstrap/Button";
 
 export interface DialogButtonProps {
   children?: ReactNode;

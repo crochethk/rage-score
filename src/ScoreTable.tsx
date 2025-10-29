@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
-import { Button, Table } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Table from "react-bootstrap/Table";
 import { useGameInteraction } from "./contexts/GameInteractionContext";
 import * as gu from "./gameUtils";
 import "./ScoreTable.style.css";

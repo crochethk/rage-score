@@ -1,4 +1,7 @@
-import { ButtonGroup, Col, Container, Row } from "react-bootstrap";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
 import {
   ScoreInputProvider,
   useScoreInput,

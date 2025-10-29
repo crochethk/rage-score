@@ -1,4 +1,5 @@
-import { Modal as BsModal, Button } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import BsModal from "react-bootstrap/Modal";
 
 declare module "react" {
   /**

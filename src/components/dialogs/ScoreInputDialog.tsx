@@ -1,4 +1,7 @@
-import { Col, Container, Form, Row } from "react-bootstrap";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
 import { useScoreInput } from "../../contexts/ScoreInputContext";
 import * as gu from "../../gameUtils";
 import type { Player, PlayerId, PlayerRoundData, Round } from "../../types";
