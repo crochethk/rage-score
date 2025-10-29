@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef } from "react";
+import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import { useGameInteraction } from "./contexts/GameInteractionContext";
@@ -16,6 +17,12 @@ export default function ScoreTable(props: ScoreTableProps) {
     players,
   );
 
+  const scores = players.map((p) =>
+    gu.isEmptyColumn(p.id, rounds)
+      ? null
+      : gu.calculateTotalScore(p.id, rounds),
+  );
+
   return (
     <>
       <div
@@ -24,39 +31,55 @@ export default function ScoreTable(props: ScoreTableProps) {
         style={{ overscrollBehaviorX: "none" }}
       >
         <Table className="score-table text-nowrap w-auto h-100 m-0 bg-body-tertiary bg-opacity-50 rounded-end-4">
-          <ScoreTableHead players={players} />
+          <ScoreTableHead players={players} scores={scores} />
           <ScoreTableBody players={players} rounds={rounds} />
-          <ScoreTableFoot players={players} rounds={rounds} />
+          <ScoreTableFoot players={players} scores={scores} />
         </Table>
       </div>
     </>
   );
 }
 
-function ScoreTableHead({ players }: { players: readonly Player[] }) {
+interface ScoreTableHeadProps {
+  players: readonly Player[];
+  scores: (number | null)[];
+}
+
+function ScoreTableHead({ players, scores }: ScoreTableHeadProps) {
   const gic = useGameInteraction();
-  const names = players.map((p) => (
-    <th
-      key={p.id}
-      className="text-truncate cursor-pointer text-light"
-      scope="col"
-      style={{
-        backgroundColor: gu.toPlayerThemeBg(p.color),
-        // Fixate column width
-        minWidth: "7em",
-        maxWidth: "7em",
-      }}
-      onClick={() => gic.openEditPlayerDialog(p.id)}
-      role="button"
-    >
-      {p.name}
-    </th>
-  ));
+
+  const sortedUniqueScoresDesc = Array.from(new Set(scores)).sort((a, b) =>
+    a === null ? 1 : b === null ? -1 : b - a,
+  );
+
+  const names = players.map((p, idx) => {
+    const totalScore = scores[idx];
+    const isEmptyColumn = totalScore === null;
+    const rank = sortedUniqueScoresDesc.indexOf(totalScore);
+    return (
+      <th
+        key={p.id}
+        className="cursor-pointer text-light position-relative"
+        scope="col"
+        style={{
+          backgroundColor: gu.toPlayerThemeBg(p.color),
+          // Fixate column width
+          minWidth: "7em",
+          maxWidth: "7em",
+        }}
+        onClick={() => gic.openEditPlayerDialog(p.id)}
+        role="button"
+      >
+        {!isEmptyColumn && <RankBadge rank={rank} limit={3} />}
+        <div className="text-truncate">{p.name}</div>
+      </th>
+    );
+  });
 
   return (
     <thead className="text-center align-middle sticky-top">
       <tr>
-        <th className="table-secondary" scope="col">
+        <th className="table-secondary z-1" scope="col">
           <Button
             className="p-1"
             variant="secondary"
@@ -207,9 +230,12 @@ function PlayerRoundDataCell(props: PlayerRoundDataCellProps) {
   );
 }
 
-type ScoreTableFootProps = GameData;
+interface ScoreTableFootProps {
+  players: readonly Player[];
+  scores: (number | null)[];
+}
 
-function ScoreTableFoot({ players, rounds }: ScoreTableFootProps) {
+function ScoreTableFoot({ players, scores }: ScoreTableFootProps) {
   return (
     <tfoot className="table-info fw-bold text-center sticky-bottom">
       <tr>
@@ -221,19 +247,38 @@ function ScoreTableFoot({ players, rounds }: ScoreTableFootProps) {
             &Sigma;
           </span>
         </th>
-        {players.map((p) => {
-          const totalScore = gu.calculateTotalScore(p.id, rounds);
-          const isEmptyColumn = gu.isEmptyColumn(p.id, rounds);
+        {players.map((p, idx) => {
+          const score = scores[idx];
+          const isEmptyColumn = score === null;
           return (
             <td key={p.id} className="border border-secondary">
-              <span className={isEmptyColumn ? "invisible" : ""}>
-                {totalScore}
-              </span>
+              <span className={isEmptyColumn ? "invisible" : ""}>{score}</span>
             </td>
           );
         })}
       </tr>
     </tfoot>
+  );
+}
+
+/** This component should be used within a `.position-relative` container. */
+function RankBadge({ rank, limit }: { rank: number; limit?: number }) {
+  if (rank < 0) {
+    console.error("RankBadge: rank must be non-negative");
+    return null;
+  }
+  if (limit !== undefined && rank >= limit) {
+    return null;
+  }
+  rank = rank + 1;
+  return (
+    <Badge
+      className="position-absolute bottom-0 end-0 bg-dark text-warning rounded-0 py-1 px-1"
+      title={`Platz ${rank}`}
+    >
+      <span className="visually-hidden">Platz</span>
+      {rank}
+    </Badge>
   );
 }
 
