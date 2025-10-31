@@ -1,5 +1,11 @@
 import Button from "react-bootstrap/Button";
-import BsModal from "react-bootstrap/Modal";
+import BsModal, {
+  type ModalProps as BsModalProps,
+} from "react-bootstrap/Modal";
+
+import { type ModalBodyProps as BsModalBodyProps } from "react-bootstrap/ModalBody";
+import { type ModalFooterProps as BsModalFooterProps } from "react-bootstrap/ModalFooter";
+import { type ModalHeaderProps as BsModalHeaderProps } from "react-bootstrap/ModalHeader";
 
 declare module "react" {
   /**
@@ -22,7 +28,6 @@ export type ModalProps = Required<Pick<BsModalProps, "show">> &
     /** Whether to create an "X" close button which will trigger the `onHide` handler. */
     closeButton?: boolean;
   };
-type BsModalProps = React.ComponentProps<typeof BsModal>;
 
 export function Modal({
   show,
@@ -66,7 +71,7 @@ type ModalHeaderProps =
    * It seems to not have any effect (bug? "closeButton" works despite not being documented)
    */
   Omit<
-    React.ComponentProps<typeof BsModal.Header>,
+    BsModalHeaderProps,
     "closeLabel" | "closeVariant" | "withCloseButton"
   > & {
     /** Text to show in the header above the title describing the modal's purpose/context. */
@@ -99,7 +104,7 @@ function ModalHeader(props: ModalHeaderProps) {
   );
 }
 
-type ModalBodyProps = React.ComponentProps<typeof BsModal.Body>;
+type ModalBodyProps = BsModalBodyProps;
 
 function ModalBody(props: ModalBodyProps) {
   return (
@@ -110,7 +115,7 @@ function ModalBody(props: ModalBodyProps) {
   );
 }
 
-type ModalFooterProps = React.ComponentProps<typeof BsModal.Footer>;
+type ModalFooterProps = BsModalFooterProps;
 
 function ModalFooter(props: ModalFooterProps) {
   return (
