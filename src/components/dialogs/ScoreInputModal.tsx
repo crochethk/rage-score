@@ -9,7 +9,7 @@ import {
 } from "../../contexts/ScoreInputContext";
 import * as gu from "../../gameUtils";
 import type { PlayerId } from "../../types";
-import { PrimaryDialogButton } from "../ui/Button/DialogButton";
+import { DialogButton } from "../ui/Button/DialogButton";
 import { Modal } from "./Modal";
 import { ScoreInputDialog } from "./ScoreInputDialog";
 
@@ -57,18 +57,20 @@ function ScoreInputNavigation({ playerId }: { playerId: PlayerId }) {
           <div className="d-grid">
             <ButtonGroup vertical>
               <ButtonGroup size="lg" aria-label="Navigations-Buttons">
-                <PrimaryDialogButton
+                <DialogButton
+                  variant="primary"
                   aria-label="Vorheriger Spieler"
                   onClick={() => onPrevPlayer(playerId)}
                 >
                   ←
-                </PrimaryDialogButton>
-                <PrimaryDialogButton
+                </DialogButton>
+                <DialogButton
+                  variant="primary"
                   aria-label="Nächster Spieler"
                   onClick={() => onNextPlayer(playerId)}
                 >
                   →
-                </PrimaryDialogButton>
+                </DialogButton>
               </ButtonGroup>
             </ButtonGroup>
           </div>
