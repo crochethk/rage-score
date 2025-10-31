@@ -17,6 +17,8 @@ export interface EditPlayerContextValue {
   onSave: (playerId: PlayerId, updateData: PlayerUpdate) => void;
   /** Callback called when the dialog should be closed discarding changes. */
   onCancel: () => void;
+  /** Callback called when the current player should be removed from the game. */
+  onRemovePlayer: (playerId: PlayerId) => void;
 }
 
 const EditPlayerContext = createContext<EditPlayerContextValue | undefined>(
@@ -52,12 +54,21 @@ function useContextValue(stateArgs: StateArgs): EditPlayerContextValue {
     dialogState.close();
   }, [dialogState]);
 
+  const onRemovePlayer = useCallback(
+    (playerId: PlayerId) => {
+      gs.removePlayer(playerId);
+      dialogState.close();
+    },
+    [dialogState, gs],
+  );
+
   return useMemo(
     () => ({
       onSave,
       onCancel,
+      onRemovePlayer,
     }),
-    [onCancel, onSave],
+    [onCancel, onRemovePlayer, onSave],
   );
 }
 

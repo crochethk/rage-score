@@ -9,6 +9,7 @@ export interface GameState {
   readonly rounds: readonly Round[];
 
   addPlayer: (name: string) => PlayerId;
+  removePlayer: (pid: PlayerId) => void;
   updatePlayer: (pid: PlayerId, updateData: PlayerUpdate) => void;
 
   updatePlayerRoundData: (
@@ -65,6 +66,22 @@ export function useGameState(): GameState {
       }));
       setRounds(nextRounds);
       return newPlayer.id;
+    },
+    [players, rounds, setPlayers, setRounds],
+  );
+
+  const removePlayer = useCallback(
+    (pid: PlayerId) => {
+      const nextPlayers = players.filter((p) => p.id !== pid);
+      setPlayers(nextPlayers);
+
+      // Remove round data associated with the player
+      const nextRounds = rounds.map((r) => {
+        const nextPlayerData = { ...r.playerData };
+        delete nextPlayerData[pid];
+        return { ...r, playerData: nextPlayerData };
+      });
+      setRounds(nextRounds);
     },
     [players, rounds, setPlayers, setRounds],
   );
@@ -140,6 +157,7 @@ export function useGameState(): GameState {
       players,
       rounds,
       addPlayer,
+      removePlayer,
       updatePlayer,
       updatePlayerRoundData,
       resetGame,
@@ -150,6 +168,7 @@ export function useGameState(): GameState {
       players,
       rounds,
       addPlayer,
+      removePlayer,
       updatePlayer,
       updatePlayerRoundData,
       resetGame,

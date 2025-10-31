@@ -7,6 +7,7 @@ import {
 import * as gu from "../../gameUtils";
 import type { Player } from "../../types";
 import { DialogButton } from "../ui/Button/DialogButton";
+import { RemoveButton } from "../ui/Button/RemoveButton";
 import { Modal } from "./Modal";
 
 export function EditPlayerModal(stateArgs: StateArgs) {
@@ -28,7 +29,7 @@ interface InternalEditPlayerModalProps {
 function InternalEditPlayerModal(props: InternalEditPlayerModalProps) {
   const { isOpen, player } = props;
   const [newName, setNewName] = useState(player.name);
-  const { onSave, onCancel } = useEditPlayer();
+  const { onSave, onCancel, onRemovePlayer } = useEditPlayer();
 
   const saveDisabled = newName.trim() === "" || player.name === newName.trim();
 
@@ -45,6 +46,14 @@ function InternalEditPlayerModal(props: InternalEditPlayerModalProps) {
       }}
       backdrop={saveDisabled || "static"}
     >
+      <Modal.Header>
+        <RemoveButton
+          description="Spieler löschen"
+          size="sm"
+          className="position-absolute start-0 top-0 m-3"
+          onClick={() => onRemovePlayer(player.id)}
+        />
+      </Modal.Header>
       <Modal.Body>
         <div className="col-sm-6">
           <label htmlFor="playerName" className="form-label">
