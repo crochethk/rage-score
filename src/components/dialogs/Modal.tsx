@@ -83,11 +83,19 @@ type ModalHeaderProps =
   };
 
 function ModalHeader(props: ModalHeaderProps) {
-  const { label, title, closeButton, onHide, ...bsHeaderProps } = props;
+  const {
+    label,
+    title,
+    closeButton,
+    className,
+    children,
+    onHide,
+    ...bsHeaderProps
+  } = props;
   return (
     <BsModal.Header
       {...bsHeaderProps}
-      className="border-0 justify-content-center p-0"
+      className={"border-0 justify-content-center p-0 " + (className ?? "")}
     >
       {
         // Omit title section if there is no title nor label
@@ -99,29 +107,29 @@ function ModalHeader(props: ModalHeaderProps) {
         )
       }
       {closeButton && <Modal.CloseButton onClick={onHide} />}
-      {props.children}
+      {children}
     </BsModal.Header>
   );
 }
 
 type ModalBodyProps = BsModalBodyProps;
 
-function ModalBody(props: ModalBodyProps) {
+function ModalBody({ className, ...bsBodyProps }: ModalBodyProps) {
   return (
     <BsModal.Body
-      {...props}
-      className={"p-0 my-1 " + (props.className ?? "")}
+      {...bsBodyProps}
+      className={"p-0 my-1 " + (className ?? "")}
     />
   );
 }
 
 type ModalFooterProps = BsModalFooterProps;
 
-function ModalFooter(props: ModalFooterProps) {
+function ModalFooter({ className, ...bsFooterProps }: ModalFooterProps) {
   return (
     <BsModal.Footer
-      {...props}
-      className={"border-0 p-0 mt-1 " + (props.className ?? "")}
+      {...bsFooterProps}
+      className={"border-0 p-0 mt-1 " + (className ?? "")}
     />
   );
 }
