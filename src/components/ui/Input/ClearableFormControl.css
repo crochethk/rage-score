@@ -1,0 +1,7 @@
+.btn-clear {
+  --bs-btn-bg: transparent !important;
+  --bs-btn-color: var(--bs-gray-600) !important;
+  --bs-btn-hover-color: var(--bs-gray-500) !important;
+  --bs-btn-active-color: var(--bs-gray-400) !important;
+  --bs-btn-border-width: 0 !important;
+}

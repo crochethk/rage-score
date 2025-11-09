@@ -12,6 +12,7 @@ import * as gu from "../../gameUtils";
 import type { Player } from "../../types";
 import { DialogButton } from "../ui/Button/DialogButton";
 import { RemoveButton } from "../ui/Button/RemoveButton";
+import { ClearableFormControl } from "../ui/Input/ClearableFormControl";
 import { Modal } from "./Modal";
 
 export function EditPlayerModal(stateArgs: StateArgs) {
@@ -68,10 +69,13 @@ function InternalEditPlayerModal(props: InternalEditPlayerModalProps) {
             Name
           </Form.Label>
           <Col>
-            <Form.Control
+            <ClearableFormControl
               value={newName}
               onChange={(ev) => setNewName(ev.target.value)}
+              onClear={() => setNewName("")}
               isInvalid={trimmedName === ""}
+              showClear={trimmedName !== ""}
+              placeholder="Name eingeben"
             />
           </Col>
         </Form.Group>
