@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from "react";
+import * as clr from "../color";
 import * as gu from "../gameUtils";
 import type { Player, PlayerId, PlayerRoundData, Round } from "../types";
 import { useLocalStorage } from "./useLocalStorage";
@@ -33,7 +34,7 @@ export function useGameState(): GameState {
 
   const sanitizePlayers = (players: Player[]) =>
     // Migration from state yet missing player colors
-    players.map((p) => (p.color ? p : { ...p, color: gu.randomRgb() }));
+    players.map((p) => (p.color ? p : { ...p, color: clr.randomRgb() }));
 
   // This automatically persists to local storage and loads from it initially
   const [players, setPlayers] = useLocalStorage<Player[]>(

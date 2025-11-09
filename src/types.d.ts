@@ -1,3 +1,6 @@
+import { type ColorRgb } from "./color";
+export type ColorRgb = ColorRgb;
+
 /** Unique identifier for a player. */
 type PlayerId = string;
 
@@ -20,13 +23,6 @@ export interface Player {
    * The player's color, used for UI theming.
    */
   color: ColorRgb;
-}
-
-/** Represents an RGB color. Each component should be in the range 0-255. */
-export interface ColorRgb {
-  r: number;
-  g: number;
-  b: number;
 }
 
 /**

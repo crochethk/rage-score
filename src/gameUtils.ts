@@ -1,4 +1,5 @@
 import { v4 as uuid } from "uuid";
+import * as clr from "./color";
 import type {
   ColorRgb,
   Player,
@@ -194,20 +195,12 @@ export function range(start: number, stop: number, step = 1) {
 }
 
 export function createPlayer(name: string, color?: ColorRgb): Player {
-  return { id: uuid(), name, color: color ?? randomRgb() };
-}
-
-export function randomRgb(): ColorRgb {
-  return {
-    r: Math.floor(Math.random() * 256),
-    g: Math.floor(Math.random() * 256),
-    b: Math.floor(Math.random() * 256),
-  };
+  return { id: uuid(), name, color: color ?? clr.randomRgb() };
 }
 
 /** Creates a CSS string which computes the background color given a player's theme color. */
 export function toPlayerThemeBg(color: ColorRgb): string {
-  return `color-mix(in srgb-linear, rgb(${color.r}, ${color.g}, ${color.b}) 50%, var(--bs-gray-900) 100%)`;
+  return `color-mix(in srgb-linear, ${clr.toCssRgb(color)} 50%, var(--bs-gray-900) 100%)`;
 }
 
 /**
