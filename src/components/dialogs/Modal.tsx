@@ -139,7 +139,7 @@ export function ModalCloseButton(props: { onClick?: () => void }) {
     <Button
       variant="close"
       aria-label="Schließen"
-      className="position-absolute top-0 end-0 z-1 m-3"
+      className="position-absolute top-0 end-0 z-1 m-3 shadow-none"
       data-bs-dismiss="modal"
       onClick={props.onClick}
     />
