@@ -1,4 +1,8 @@
 import { useState } from "react";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
+import * as clr from "../../color";
 import {
   EditPlayerProvider,
   useEditPlayer,
@@ -29,16 +33,20 @@ interface InternalEditPlayerModalProps {
 function InternalEditPlayerModal(props: InternalEditPlayerModalProps) {
   const { isOpen, player } = props;
   const [newName, setNewName] = useState(player.name);
+  const [newColorHex, setNewColorHex] = useState(clr.toCssHex(player.color));
   const { onSave, onCancel, onRemovePlayer } = useEditPlayer();
 
-  const saveDisabled = newName.trim() === "" || player.name === newName.trim();
+  const trimmedName = newName.trim();
+  const saveDisabled =
+    trimmedName === "" ||
+    (player.name === trimmedName && clr.toCssHex(player.color) === newColorHex);
 
   return (
     <Modal
       show={isOpen}
       label={`Spieler bearbeiten`}
       title={player.name}
-      bgColor={gu.toPlayerThemeBg(player.color)}
+      bgColor={gu.toPlayerThemeBg(clr.fromCssHex(newColorHex))}
       closeButton
       onHide={onCancel}
       onEscapeKeyDown={(ev) => {
@@ -55,20 +63,30 @@ function InternalEditPlayerModal(props: InternalEditPlayerModalProps) {
         />
       </Modal.Header>
       <Modal.Body>
-        <div className="col-sm-6">
-          <label htmlFor="playerName" className="form-label">
+        <Form.Group as={Row} controlId="editPlayer.name" className="py-1">
+          <Form.Label column className="col-2 text-end">
             Name
-          </label>
-          <input
-            id="playerName"
-            type="text"
-            className="form-control"
-            value={newName}
-            required
-            onChange={(ev) => setNewName(ev.target.value)}
-          />
-        </div>
-        {/* <div>Farbe: {"<COLOR PICKER>"}</div> */}
+          </Form.Label>
+          <Col>
+            <Form.Control
+              value={newName}
+              onChange={(ev) => setNewName(ev.target.value)}
+              isInvalid={trimmedName === ""}
+            />
+          </Col>
+        </Form.Group>
+        <Form.Group as={Row} controlId="editPlayer.color" className="py-1">
+          <Form.Label column className="col-2 text-end">
+            Farbe
+          </Form.Label>
+          <Col>
+            <Form.Control
+              type="color"
+              value={newColorHex}
+              onChange={(ev) => setNewColorHex(ev.target.value)}
+            />
+          </Col>
+        </Form.Group>
       </Modal.Body>
       <Modal.Footer>
         <div className="text-end m-0">
@@ -76,7 +94,10 @@ function InternalEditPlayerModal(props: InternalEditPlayerModalProps) {
             variant="primary"
             className="ms-2 py-1"
             onClick={() => {
-              onSave(player.id, { name: newName });
+              onSave(player.id, {
+                name: trimmedName,
+                color: clr.fromCssHex(newColorHex),
+              });
             }}
             disabled={saveDisabled}
           >
