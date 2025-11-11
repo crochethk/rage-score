@@ -1,3 +1,4 @@
+import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
@@ -84,18 +85,33 @@ function ScoreInputForm(props: ScoreInputFormProps) {
         <option value="">---</option>
         {possibleBidsOptions}
       </ScoreSelect>
-      <ScoreSelect
-        label="Bekommen"
-        controlId="tricksInput"
-        required
-        value={roundData.tricksTaken ?? ""}
-        onChange={(val) =>
-          onScoreInput(playerId, { tricksTaken: parseTricksValue(val) })
-        }
-      >
-        <option value="">---</option>
-        {possibleBidsOptions}
-      </ScoreSelect>
+      <Row>
+        <Col>
+          <ScoreSelect
+            label="Bekommen"
+            controlId="tricksInput"
+            required
+            value={roundData.tricksTaken ?? ""}
+            onChange={(val) =>
+              onScoreInput(playerId, { tricksTaken: parseTricksValue(val) })
+            }
+          >
+            <option value="">---</option>
+            {possibleBidsOptions}
+          </ScoreSelect>
+        </Col>
+        <Col xs="auto" className="align-content-center">
+          <Button
+            variant="secondary"
+            aria-description="'Bekommen' auf Wert von 'Geboten' setzen"
+            onClick={() =>
+              onScoreInput(playerId, { tricksTaken: roundData.bid })
+            }
+          >
+            Geschafft
+          </Button>
+        </Col>
+      </Row>
       <ScoreSelect
         label="Bonus/Malus aus Karten"
         controlId="bonusPointsInput"
