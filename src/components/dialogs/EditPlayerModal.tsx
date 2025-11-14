@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, type JSX } from "react";
+import type { FormGroupProps } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
@@ -64,33 +65,23 @@ function InternalEditPlayerModal(props: InternalEditPlayerModalProps) {
         />
       </Modal.Header>
       <Modal.Body>
-        <Form.Group as={Row} controlId="editPlayer.name" className="py-1">
-          <Form.Label column className="col-2 text-end">
-            Name
-          </Form.Label>
-          <Col>
-            <ClearableFormControl
-              value={newName}
-              onChange={(ev) => setNewName(ev.target.value)}
-              onClear={() => setNewName("")}
-              isInvalid={trimmedName === ""}
-              showClear={trimmedName !== ""}
-              placeholder="Name eingeben"
-            />
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} controlId="editPlayer.color" className="py-1">
-          <Form.Label column className="col-2 text-end">
-            Farbe
-          </Form.Label>
-          <Col>
-            <Form.Control
-              type="color"
-              value={newColorHex}
-              onChange={(ev) => setNewColorHex(ev.target.value)}
-            />
-          </Col>
-        </Form.Group>
+        <LabeledFormGroup label="Neuer Name" controlId="editPlayer.name">
+          <ClearableFormControl
+            value={newName}
+            onChange={(ev) => setNewName(ev.target.value)}
+            onClear={() => setNewName("")}
+            isInvalid={trimmedName === ""}
+            showClear={trimmedName !== ""}
+            placeholder="Name eingeben..."
+          />
+        </LabeledFormGroup>
+        <LabeledFormGroup label="Farbe" controlId="editPlayer.color">
+          <Form.Control
+            type="color"
+            value={newColorHex}
+            onChange={(ev) => setNewColorHex(ev.target.value)}
+          />
+        </LabeledFormGroup>
       </Modal.Body>
       <Modal.Footer>
         <div className="text-end m-0">
@@ -117,5 +108,39 @@ function InternalEditPlayerModal(props: InternalEditPlayerModalProps) {
         </div>
       </Modal.Footer>
     </Modal>
+  );
+}
+
+interface LabeledFormGroupProps extends FormGroupProps {
+  label: string | JSX.Element;
+  labelClassName?: string;
+}
+
+/**
+ * Renders a `Form.Group` in a `Row` with a label in the first `Col`. `children`
+ * is placed in the second `Col` and should typically be a form control.
+ * By default, the label column has a fixed grid width but can be overridden via
+ * `labelClassName`.
+ */
+function LabeledFormGroup({
+  controlId,
+  className,
+  label,
+  labelClassName,
+  children,
+  ...bsFormGroupProps
+}: LabeledFormGroupProps) {
+  return (
+    <Form.Group
+      as={Row}
+      controlId={controlId}
+      className={"py-1 " + (className ?? "")}
+      {...bsFormGroupProps}
+    >
+      <Form.Label column className={"col-3 text-end " + (labelClassName ?? "")}>
+        {label}
+      </Form.Label>
+      <Col>{children}</Col>
+    </Form.Group>
   );
 }
