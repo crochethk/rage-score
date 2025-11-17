@@ -31,6 +31,14 @@
   }
 }
 
+.table-responsive:has(.score-table) {
+  max-height: 100vh;
+}
+
+.table-error {
+  --bs-table-bg: var(--bs-red-300);
+}
+
 /** Clickable data cells */
 .btn-scoreCell {
   --bs-btn-padding-x: 0 !important;
@@ -54,18 +62,3 @@
   }
 }
 
-/* --- Custom Utilities --- */
-
-.xsmall {
-  font-size: 0.75rem;
-}
-
-/* --- Bootstrap Extensions ---*/
-
-.table-responsive {
-  max-height: 100vh;
-}
-
-.table-error {
-  --bs-table-bg: var(--bs-red-300);
-}

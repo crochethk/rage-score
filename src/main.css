@@ -7,6 +7,14 @@
   --bs-red-300: #ea868f;
 }
 
+/* --- Utilities --- */
+
+.xsmall {
+  font-size: 0.75rem;
+}
+
+/* --- Tags --- */
+
 html {
   min-height: calc(100% + env(safe-area-inset-top));
   padding: env(safe-area-inset-top) env(safe-area-inset-right)
