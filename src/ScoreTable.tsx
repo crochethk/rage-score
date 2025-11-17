@@ -59,7 +59,7 @@ function ScoreTableHead({ players, scores }: ScoreTableHeadProps) {
     return (
       <th
         key={p.id}
-        className="cursor-pointer text-light position-relative"
+        className="text-light position-relative"
         scope="col"
         style={{
           backgroundColor: gu.toPlayerThemeBg(p.color),
@@ -198,16 +198,18 @@ function PlayerRoundDataCell(props: PlayerRoundDataCellProps) {
 
   return (
     <>
-      <td
-        className="p-0 cell-hover cursor-pointer border border-secondary h-100"
-        onClick={onClick}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") onClick();
-        }}
-      >
-        <div className="d-flex flex-column w-100 h-100">
+      <td className="p-0 border border-secondary h-100">
+        <Button
+          variant="scoreCell"
+          as="a" // required for cross-browser compatibility
+          href={undefined}
+          className="d-flex flex-column w-100 h-100"
+          onClick={onClick}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") onClick();
+          }}
+          aria-label="Daten bearbeiten"
+        >
           <div className="d-flex flex-grow-1 text-center border-bottom border-dark border-opacity-25">
             <div className={colClassName}>{bid ?? ""}</div>
             <div className={colClassName}>{tricksTaken ?? ""}</div>
@@ -224,7 +226,7 @@ function PlayerRoundDataCell(props: PlayerRoundDataCellProps) {
               </span>
             </div>
           </div>
-        </div>
+        </Button>
       </td>
     </>
   );

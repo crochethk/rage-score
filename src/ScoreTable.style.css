@@ -31,20 +31,33 @@
   }
 }
 
-/* --- Custom Utilities --- */
+/** Clickable data cells */
+.btn-scoreCell {
+  --bs-btn-padding-x: 0 !important;
+  --bs-btn-padding-y: 0 !important;
 
-/** Adjusted copy-pasta of ".table-hover" to highlight individual cells */
-.cell-hover:hover {
-  --bs-table-color-state: var(--bs-table-hover-color);
-  --bs-table-bg-state: var(--bs-table-hover-bg);
+  --bs-btn-color: inherit !important;
+  --bs-btn-bg: transparent !important;
+
+  --bs-btn-border-color: transparent !important;
+  --bs-btn-border-width: 0 !important;
+  --bs-btn-border-radius: 0 !important;
+
+  --bs-btn-hover-bg: var(--bs-yellow-100) !important;
+  --bs-btn-active-bg: var(--bs-btn-hover-bg) !important;
+
+  --bs-btn-disabled-opacity: 0.25 !important;
+
+  /* Inside erroneous row/cell */
+  .table-error & {
+    --bs-btn-hover-bg: var(--bs-red-200) !important;
+  }
 }
+
+/* --- Custom Utilities --- */
 
 .xsmall {
   font-size: 0.75rem;
-}
-
-.cursor-pointer {
-  cursor: pointer;
 }
 
 /* --- Bootstrap Extensions ---*/
@@ -54,5 +67,5 @@
 }
 
 .table-error {
-  --bs-table-bg: #f9919b;
+  --bs-table-bg: var(--bs-red-300);
 }

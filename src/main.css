@@ -1,4 +1,12 @@
 /** Global styles */
+
+/* --- Variables --- */
+:root {
+  --bs-yellow-100: #fff3cd;
+  --bs-red-200: #f1aeb5;
+  --bs-red-300: #ea868f;
+}
+
 html {
   min-height: calc(100% + env(safe-area-inset-top));
   padding: env(safe-area-inset-top) env(safe-area-inset-right)
