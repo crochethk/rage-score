@@ -3,10 +3,11 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
+import { EditPlayerModal } from "./components/dialogs/EditPlayerModal";
 import { ScoreInputModal } from "./components/dialogs/ScoreInputModal";
+import type { EditPlayerDialogData } from "./contexts/EditPlayerContext";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
 import type { ScoreInputData } from "./contexts/ScoreInputContext";
-import * as gu from "./gameUtils";
 import { useDialogState } from "./hooks/useDialogState";
 import { useGameState } from "./hooks/useGameState";
 import ScoreTable from "./ScoreTable";
@@ -15,6 +16,7 @@ import type { PlayerId } from "./types";
 export default function App() {
   const gs = useGameState();
   const scoreInputState = useDialogState<ScoreInputData>();
+  const editPlayerState = useDialogState<EditPlayerDialogData>();
 
   // --- GameInteractionContext Value
 
@@ -27,17 +29,9 @@ export default function App() {
 
   const openEditPlayerDialog = useCallback(
     (playerId: PlayerId) => {
-      const player = gu.findPlayerOrThrow(gs.players, playerId);
-
-      const newName = (window.prompt("Name ändern:", player.name) ?? "").trim();
-      if (newName.length === 0) {
-        console.log("Aborted editing player: No name given");
-        return;
-      }
-
-      gs.updatePlayer(player.id, { name: newName });
+      editPlayerState.open({ playerId });
     },
-    [gs],
+    [editPlayerState],
   );
 
   const openAddPlayerDialog = useCallback(() => {
@@ -115,10 +109,12 @@ export default function App() {
           </Col>
         </Row>
       </Container>
-
       {/* --- Modals --- */}
       {scoreInputState.isOpen && (
         <ScoreInputModal gs={gs} scoreInputState={scoreInputState} />
+      )}
+      {editPlayerState.isOpen && (
+        <EditPlayerModal gs={gs} dialogState={editPlayerState} />
       )}
     </>
   );
