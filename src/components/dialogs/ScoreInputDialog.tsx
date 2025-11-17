@@ -95,6 +95,7 @@ function ScoreInputForm(props: ScoreInputFormProps) {
             onChange={(val) =>
               onScoreInput(playerId, { tricksTaken: parseTricksValue(val) })
             }
+            disabled={roundData.bid === undefined}
           >
             <option value="">---</option>
             {possibleBidsOptions}
@@ -106,6 +107,10 @@ function ScoreInputForm(props: ScoreInputFormProps) {
             aria-description="'Bekommen' auf Wert von 'Geboten' setzen"
             onClick={() =>
               onScoreInput(playerId, { tricksTaken: roundData.bid })
+            }
+            disabled={
+              roundData.bid === undefined ||
+              roundData.bid === roundData.tricksTaken
             }
           >
             Geschafft
