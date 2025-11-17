@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import { useGameInteraction } from "./contexts/GameInteractionContext";
 import * as gu from "./gameUtils";
-import "./ScoreTable.style.css";
+import "./ScoreTable.css";
 import type { GameData, Player, PlayerRoundData, Round } from "./types";
 
 interface ScoreTableProps {
