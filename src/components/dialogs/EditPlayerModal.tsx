@@ -65,7 +65,7 @@ function InternalEditPlayerModal(props: InternalEditPlayerModalProps) {
         />
       </Modal.Header>
       <Modal.Body>
-        <LabeledFormGroup label="Neuer Name" controlId="editPlayer.name">
+        <LabeledFormGroup label="Name" controlId="editPlayer.name">
           <ClearableFormControl
             value={newName}
             onChange={(ev) => setNewName(ev.target.value)}
@@ -137,7 +137,7 @@ function LabeledFormGroup({
       className={"py-1 " + (className ?? "")}
       {...bsFormGroupProps}
     >
-      <Form.Label column className={"col-3 text-end " + (labelClassName ?? "")}>
+      <Form.Label column className={"col-2 text-end " + (labelClassName ?? "")}>
         {label}
       </Form.Label>
       <Col>{children}</Col>
