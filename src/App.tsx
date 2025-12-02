@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
+import { AddPlayerModal } from "./components/dialogs/AddPlayerModal";
 import { EditPlayerModal } from "./components/dialogs/EditPlayerModal";
 import { ScoreInputModal } from "./components/dialogs/ScoreInputModal";
 import type { EditPlayerDialogData } from "./contexts/EditPlayerContext";
@@ -17,6 +18,7 @@ export default function App() {
   const gs = useGameState();
   const scoreInputState = useDialogState<ScoreInputData>();
   const editPlayerState = useDialogState<EditPlayerDialogData>();
+  const addPlayerState = useDialogState<null>();
 
   // --- GameInteractionContext Value
 
@@ -34,15 +36,10 @@ export default function App() {
     [editPlayerState],
   );
 
-  const openAddPlayerDialog = useCallback(() => {
-    const name = (window.prompt("Name eingeben:") ?? "").trim();
-    if (name.length === 0) {
-      console.log("Aborted adding player: No name given");
-      return;
-    }
-
-    gs.addPlayer(name);
-  }, [gs]);
+  const openAddPlayerDialog = useCallback(
+    () => addPlayerState.open(null),
+    [addPlayerState],
+  );
 
   const reverseRounds = useCallback(() => gs.reverseRounds(), [gs]);
 
@@ -115,6 +112,9 @@ export default function App() {
       )}
       {editPlayerState.isOpen && (
         <EditPlayerModal gs={gs} dialogState={editPlayerState} />
+      )}
+      {addPlayerState.isOpen && (
+        <AddPlayerModal gs={gs} dialogState={addPlayerState} />
       )}
     </>
   );
