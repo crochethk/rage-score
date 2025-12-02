@@ -1,4 +1,4 @@
-import { useState, type JSX } from "react";
+import { useEffect, useRef, useState, type JSX } from "react";
 import type { FormGroupProps } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -57,6 +57,14 @@ export function PlayerFormModal(props: PlayerFormModalProps) {
     if (!confirmDisabled) onConfirm(trimmedName, newColorHex);
   };
 
+  // Focus the name input field when the modal opens
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    if (isOpen) {
+      nameInputRef.current?.focus();
+    }
+  }, [isOpen]);
+
   return (
     <Modal
       show={isOpen}
@@ -74,6 +82,7 @@ export function PlayerFormModal(props: PlayerFormModalProps) {
       <Modal.Body>
         <LabeledFormGroup label="Name" controlId="playerForm.name">
           <ClearableFormControl
+            ref={nameInputRef}
             value={newName}
             onChange={(ev) => setNewName(ev.target.value)}
             onClear={() => setNewName("")}

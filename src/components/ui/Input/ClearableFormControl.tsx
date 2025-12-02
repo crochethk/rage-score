@@ -9,6 +9,7 @@ interface FormControlProps extends BsFormControlProps {
   onClear: () => void;
   /** Whether to show the clear button. */
   showClear?: boolean;
+  ref?: React.Ref<HTMLInputElement>;
 }
 
 /** A text input field (`Form.Control`) with a clear button inside it. */
@@ -18,11 +19,13 @@ export function ClearableFormControl({
   onChange,
   onClear,
   showClear = true,
+  ref,
   ...bsProps
 }: FormControlProps) {
   return (
     <div className="position-relative">
       <Form.Control
+        ref={ref}
         value={value}
         onChange={onChange}
         isInvalid={isInvalid}
