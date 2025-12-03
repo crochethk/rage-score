@@ -80,6 +80,9 @@ export function PlayerFormModal(props: PlayerFormModalProps) {
             isInvalid={trimmedName === ""}
             showClear={trimmedName !== ""}
             placeholder="Name eingeben..."
+            onKeyDown={(ev) => {
+              if (ev.key === "Enter") handleConfirm();
+            }}
           />
         </LabeledFormGroup>
         <LabeledFormGroup label="Farbe" controlId="playerForm.color">
