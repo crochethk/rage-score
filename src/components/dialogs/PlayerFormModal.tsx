@@ -52,6 +52,11 @@ export function PlayerFormModal(props: PlayerFormModalProps) {
     initialName === trimmedName && initialColorHex === newColorHex;
   const confirmDisabled = trimmedName === "" || isUnchanged;
 
+  // Only allow confirming if save is enabled
+  const handleConfirm = () => {
+    if (!confirmDisabled) onConfirm(trimmedName, newColorHex);
+  };
+
   return (
     <Modal
       show={isOpen}
@@ -90,7 +95,7 @@ export function PlayerFormModal(props: PlayerFormModalProps) {
           <DialogButton
             variant="primary"
             className="ms-2 py-1"
-            onClick={() => onConfirm(trimmedName, newColorHex)}
+            onClick={handleConfirm}
             disabled={confirmDisabled}
           >
             {confirmLabel}
