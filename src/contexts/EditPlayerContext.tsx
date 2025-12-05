@@ -1,4 +1,5 @@
 import { createContext, use, useCallback, useMemo } from "react";
+import * as gu from "../gameUtils";
 import type { DialogState } from "../hooks/useDialogState";
 import type { GameState, PlayerUpdate } from "../hooks/useGameState";
 import type { PlayerId } from "../types";
@@ -19,6 +20,8 @@ export interface EditPlayerContextValue {
   onCancel: () => void;
   /** Callback called when the current player should be removed from the game. */
   onRemovePlayer: (playerId: PlayerId) => void;
+  /** Callback called when the current player's column should be shifted left or right. */
+  onShiftPlayer: (playerId: PlayerId, direction: "right" | "left") => void;
 }
 
 const EditPlayerContext = createContext<EditPlayerContextValue | undefined>(
@@ -62,13 +65,34 @@ function useContextValue(stateArgs: StateArgs): EditPlayerContextValue {
     [dialogState, gs],
   );
 
+  const onShiftPlayer = useCallback(
+    (playerId: PlayerId, direction: "left" | "right") => {
+      switch (direction) {
+        case "left":
+          gs.setState({
+            players: gu.shiftPlayerLeft(gs.players, playerId),
+            rounds: gs.rounds,
+          });
+          break;
+        case "right":
+          gs.setState({
+            players: gu.shiftPlayerRight(gs.players, playerId),
+            rounds: gs.rounds,
+          });
+          break;
+      }
+    },
+    [gs],
+  );
+
   return useMemo(
     () => ({
       onSave,
       onCancel,
       onRemovePlayer,
+      onShiftPlayer,
     }),
-    [onCancel, onRemovePlayer, onSave],
+    [onCancel, onRemovePlayer, onSave, onShiftPlayer],
   );
 }
 

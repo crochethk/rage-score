@@ -1,3 +1,5 @@
+import Button from "react-bootstrap/Button";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 import * as clr from "../../color";
 import {
   EditPlayerProvider,
@@ -27,7 +29,7 @@ interface InternalEditPlayerModalProps {
 /** `EditPlayerModal` for use inside a wrapping `EditPlayerProvider` */
 function InternalEditPlayerModal(props: InternalEditPlayerModalProps) {
   const { isOpen, player } = props;
-  const { onSave, onCancel, onRemovePlayer } = useEditPlayer();
+  const { onSave, onCancel, onRemovePlayer, onShiftPlayer } = useEditPlayer();
 
   return (
     <PlayerFormModal
@@ -45,13 +47,31 @@ function InternalEditPlayerModal(props: InternalEditPlayerModalProps) {
       }
       onCancel={onCancel}
       headerChildren={
-        <RemoveButton
-          description="Spieler löschen"
-          size="sm"
-          className="position-absolute start-0 top-0 m-3"
-          onClick={() => onRemovePlayer(player.id)}
-        />
+        <>
+          <RemoveButton
+            description="Spieler löschen"
+            size="sm"
+            className="position-absolute start-0 top-0 m-3"
+            onClick={() => onRemovePlayer(player.id)}
+          />
+        </>
       }
-    />
+      footerChildren={
+        <ButtonGroup className="mt-2 d-inline-block">
+          <Button
+            variant="secondary"
+            onClick={() => onShiftPlayer(player.id, "left")}
+          >
+            <i className="bi bi-arrow-bar-left"></i>
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => onShiftPlayer(player.id, "right")}
+          >
+            <i className="bi bi-arrow-bar-right"></i>
+          </Button>
+        </ButtonGroup>
+      }
+    ></PlayerFormModal>
   );
 }

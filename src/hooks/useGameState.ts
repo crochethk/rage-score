@@ -1,7 +1,13 @@
 import { useCallback, useMemo } from "react";
 import * as clr from "../color";
 import * as gu from "../gameUtils";
-import type { Player, PlayerId, PlayerRoundData, Round } from "../types";
+import type {
+  GameData,
+  Player,
+  PlayerId,
+  PlayerRoundData,
+  Round,
+} from "../types";
 import { useLocalStorage } from "./useLocalStorage";
 
 export interface GameState {
@@ -23,6 +29,7 @@ export interface GameState {
   /** Resets all scores, but keeps players and rounds. */
   resetScores: () => void;
   reverseRounds: () => void;
+  setState: (nextState: GameData) => void;
 }
 
 export type PlayerInfo = Omit<Player, "id">;
@@ -34,17 +41,17 @@ export function useGameState(): GameState {
 
   // --- Main application state
 
-  const sanitizePlayers = (players: Player[]) =>
+  const sanitizePlayers = (players: readonly Player[]) =>
     // Migration from state yet missing player colors
     players.map((p) => (p.color ? p : { ...p, color: clr.randomRgb() }));
 
   // This automatically persists to local storage and loads from it initially
-  const [players, setPlayers] = useLocalStorage<Player[]>(
+  const [players, setPlayers] = useLocalStorage<readonly Player[]>(
     "players",
     defaultState.players,
     sanitizePlayers,
   );
-  const [rounds, setRounds] = useLocalStorage<Round[]>(
+  const [rounds, setRounds] = useLocalStorage<readonly Round[]>(
     "rounds",
     defaultState.rounds,
   );
@@ -156,6 +163,14 @@ export function useGameState(): GameState {
     const nextRounds = [...rounds].reverse();
     setRounds(nextRounds);
   }, [rounds, setRounds]);
+
+  const setState = useCallback(
+    (nextState: GameData) => {
+      setPlayers(nextState.players);
+      setRounds(nextState.rounds);
+    },
+    [setPlayers, setRounds],
+  );
   return useMemo(
     () => ({
       players,
@@ -167,6 +182,7 @@ export function useGameState(): GameState {
       resetGame,
       resetScores,
       reverseRounds,
+      setState,
     }),
     [
       players,
@@ -178,6 +194,7 @@ export function useGameState(): GameState {
       resetGame,
       resetScores,
       reverseRounds,
+      setState,
     ],
   );
 }

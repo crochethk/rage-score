@@ -254,3 +254,28 @@ function isEmptyPlayerRoundData(data: Partial<PlayerRoundData>): boolean {
     data.bonusCardPoints === undefined
   );
 }
+
+export function shiftPlayerRight(players: readonly Player[], pid: PlayerId) {
+  const playerIndex = findPlayerIndexOrThrow(players, pid);
+  if (playerIndex === players.length - 1) {
+    return players;
+  }
+  const nextPlayers = [...players];
+  // Swap players
+  const p0 = nextPlayers[playerIndex];
+  nextPlayers[playerIndex] = nextPlayers[playerIndex + 1];
+  nextPlayers[playerIndex + 1] = p0;
+  return nextPlayers;
+}
+export function shiftPlayerLeft(players: readonly Player[], pid: PlayerId) {
+  const playerIndex = findPlayerIndexOrThrow(players, pid);
+  if (playerIndex === 0) {
+    return players;
+  }
+  const nextPlayers = [...players];
+  // Swap players
+  const p0 = nextPlayers[playerIndex];
+  nextPlayers[playerIndex] = nextPlayers[playerIndex - 1];
+  nextPlayers[playerIndex - 1] = p0;
+  return nextPlayers;
+}

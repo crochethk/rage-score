@@ -25,8 +25,11 @@ interface PlayerFormModalProps {
   onConfirm: (name: string, colorHex: string) => void;
   onCancel: () => void;
 
-  // Optional additional header content (e.g. a Remove button)
+  /** Optional additional header content (e.g. a Remove button) */
   headerChildren?: React.ReactNode;
+  footerChildren?: React.ReactNode;
+  /** Optional additional body content */
+  children?: React.ReactNode;
 }
 
 export function PlayerFormModal(props: PlayerFormModalProps) {
@@ -41,6 +44,8 @@ export function PlayerFormModal(props: PlayerFormModalProps) {
     onConfirm,
     onCancel,
     headerChildren,
+    footerChildren,
+    children,
   } = props;
 
   const [newName, setNewName] = useState(initialName);
@@ -101,8 +106,10 @@ export function PlayerFormModal(props: PlayerFormModalProps) {
             onChange={(ev) => setNewColorHex(ev.target.value)}
           />
         </LabeledFormGroup>
+        {children}
       </Modal.Body>
       <Modal.Footer>
+        <div className="ms-0 me-auto">{footerChildren}</div>
         <div className="text-end m-0">
           <DialogButton
             variant="primary"
