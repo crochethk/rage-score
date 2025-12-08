@@ -1,3 +1,4 @@
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 import * as clr from "../../color";
 import {
   EditPlayerProvider,
@@ -5,29 +6,36 @@ import {
   type StateArgs,
 } from "../../contexts/EditPlayerContext";
 import * as gu from "../../gameUtils";
-import type { Player } from "../../types";
+import type { Player, PlayerId } from "../../types";
+import { DialogButton } from "../ui/Button/DialogButton";
 import { RemoveButton } from "../ui/Button/RemoveButton";
 import { PlayerFormModal } from "./PlayerFormModal";
 
 export function EditPlayerModal(stateArgs: StateArgs) {
   const { gs, dialogState } = stateArgs;
-  const player = gu.findPlayerOrThrow(gs.players, dialogState.data!.playerId);
   return (
     <EditPlayerProvider state={stateArgs}>
-      <InternalEditPlayerModal isOpen={dialogState.isOpen} player={player} />
+      <InternalEditPlayerModal
+        isOpen={dialogState.isOpen}
+        playerId={dialogState.data!.playerId}
+        players={gs.players}
+      />
     </EditPlayerProvider>
   );
 }
 
 interface InternalEditPlayerModalProps {
   isOpen: boolean;
-  player: Player;
+  playerId: PlayerId;
+  players: readonly Player[];
 }
 
 /** `EditPlayerModal` for use inside a wrapping `EditPlayerProvider` */
 function InternalEditPlayerModal(props: InternalEditPlayerModalProps) {
-  const { isOpen, player } = props;
-  const { onSave, onCancel, onRemovePlayer } = useEditPlayer();
+  const { isOpen, playerId, players } = props;
+  const { onSave, onCancel, onRemovePlayer, onShiftPlayer } = useEditPlayer();
+  const playerIndex = gu.findPlayerIndexOrThrow(players, playerId);
+  const player = players[playerIndex];
 
   return (
     <PlayerFormModal
@@ -52,6 +60,24 @@ function InternalEditPlayerModal(props: InternalEditPlayerModalProps) {
           onClick={() => onRemovePlayer(player.id)}
         />
       }
-    />
+      footerChildren={
+        <ButtonGroup className="mt-2 d-inline-block">
+          <DialogButton
+            variant="secondary"
+            onClick={() => onShiftPlayer(playerIndex, "prev")}
+            disabled={playerIndex <= 0}
+          >
+            <i className="bi bi-arrow-bar-left"></i>
+          </DialogButton>
+          <DialogButton
+            variant="secondary"
+            onClick={() => onShiftPlayer(playerIndex, "next")}
+            disabled={playerIndex >= players.length - 1}
+          >
+            <i className="bi bi-arrow-bar-right"></i>
+          </DialogButton>
+        </ButtonGroup>
+      }
+    ></PlayerFormModal>
   );
 }

@@ -1,4 +1,6 @@
 import { createContext, use, useCallback, useMemo } from "react";
+import type { AdjacencyDirection } from "../gameUtils";
+import * as gu from "../gameUtils";
 import type { DialogState } from "../hooks/useDialogState";
 import type { GameState, PlayerUpdate } from "../hooks/useGameState";
 import type { PlayerId } from "../types";
@@ -19,6 +21,8 @@ export interface EditPlayerContextValue {
   onCancel: () => void;
   /** Callback called when the current player should be removed from the game. */
   onRemovePlayer: (playerId: PlayerId) => void;
+  /** Callback called when the current player's column should be shifted left or right. */
+  onShiftPlayer: (playerIndex: number, direction: AdjacencyDirection) => void;
 }
 
 const EditPlayerContext = createContext<EditPlayerContextValue | undefined>(
@@ -62,13 +66,24 @@ function useContextValue(stateArgs: StateArgs): EditPlayerContextValue {
     [dialogState, gs],
   );
 
+  const onShiftPlayer = useCallback(
+    (playerIndex: number, direction: AdjacencyDirection) => {
+      gs.setState({
+        players: gu.shiftPlayer(gs.players, playerIndex, direction),
+        rounds: gs.rounds,
+      });
+    },
+    [gs],
+  );
+
   return useMemo(
     () => ({
       onSave,
       onCancel,
       onRemovePlayer,
+      onShiftPlayer,
     }),
-    [onCancel, onRemovePlayer, onSave],
+    [onCancel, onRemovePlayer, onSave, onShiftPlayer],
   );
 }
 

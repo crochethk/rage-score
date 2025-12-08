@@ -256,3 +256,29 @@ function isEmptyPlayerRoundData(data: Partial<PlayerRoundData>): boolean {
     data.bonusCardPoints === undefined
   );
 }
+
+/**
+ * Swaps position of the given player with its left (lower index) or right
+ * (higher index) neighbor.
+ * @returns If the given player is already at the edge, the original `players`
+ * array is returned. Otherwise, a new shallow copy of the array with the swap
+ * applied is returned.
+ * @throws {Error} If the player with the given `pid` is not found in the array.
+ */
+export function shiftPlayer(
+  players: readonly Player[],
+  playerIndex: number,
+  direction: AdjacencyDirection,
+) {
+  const adjacentIndex =
+    direction === "prev" ? playerIndex - 1 : playerIndex + 1;
+  if (adjacentIndex < 0 || adjacentIndex >= players.length) {
+    return players;
+  }
+  const nextPlayers = [...players];
+  // Swap players
+  const p0 = nextPlayers[playerIndex];
+  nextPlayers[playerIndex] = nextPlayers[adjacentIndex];
+  nextPlayers[adjacentIndex] = p0;
+  return nextPlayers;
+}
