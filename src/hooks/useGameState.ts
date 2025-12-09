@@ -8,7 +8,7 @@ export interface GameState {
   readonly players: readonly Player[];
   readonly rounds: readonly Round[];
 
-  addPlayer: (name: string) => PlayerId;
+  addPlayer: (playerInfo: PlayerInfo) => PlayerId;
   removePlayer: (pid: PlayerId) => void;
   updatePlayer: (pid: PlayerId, updateData: PlayerUpdate) => void;
 
@@ -25,6 +25,7 @@ export interface GameState {
   reverseRounds: () => void;
 }
 
+export type PlayerInfo = Omit<Player, "id">;
 export type PlayerUpdate = Partial<Omit<Player, "id">>;
 export type PlayerRoundDataUpdate = Partial<PlayerRoundData>;
 
@@ -51,8 +52,11 @@ export function useGameState(): GameState {
   // --- State modification API ---
 
   const addPlayer = useCallback(
-    (name: string) => {
-      const newPlayer: Player = gu.createPlayer(name);
+    (playerInfo: PlayerInfo) => {
+      const newPlayer: Player = gu.createPlayer(
+        playerInfo.name,
+        playerInfo.color,
+      );
       const nextPlayers = [...players, newPlayer];
       setPlayers(nextPlayers);
 
