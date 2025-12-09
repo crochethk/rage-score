@@ -8,6 +8,8 @@ import type {
   Round,
 } from "./types";
 
+export type AdjacencyDirection = "prev" | "next";
+
 /**
  * Creates an array with possible bid values from 0 to `cardsDealt` (including).
  */
@@ -63,7 +65,7 @@ export function calculateTotalScore(
 export function getAdjacentPlayer(
   players: readonly Player[],
   pid: PlayerId,
-  mode: "next" | "prev",
+  mode: AdjacencyDirection,
 ): Player {
   const currentIdx = findPlayerIndexOrThrow(players, pid);
   switch (mode) {
