@@ -37,23 +37,19 @@ export type PlayerUpdate = Partial<Omit<Player, "id">>;
 export type PlayerRoundDataUpdate = Partial<PlayerRoundData>;
 
 export function useGameState(): GameState {
-  const defaultState = useMemo(() => createDefaultGameState(), []);
+  const defaultData = useMemo(() => createDefaultGameData(), []);
 
   // --- Main application state
-
-  const sanitizePlayers = (players: readonly Player[]) =>
-    // Migration from state yet missing player colors
-    players.map((p) => (p.color ? p : { ...p, color: clr.randomRgb() }));
+  const handleInitialLoad = (gd: GameData) => ({
+    players: sanitizePlayerColors(gd.players),
+    rounds: gd.rounds,
+  });
 
   // This automatically persists to local storage and loads from it initially
-  const [players, setPlayers] = useLocalStorage<readonly Player[]>(
-    "players",
-    defaultState.players,
-    sanitizePlayers,
-  );
-  const [rounds, setRounds] = useLocalStorage<readonly Round[]>(
-    "rounds",
-    defaultState.rounds,
+  const [gameData, setGameData] = useLocalStorage<GameData>(
+    "gameData",
+    defaultData,
+    handleInitialLoad,
   );
 
   // --- State modification API ---
@@ -64,117 +60,119 @@ export function useGameState(): GameState {
         playerInfo.name,
         playerInfo.color,
       );
-      const nextPlayers = [...players, newPlayer];
-      setPlayers(nextPlayers);
+      setGameData((gd) => {
+        const players = [...gd.players, newPlayer];
+        // Add empty player record to all existing rounds
+        const rounds = gd.rounds.map((r) => ({
+          ...r,
+          playerData: {
+            ...r.playerData,
+            [newPlayer.id]: {},
+          },
+        }));
+        return { players, rounds };
+      });
 
-      // Add empty player record to all existing rounds
-      const nextRounds = rounds.map((r) => ({
-        ...r,
-        playerData: {
-          ...r.playerData,
-          [newPlayer.id]: {},
-        },
-      }));
-      setRounds(nextRounds);
       return newPlayer.id;
     },
-    [players, rounds, setPlayers, setRounds],
+    [setGameData],
   );
 
   const removePlayer = useCallback(
     (pid: PlayerId) => {
-      const nextPlayers = players.filter((p) => p.id !== pid);
-      setPlayers(nextPlayers);
-
-      // Remove round data associated with the player
-      const nextRounds = rounds.map((r) => {
-        const nextPlayerData = { ...r.playerData };
-        delete nextPlayerData[pid];
-        return { ...r, playerData: nextPlayerData };
+      setGameData((gd) => {
+        const players = gd.players.filter((p) => p.id !== pid);
+        // Remove round data associated with the player
+        const rounds = gd.rounds.map((r) => {
+          const nextPlayerData = { ...r.playerData };
+          delete nextPlayerData[pid];
+          return { ...r, playerData: nextPlayerData };
+        });
+        return { players, rounds };
       });
-      setRounds(nextRounds);
     },
-    [players, rounds, setPlayers, setRounds],
+    [setGameData],
   );
 
   const updatePlayer = useCallback(
     (pid: PlayerId, updateData: PlayerUpdate) => {
-      const playerIndex = gu.findPlayerIndexOrThrow(players, pid);
-      const updatedPlayer = { ...players[playerIndex], ...updateData };
-      const nextPlayers = [...players];
-      nextPlayers[playerIndex] = updatedPlayer;
-      setPlayers(nextPlayers);
+      setGameData((gd) => {
+        const playerIndex = gu.findPlayerIndexOrThrow(gd.players, pid);
+        const updatedPlayer = { ...gd.players[playerIndex], ...updateData };
+        const players = [...gd.players];
+        players[playerIndex] = updatedPlayer;
+        return { players, rounds: gd.rounds };
+      });
     },
-    [players, setPlayers],
+    [setGameData],
   );
 
   const updatePlayerRoundData = useCallback(
     (pid: PlayerId, roundNumber: number, updateData: PlayerRoundDataUpdate) => {
-      const roundIndex = gu.findRoundIndexOrThrow(rounds, roundNumber);
-      const oldRound = rounds[roundIndex];
+      setGameData((gd) => {
+        const roundIndex = gu.findRoundIndexOrThrow(gd.rounds, roundNumber);
+        const oldRound = gd.rounds[roundIndex];
 
-      // --- Get old round data for player
-      const oldRoundData = oldRound.playerData[pid];
-      if (!oldRoundData) {
-        throw new Error(
-          `Invariant violation: No PlayerRoundData exists for player ${pid} in round ${roundNumber}`,
-        );
-      }
+        // --- Get old round data for player
+        const oldRoundData = oldRound.playerData[pid];
+        if (!oldRoundData) {
+          throw new Error(
+            `Invariant violation: No PlayerRoundData exists for player ${pid} in round ${roundNumber}`,
+          );
+        }
 
-      // --- Create updated PlayerRoundData
-      const newRoundData = { ...oldRoundData, ...updateData };
+        // --- Create updated PlayerRoundData
+        const newRoundData = { ...oldRoundData, ...updateData };
 
-      // Reset bonus points if tricks taken is zero or undefined
-      if (
-        newRoundData.bonusCardPoints &&
-        (newRoundData.tricksTaken === undefined ||
-          newRoundData.tricksTaken === 0)
-      ) {
-        newRoundData.bonusCardPoints = undefined;
-      }
+        // Reset bonus points if tricks taken is zero or undefined
+        if (
+          newRoundData.bonusCardPoints &&
+          (newRoundData.tricksTaken === undefined ||
+            newRoundData.tricksTaken === 0)
+        ) {
+          newRoundData.bonusCardPoints = undefined;
+        }
 
-      // --- Create updated updated round object
-      const updatedRound = { ...oldRound };
-      updatedRound.playerData[pid] = newRoundData;
+        // --- Create updated updated round object
+        const updatedRound = { ...oldRound };
+        updatedRound.playerData[pid] = newRoundData;
 
-      // --- Update rounds array
-      const nextRounds = [...rounds];
-      nextRounds[roundIndex] = updatedRound;
-      setRounds(nextRounds);
+        // --- Update rounds array
+        const rounds = [...gd.rounds];
+        rounds[roundIndex] = updatedRound;
+
+        return { players: gd.players, rounds };
+      });
     },
-    [rounds, setRounds],
+    [setGameData],
   );
 
-  const resetGame = useCallback(() => {
-    const initialState = createDefaultGameState();
-    setPlayers(initialState.players);
-    setRounds(initialState.rounds);
-  }, [setPlayers, setRounds]);
+  const resetGame = useCallback(
+    () => setGameData(createDefaultGameData()),
+    [setGameData],
+  );
 
   const resetScores = useCallback(() => {
-    const nextRounds = rounds.map((r) => ({
-      ...r,
-      playerData: gu.createEmptyPlayerDataRecords(players),
-    }));
-    setRounds(nextRounds);
-  }, [players, rounds, setRounds]);
+    setGameData((gd) => {
+      const rounds = gd.rounds.map((r) => ({
+        ...r,
+        playerData: gu.createEmptyPlayerDataRecords(gd.players),
+      }));
+      return { players: gd.players, rounds };
+    });
+  }, [setGameData]);
 
   const reverseRounds = useCallback(() => {
-    const nextRounds = [...rounds].reverse();
-    setRounds(nextRounds);
-  }, [rounds, setRounds]);
+    setGameData((gd) => {
+      const rounds = [...gd.rounds].reverse();
+      return { players: gd.players, rounds };
+    });
+  }, [setGameData]);
 
-  const setState = useCallback(
-    (nextState: GameData) => {
-      setPlayers(nextState.players);
-      setRounds(nextState.rounds);
-    },
-    [setPlayers, setRounds],
-  );
   return useMemo(
     () => ({
-      players,
-      rounds,
+      players: gameData.players,
+      rounds: gameData.rounds,
       addPlayer,
       removePlayer,
       updatePlayer,
@@ -182,24 +180,24 @@ export function useGameState(): GameState {
       resetGame,
       resetScores,
       reverseRounds,
-      setState,
+      setState: setGameData,
     }),
     [
-      players,
-      rounds,
       addPlayer,
+      gameData.players,
+      gameData.rounds,
       removePlayer,
-      updatePlayer,
-      updatePlayerRoundData,
       resetGame,
       resetScores,
       reverseRounds,
-      setState,
+      setGameData,
+      updatePlayer,
+      updatePlayerRoundData,
     ],
   );
 }
 
-function createDefaultGameState() {
+function createDefaultGameData(): GameData {
   const playerCount = 2;
   const players = gu
     .range(1, playerCount + 1)
@@ -209,4 +207,9 @@ function createDefaultGameState() {
   const totalRounds = 10;
   const rounds = gu.createEmptyRounds(totalRounds, players);
   return { players, rounds };
+}
+
+function sanitizePlayerColors(players: readonly Player[]) {
+  // Migration from state yet missing player colors
+  return players.map((p) => (p.color ? p : { ...p, color: clr.randomRgb() }));
 }
