@@ -62,14 +62,14 @@ function ScoreInputNavigation({ playerId }: { playerId: PlayerId }) {
                   aria-label="Vorheriger Spieler"
                   onClick={() => onPrevPlayer(playerId)}
                 >
-                  ←
+                  <i className="bi bi-arrow-left" />
                 </DialogButton>
                 <DialogButton
                   variant="primary"
                   aria-label="Nächster Spieler"
                   onClick={() => onNextPlayer(playerId)}
                 >
-                  →
+                  <i className="bi bi-arrow-right" />
                 </DialogButton>
               </ButtonGroup>
             </ButtonGroup>
