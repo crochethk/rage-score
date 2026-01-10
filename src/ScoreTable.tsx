@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useLayoutEffect, useRef } from "react";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
@@ -158,13 +159,13 @@ function RoundDataRow({ players, round, isValid, isFirst }: RoundDataRowProps) {
   const invalidRoundClass = "table-error";
 
   return (
-    <tr key={round.roundNumber} className={isValid ? "" : invalidRoundClass}>
+    <tr key={round.roundNumber} className={clsx(!isValid && invalidRoundClass)}>
       <th
         scope="row"
-        className={
-          (isValid ? "table-secondary" : invalidRoundClass) +
-          " text-center align-middle w-auto"
-        }
+        className={clsx(
+          isValid ? "table-secondary" : invalidRoundClass,
+          "text-center align-middle w-auto",
+        )}
       >
         <span className="d-none d-sm-block fs-6 fw-light">
           Runde {round.roundNumber}
@@ -189,12 +190,13 @@ function PlayerRoundDataCell(props: PlayerRoundDataCellProps) {
     ? gu.calculateRoundScore(roundData)
     : null;
 
-  const colClassName =
-    "col flex-grow-1 flex-shrink-1" +
-    " p-0" +
-    " border-end border-dark border-opacity-25" +
-    " xsmall" +
-    " align-content-center";
+  const colClassName = clsx(
+    "col flex-grow-1 flex-shrink-1",
+    "p-0",
+    "border-end border-dark border-opacity-25",
+    "xsmall",
+    "align-content-center",
+  );
 
   return (
     <>
@@ -213,15 +215,15 @@ function PlayerRoundDataCell(props: PlayerRoundDataCellProps) {
           <div className="d-flex flex-grow-1 text-center border-bottom border-dark border-opacity-25">
             <div className={colClassName}>{bid ?? ""}</div>
             <div className={colClassName}>{tricksTaken ?? ""}</div>
-            <div className={colClassName + " border-end-0"}>
-              <span className={bonusCardPoints === 0 ? "invisible" : ""}>
+            <div className={clsx(colClassName, "border-end-0")}>
+              <span className={clsx(bonusCardPoints === 0 && "invisible")}>
                 {bonusCardPoints > 0 ? "+" + bonusCardPoints : bonusCardPoints}
               </span>
             </div>
           </div>
           <div className="d-flex flex-grow-1 justify-content-center align-items-center p-1 p-sm-0">
             <div className={"fw-bold"}>
-              <span className={roundScore === null ? " invisible" : ""}>
+              <span className={clsx(roundScore === null && "invisible")}>
                 {roundScore ?? "n/a"}
               </span>
             </div>
@@ -254,7 +256,9 @@ function ScoreTableFoot({ players, scores }: ScoreTableFootProps) {
           const isEmptyColumn = score === null;
           return (
             <td key={p.id} className="border border-secondary">
-              <span className={isEmptyColumn ? "invisible" : ""}>{score}</span>
+              <span className={clsx(isEmptyColumn && "invisible")}>
+                {score}
+              </span>
             </td>
           );
         })}
