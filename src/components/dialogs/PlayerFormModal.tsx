@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useEffect, useRef, useState, type JSX } from "react";
 import type { FormGroupProps } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
@@ -155,10 +156,10 @@ function LabeledFormGroup({
     <Form.Group
       as={Row}
       controlId={controlId}
-      className={"py-1 " + (className ?? "")}
+      className={clsx("py-1", className)}
       {...bsFormGroupProps}
     >
-      <Form.Label column className={"col-2 text-end " + (labelClassName ?? "")}>
+      <Form.Label column className={clsx("col-2 text-end", labelClassName)}>
         {label}
       </Form.Label>
       <Col>{children}</Col>

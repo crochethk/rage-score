@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import Button from "react-bootstrap/Button";
 import BsModal, {
   type ModalProps as BsModalProps,
@@ -50,7 +51,7 @@ export function Modal({
       show={show}
       centered
       {...bsModalProps}
-      contentClassName={"border-0 rounded-4 p-3 " + (contentClassName ?? "")}
+      contentClassName={clsx("border-0 rounded-4 p-3", contentClassName)}
       style={{ ...bgStyle, ...style }}
       onHide={onHide}
     >
@@ -95,7 +96,7 @@ function ModalHeader(props: ModalHeaderProps) {
   return (
     <BsModal.Header
       {...bsHeaderProps}
-      className={"border-0 justify-content-center p-0 " + (className ?? "")}
+      className={clsx("border-0 justify-content-center p-0", className)}
     >
       {
         // Omit title section if there is no title nor label
@@ -116,10 +117,7 @@ type ModalBodyProps = BsModalBodyProps;
 
 function ModalBody({ className, ...bsBodyProps }: ModalBodyProps) {
   return (
-    <BsModal.Body
-      {...bsBodyProps}
-      className={"p-0 my-1 " + (className ?? "")}
-    />
+    <BsModal.Body {...bsBodyProps} className={clsx("p-0 my-1", className)} />
   );
 }
 
@@ -129,7 +127,7 @@ function ModalFooter({ className, ...bsFooterProps }: ModalFooterProps) {
   return (
     <BsModal.Footer
       {...bsFooterProps}
-      className={"border-0 p-0 mt-1 " + (className ?? "")}
+      className={clsx("border-0 p-0 mt-1", className)}
     />
   );
 }

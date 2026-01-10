@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import BsButton, {
   type ButtonProps as BsButtonProps,
 } from "react-bootstrap/Button";
@@ -10,9 +11,7 @@ export function DialogButton(props: DialogButtonProps) {
     <BsButton
       {...bsButtonProps}
       variant={variant}
-      className={
-        `border border-${variant}-subtle border-1 ` + (className ?? "")
-      }
+      className={clsx(`border border-${variant}-subtle border-1`, className)}
     />
   );
 }
