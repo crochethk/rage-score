@@ -72,7 +72,7 @@ function ScoreTableHead({ players, scores }: ScoreTableHeadProps) {
         role="button"
       >
         {!isEmptyColumn && <RankBadge rank={rank} limit={3} />}
-        <div className="text-truncate">{p.name}</div>
+        <div className="text-truncate fs-5">{p.name}</div>
       </th>
     );
   });
@@ -222,7 +222,7 @@ function PlayerRoundDataCell(props: PlayerRoundDataCellProps) {
             </div>
           </div>
           <div className="d-flex flex-grow-1 justify-content-center align-items-center p-1 p-sm-0">
-            <div className={"fw-bold"}>
+            <div>
               <span className={clsx(roundScore === null && "invisible")}>
                 {roundScore ?? "n/a"}
               </span>
@@ -241,7 +241,7 @@ interface ScoreTableFootProps {
 
 function ScoreTableFoot({ players, scores }: ScoreTableFootProps) {
   return (
-    <tfoot className="table-info fw-bold text-center sticky-bottom">
+    <tfoot className="table-info fw-bold text-center sticky-bottom fs-5">
       <tr>
         <th scope="row" className="table-secondary">
           <span id="totalLabel" className="d-none d-sm-inline">
