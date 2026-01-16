@@ -42,9 +42,9 @@ Dieses Dokument spezifiziert die Anforderungen für eine digitale Punktetabelle 
 **FA-03:** Das System **muss** zwischen 3 und 8 Spieler pro Spiel unterstützen.
 
 - **Akzeptanzkriterium:**
-  - Das System legt im Ursprungszustand zu Beginn 3 editierbare Spieler an.
-  - Bei Unterschreitung von 3 oder Überschreitung von 8 Spielern wird eine nicht blockierende Warnung angezeigt
-  - Es wird eine harte obere Grenze von 16 Spielern gewählt, die nicht überschritten werden darf.
+    - Das System legt im Ursprungszustand zu Beginn 3 editierbare Spieler an.
+    - Bei Unterschreitung von 3 oder Überschreitung von 8 Spielern wird eine nicht blockierende Warnung angezeigt
+    - Es wird eine harte obere Grenze von 16 Spielern gewählt, die nicht überschritten werden darf.
 
 **FA-04:** Das System **muss** das Editieren der Spielernamen und -farben ermöglichen.
 
@@ -242,4 +242,4 @@ Die folgenden Funktionen sind **nicht Teil** der initialen Umsetzung, aber als z
 
 - Beliebige Anzahl Runden
 - Benutzerdefinierte Anzahl an Karten pro Runde
-  - ggf. zufällige Anzahl Karten pro Runde
+    - ggf. zufällige Anzahl Karten pro Runde

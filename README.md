@@ -21,35 +21,35 @@ From here you are ready to prepare and then start your _Rage_ game.
 
 1. Click on the blue button on the right hand side of the table header row.
 
-   ![add player button](doc/assets/table_1-add_player_button.webp)
+    ![add player button](doc/assets/table_1-add_player_button.webp)
 
 2. The _Add Player Dialog_ opens.
 
-   ![add player modal](doc/assets/add_player_modal-full.webp)
+    ![add player modal](doc/assets/add_player_modal-full.webp)
 
 3. Insert the player's **name**.
-   - (optional) Change the player's theme **color**.
-     > The preselected color is randomly generated every time the modal is opened.
+    - (optional) Change the player's theme **color**.
+        > The preselected color is randomly generated every time the modal is opened.
 
 4. Click `Hinzufügen` to add the player.
 
-   > The modal will then clear and remain open so you can add additional players.
+    > The modal will then clear and remain open so you can add additional players.
 
 5. For each new player a new accordingly named column will appear.
 
-   ![new player column](doc/assets/added_player_col-marked.webp)
+    ![new player column](doc/assets/added_player_col-marked.webp)
 
 #### Edit a Player
 
 1. Click on the name of the player you want to edit in the table header row.
 2. The _Edit Player Dialog_ opens.
 
-   ![edit player modal](doc/assets/edit_player_modal-marked.webp)
+    ![edit player modal](doc/assets/edit_player_modal-marked.webp)
 
-   Here you can:
-   - (1) **Change** the player's _name_ and/or _color_.
-   - (2) **Shift** the player's column to the right or left.
-   - (3) **Remove** the selected player from the table.
+    Here you can:
+    - (1) **Change** the player's _name_ and/or _color_.
+    - (2) **Shift** the player's column to the right or left.
+    - (3) **Remove** the selected player from the table.
 
 3. To apply your changes click the `Speichern` button.
 
@@ -59,24 +59,24 @@ During a round you will need to input _bids_, _tricks taken_ for each player and
 
 1. Click on a player's data cell in the row of the round in question.
 
-   ![round data cell](doc/assets/data_cell_click.webp)
+    ![round data cell](doc/assets/data_cell_click.webp)
 
 2. The _Score Input Dialog_ opens.
 
-   ![empty score input modal](doc/assets/input_modal_2-cleared.webp)
+    ![empty score input modal](doc/assets/input_modal_2-cleared.webp)
 
 3. Using the drop-down fields, input the values relevant to the current game stage (e.g. the bid at the beginning of a round).
 
-   ![marked score input modal](doc/assets/input_modal_2-marked.webp)
-   - (1) **Set To Bid**: Use the `Geschafft` button to set _tricks taken_ to the player's _bid_ value.
+    ![marked score input modal](doc/assets/input_modal_2-marked.webp)
+    - (1) **Set To Bid**: Use the `Geschafft` button to set _tricks taken_ to the player's _bid_ value.
 
-   - (2) **←**/**→** : Use the _arrow buttons_ at the bottom to quickly switch to the next or previous player.
+    - (2) **←**/**→** : Use the _arrow buttons_ at the bottom to quickly switch to the next or previous player.
 
 4. After a complete round the table will look similar to the image below:
 
-   ![table after round](doc/assets/table_with_score-full.webp)
-   - Each cell shows the points received in a given round.
-   - The total points of all rounds are shown at the bottom of the table.
+    ![table after round](doc/assets/table_with_score-full.webp)
+    - Each cell shows the points received in a given round.
+    - The total points of all rounds are shown at the bottom of the table.
 
 ### Reset
 
