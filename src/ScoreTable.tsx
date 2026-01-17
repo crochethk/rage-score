@@ -94,7 +94,7 @@ function ScoreTableHead({ players, scores }: ScoreTableHeadProps) {
         {names}
         <th
           scope="col"
-          className="bg-primary rounded-end-4 border-bottom-0 cursor-pointer text-light"
+          className="bg-primary rounded-end-4 border-bottom-0 text-light"
           style={{ minWidth: "3.5em", maxWidth: "3.5em" }}
           onClick={gic.openAddPlayerDialog}
           tabIndex={0}
