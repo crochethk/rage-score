@@ -14,10 +14,11 @@ interface ScoreInputDialogProps {
 
   /** The current data of the round in question. */
   round: Round;
+  readonly: boolean;
 }
 
 export function ScoreInputDialog(props: ScoreInputDialogProps) {
-  const { player, round } = props;
+  const { player, round, readonly } = props;
   const roundData = round.playerData[player.id];
   return (
     <>
@@ -31,6 +32,7 @@ export function ScoreInputDialog(props: ScoreInputDialogProps) {
               playerId={player.id}
               roundData={roundData}
               cardsDealt={round.cardsDealt}
+              readonly={readonly}
             />
           </Col>
         </Row>
@@ -48,10 +50,11 @@ interface ScoreInputFormProps {
 
   /** The largest possible bid for this round. */
   cardsDealt: number;
+  readonly: boolean;
 }
 
 function ScoreInputForm(props: ScoreInputFormProps) {
-  const { playerId, roundData, cardsDealt } = props;
+  const { playerId, roundData, cardsDealt, readonly } = props;
   const { onScoreInput } = useScoreInput();
 
   const possibleBidsOptions = gu.getPossibleBids(cardsDealt).map((b) => (
@@ -81,6 +84,7 @@ function ScoreInputForm(props: ScoreInputFormProps) {
         onChange={(val) =>
           onScoreInput(playerId, { bid: parseTricksValue(val) })
         }
+        disabled={readonly}
       >
         <option value="">---</option>
         {possibleBidsOptions}
@@ -95,27 +99,29 @@ function ScoreInputForm(props: ScoreInputFormProps) {
             onChange={(val) =>
               onScoreInput(playerId, { tricksTaken: parseTricksValue(val) })
             }
-            disabled={roundData.bid === undefined}
+            disabled={readonly || roundData.bid === undefined}
           >
             <option value="">---</option>
             {possibleBidsOptions}
           </ScoreSelect>
         </Col>
-        <Col xs="auto" className="align-content-center">
-          <Button
-            variant="secondary"
-            aria-description="'Bekommen' auf Wert von 'Geboten' setzen"
-            onClick={() =>
-              onScoreInput(playerId, { tricksTaken: roundData.bid })
-            }
-            disabled={
-              roundData.bid === undefined ||
-              roundData.bid === roundData.tricksTaken
-            }
-          >
-            Geschafft
-          </Button>
-        </Col>
+        {!readonly && (
+          <Col xs="auto" className="align-content-center">
+            <Button
+              variant="secondary"
+              aria-description="'Bekommen' auf Wert von 'Geboten' setzen"
+              onClick={() =>
+                onScoreInput(playerId, { tricksTaken: roundData.bid })
+              }
+              disabled={
+                roundData.bid === undefined ||
+                roundData.bid === roundData.tricksTaken
+              }
+            >
+              Geschafft
+            </Button>
+          </Col>
+        )}
       </Row>
       <ScoreSelect
         label="Bonus/Malus aus Karten"
@@ -124,7 +130,7 @@ function ScoreInputForm(props: ScoreInputFormProps) {
         onChange={(val) =>
           onScoreInput(playerId, { bonusCardPoints: parseBonusValue(val) })
         }
-        disabled={!roundData.tricksTaken}
+        disabled={readonly || !roundData.tricksTaken}
       >
         {bonusPointsOptions}
       </ScoreSelect>

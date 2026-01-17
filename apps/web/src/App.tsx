@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -19,6 +19,9 @@ export default function App() {
   const scoreInputState = useDialogState<ScoreInputData>();
   const editPlayerState = useDialogState<EditPlayerDialogData>();
   const addPlayerState = useDialogState<null>();
+
+  // Whether the App/ScoreTable is in read-only mode
+  const [readonly, setReadonly] = useState(false);
 
   // --- GameInteractionContext Value
 
@@ -81,34 +84,40 @@ export default function App() {
           <Col className="px-0 px-sm-3 col-sm-auto mx-sm-auto">
             {/* --- Score Table --- */}
             <GameInteractionContext value={gameInteractionValue}>
-              <ScoreTable gameData={gs} />
+              <ScoreTable gameData={gs} readonly={readonly} />
             </GameInteractionContext>
           </Col>
         </Row>
 
         {/* --- Game Management Panel --- */}
-        <Row className="mt-2">
-          <Col className="col-12 mx-auto text-start text-sm-center">
-            <Button
-              variant="danger"
-              className="fw-bold m-1"
-              onClick={handleFullReset}
-            >
-              <i className="bi bi-trash" /> Alles Löschen
-            </Button>
-            <Button
-              variant="danger"
-              className="fw-bold m-1"
-              onClick={handleScoreReset}
-            >
-              <i className="bi bi-trash fw-bold" /> Punkte Löschen
-            </Button>
-          </Col>
-        </Row>
+        {!readonly && (
+          <Row className="mt-2">
+            <Col className="col-12 mx-auto text-start text-sm-center">
+              <Button
+                variant="danger"
+                className="fw-bold m-1"
+                onClick={handleFullReset}
+              >
+                <i className="bi bi-trash" /> Alles Löschen
+              </Button>
+              <Button
+                variant="danger"
+                className="fw-bold m-1"
+                onClick={handleScoreReset}
+              >
+                <i className="bi bi-trash fw-bold" /> Punkte Löschen
+              </Button>
+            </Col>
+          </Row>
+        )}
       </Container>
       {/* --- Modals --- */}
       {scoreInputState.isOpen && (
-        <ScoreInputModal gs={gs} scoreInputState={scoreInputState} />
+        <ScoreInputModal
+          gs={gs}
+          scoreInputState={scoreInputState}
+          readonly={readonly}
+        />
       )}
       {editPlayerState.isOpen && (
         <EditPlayerModal gs={gs} dialogState={editPlayerState} />

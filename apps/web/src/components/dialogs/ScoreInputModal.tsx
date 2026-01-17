@@ -1,3 +1,5 @@
+import clsx from "clsx";
+import { useState } from "react";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -13,8 +15,12 @@ import { DialogButton } from "../ui/Button/DialogButton";
 import { Modal } from "./Modal";
 import { ScoreInputDialog } from "./ScoreInputDialog";
 
-export function ScoreInputModal(stateArgs: StateArgs) {
-  const { gs, scoreInputState } = stateArgs;
+export type ScoreInputModalProps = StateArgs & {
+  readonly: boolean;
+};
+
+export function ScoreInputModal(props: ScoreInputModalProps) {
+  const { gs, scoreInputState, readonly } = props;
   // playerId and roundNumber must be defined here if dialog isOpen
   const currentPlayer = gu.findPlayerOrThrow(
     gs.players,
@@ -27,7 +33,7 @@ export function ScoreInputModal(stateArgs: StateArgs) {
 
   return (
     <>
-      <ScoreInputProvider state={stateArgs}>
+      <ScoreInputProvider state={props}>
         <Modal
           show={scoreInputState.isOpen}
           label={`Angaben für Runde ${currentRound.roundNumber}`}
@@ -36,8 +42,13 @@ export function ScoreInputModal(stateArgs: StateArgs) {
           closeButton
           onHide={scoreInputState.close}
         >
+          {readonly && <SpectatorModeIcon />}
           <Modal.Body>
-            <ScoreInputDialog player={currentPlayer} round={currentRound} />
+            <ScoreInputDialog
+              player={currentPlayer}
+              round={currentRound}
+              readonly={readonly}
+            />
           </Modal.Body>
           <Modal.Footer>
             <ScoreInputNavigation playerId={currentPlayer.id} />
@@ -45,6 +56,32 @@ export function ScoreInputModal(stateArgs: StateArgs) {
         </Modal>
       </ScoreInputProvider>
     </>
+  );
+}
+
+function SpectatorModeIcon() {
+  const description = "Bearbeitung deaktiviert (Zuschauer-Modus)";
+
+  // TODO decide on __one__ icon
+  const icons = [
+    "bi-lock",
+    "bi-eye",
+    "bi-binoculars",
+    "bi-person-workspace",
+    "bi-incognito",
+    "bi-ban",
+  ];
+  const [iconIdx, setIconIdx] = useState(0);
+
+  return (
+    <span
+      className="position-absolute fs-2 opacity-75"
+      aria-label={description}
+      title={description}
+      onClick={() => setIconIdx((i) => (i + 1) % icons.length)}
+    >
+      <i className={clsx("bi", icons[iconIdx])} />
+    </span>
   );
 }
 

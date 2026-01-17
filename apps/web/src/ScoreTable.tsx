@@ -10,10 +10,13 @@ import type { GameData, Player, PlayerRoundData, Round } from "./types";
 
 interface ScoreTableProps {
   gameData: GameData;
+  /** Render the table in read-only mode disabling modification of the underlying data */
+  readonly: boolean;
 }
 
 export default function ScoreTable(props: ScoreTableProps) {
-  const { players, rounds } = props.gameData;
+  const { gameData, readonly } = props;
+  const { players, rounds } = gameData;
   const scrollToEndRef = useScrollToXEndOnLengthChange<HTMLDivElement, Player>(
     players,
   );
@@ -32,7 +35,11 @@ export default function ScoreTable(props: ScoreTableProps) {
         style={{ overscrollBehaviorX: "none" }}
       >
         <Table className="score-table text-nowrap w-auto h-100 m-0 bg-body-tertiary bg-opacity-50 rounded-end-4">
-          <ScoreTableHead players={players} scores={scores} />
+          <ScoreTableHead
+            players={players}
+            scores={scores}
+            readonly={readonly}
+          />
           <ScoreTableBody players={players} rounds={rounds} />
           <ScoreTableFoot players={players} scores={scores} />
         </Table>
@@ -44,9 +51,10 @@ export default function ScoreTable(props: ScoreTableProps) {
 interface ScoreTableHeadProps {
   players: readonly Player[];
   scores: (number | null)[];
+  readonly: boolean;
 }
 
-function ScoreTableHead({ players, scores }: ScoreTableHeadProps) {
+function ScoreTableHead({ players, scores, readonly }: ScoreTableHeadProps) {
   const gic = useGameInteraction();
 
   const sortedUniqueScoresDesc = Array.from(new Set(scores)).sort((a, b) =>
@@ -68,8 +76,11 @@ function ScoreTableHead({ players, scores }: ScoreTableHeadProps) {
           minWidth: "7em",
           maxWidth: "7em",
         }}
-        onClick={() => gic.openEditPlayerDialog(p.id)}
-        role="button"
+        onClick={() => {
+          if (readonly) return;
+          gic.openEditPlayerDialog(p.id);
+        }}
+        role={readonly ? "" : "button"}
       >
         {!isEmptyColumn && <RankBadge rank={rank} limit={3} />}
         <div className="text-truncate fs-5">{p.name}</div>
@@ -86,7 +97,8 @@ function ScoreTableHead({ players, scores }: ScoreTableHeadProps) {
             variant="secondary"
             size="sm"
             aria-label="Rundenreihenfolge umkehren"
-            onClick={() => gic.reverseRounds()}
+            onClick={gic.reverseRounds}
+            disabled={readonly}
           >
             <i className="bi bi-arrow-down-up"></i>
           </Button>
@@ -94,23 +106,33 @@ function ScoreTableHead({ players, scores }: ScoreTableHeadProps) {
         {names}
         <th
           scope="col"
-          className="bg-primary rounded-end-4 border-bottom-0 text-light"
+          className={clsx(
+            "rounded-end-4 border-bottom-0 text-light",
+            readonly ? "bg-white bg-opacity-50 opacity-50" : "bg-primary",
+          )}
           style={{ minWidth: "3.5em", maxWidth: "3.5em" }}
-          onClick={gic.openAddPlayerDialog}
+          onClick={() => {
+            if (readonly) return;
+            gic.openAddPlayerDialog();
+          }}
           tabIndex={0}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault(); // prevent spacebar scroll
+              if (readonly) return;
               gic.openAddPlayerDialog();
             }
           }}
-          role="button"
-          title="Spieler hinzufügen"
+          role={readonly ? "" : "button"}
+          title={
+            "Spieler hinzufügen" +
+            (readonly ? " (im Zuschauer-Modus deaktiviert)" : "")
+          }
         >
           <i
             className="bi bi-person-plus-fill"
             aria-label="Spieler hinzufügen"
-          ></i>
+          />
         </th>
       </tr>
     </thead>
