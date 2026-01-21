@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -14,14 +14,16 @@ import { useGameState } from "./hooks/useGameState";
 import ScoreTable from "./ScoreTable";
 import type { PlayerId } from "./types";
 
-export default function App() {
-  const gs = useGameState();
+export interface AppProps {
+  gs: ReturnType<typeof useGameState>;
+  /** Whether the App/ScoreTable is in read-only mode */
+  readonly?: boolean;
+}
+
+export default function App({ gs, readonly = false }: AppProps) {
   const scoreInputState = useDialogState<ScoreInputData>();
   const editPlayerState = useDialogState<EditPlayerDialogData>();
   const addPlayerState = useDialogState<null>();
-
-  // Whether the App/ScoreTable is in read-only mode
-  const [readonly, setReadonly] = useState(false);
 
   // --- GameInteractionContext Value
 
