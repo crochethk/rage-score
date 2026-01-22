@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
+import type { GameState } from "../../classes/GameState";
 import * as clr from "../../color";
 import type { DialogState } from "../../hooks/useDialogState";
-import type { GameState } from "../../hooks/useGameState";
 import { PlayerFormModal } from "./PlayerFormModal";
 
 interface AddPlayerModalProps {

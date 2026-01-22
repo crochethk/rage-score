@@ -1,8 +1,8 @@
 import { createContext, use, useCallback, useMemo } from "react";
+import type { GameState, PlayerUpdate } from "../classes/GameState";
 import type { AdjacencyDirection } from "../gameUtils";
 import * as gu from "../gameUtils";
 import type { DialogState } from "../hooks/useDialogState";
-import type { GameState, PlayerUpdate } from "../hooks/useGameState";
 import type { PlayerId } from "../types";
 
 export interface StateArgs {

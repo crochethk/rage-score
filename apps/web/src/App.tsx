@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
+import type { GameState } from "./classes/GameState";
 import { AddPlayerModal } from "./components/dialogs/AddPlayerModal";
 import { EditPlayerModal } from "./components/dialogs/EditPlayerModal";
 import { ScoreInputModal } from "./components/dialogs/ScoreInputModal";
@@ -10,12 +11,11 @@ import type { EditPlayerDialogData } from "./contexts/EditPlayerContext";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
 import type { ScoreInputData } from "./contexts/ScoreInputContext";
 import { useDialogState } from "./hooks/useDialogState";
-import { useGameState } from "./hooks/useGameState";
 import ScoreTable from "./ScoreTable";
 import type { PlayerId } from "./types";
 
 export interface AppProps {
-  gs: ReturnType<typeof useGameState>;
+  gs: GameState;
   /** Whether the App/ScoreTable is in read-only mode */
   readonly?: boolean;
 }
