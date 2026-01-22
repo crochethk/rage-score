@@ -1,7 +1,8 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useMemo } from "react";
 import App from "./App";
-import { GameState, type StateUpdater } from "./classes/GameState";
+import { GameState } from "./classes/GameState";
 import * as clr from "./color";
+import { useGameState } from "./hooks/useGameState";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import type { GameData, Player } from "./types";
 
@@ -23,32 +24,11 @@ export function AppHost() {
 
   // TODO ------------------------------------------------NEW STUFF-----
 
-  const dataRef = useRef<GameData>(data);
-  const setDataWithRefSync = useCallback(
-    (updater: StateUpdater<GameData>) => {
-      setData((prev) => {
-        const next = typeof updater === "function" ? updater(prev) : updater;
-        dataRef.current = next;
-        return next;
-      });
-    },
-    [setData],
-  );
-
-  const gameState = useMemo(
-    () =>
-      new GameState({
-        get: () => dataRef.current,
-        set: setDataWithRefSync,
-      }),
-    [setDataWithRefSync],
-  );
-
-  // const gs = useGameState();
+  const gs = useGameState(() => data, setData);
 
   // TODO add socket connection logic for hosting a game
 
-  return <App gs={gameState} />;
+  return <App gs={gs} />;
 }
 
 function sanitizePlayerColors(players: readonly Player[]) {
