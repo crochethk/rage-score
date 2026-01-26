@@ -41,7 +41,8 @@ export default defineConfig([
     },
     rules: {
       semi: ["error", "always"],
-      "@typescript-eslint/no-unused-vars": ["warn"],
+      "@typescript-eslint/no-unused-vars": ["off"],
+      "@typescript-eslint/switch-exhaustiveness-check": ["error"],
     },
   },
   {
