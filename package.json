@@ -7,7 +7,9 @@
   ],
   "scripts": {
     "dev:web": "npm run dev --workspace=rage-score -- --host",
-    "build:web": "npm run build --workspace=rage-score"
+    "build:web": "npm run build --workspace=rage-score",
+    "dev:server": "npm run dev --workspace=relay-server",
+    "build:server": "npm run build --workspace=relay-server"
   },
   "devDependencies": {
     "eslint": "^9.33.0",
