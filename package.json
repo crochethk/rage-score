@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "scripts": {
+    "build": "npm run build -w @repo/shared && npm run build --workspaces",
     "dev:web": "npm run dev --workspace=rage-score -- --host",
     "build:web": "npm run build --workspace=rage-score",
     "dev:server": "npm run dev --workspace=relay-server",
