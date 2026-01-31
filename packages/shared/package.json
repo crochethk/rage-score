@@ -16,12 +16,14 @@
     "build": "tsc -b",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist .tsbuildinfo"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@types/node": "^25.0.10",
     "eslint": "^9.33.0",
+    "rimraf": "^6.1.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1"
   }
