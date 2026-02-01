@@ -1,13 +1,13 @@
 import "dotenv/config"; // must be the first import!
 
-import Debug from "debug";
-import { Server, Socket, type ExtendedError } from "socket.io";
-import type { HostAuth, SpectatorAuth } from "./shared/auth.js";
+import type { HostAuth, SpectatorAuth } from "@repo/shared/socket/auth";
 import type {
   ClientToServerEvents,
   InterServerEvents,
   ServerToClientEvents,
-} from "./shared/socketEvents.js";
+} from "@repo/shared/socket/socketEvents";
+import Debug from "debug";
+import { Server, type ExtendedError, type Socket } from "socket.io";
 import { getLocalExternalIPs } from "./utils.js";
 
 const dbg = Debug("server:main");
