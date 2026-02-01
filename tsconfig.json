@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/shared" },
+    { "path": "./apps/relay-server" },
+    { "path": "./apps/web" }
+  ]
+}

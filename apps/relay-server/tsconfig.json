@@ -7,19 +7,21 @@
     "moduleResolution": "nodenext",
     "moduleDetection": "force",
     "verbatimModuleSyntax": true,
+    "tsBuildInfoFile": "./.tsbuildinfo",
+    "composite": true,
+    "baseUrl": ".", // TODO probably not needed (https://www.typescriptlang.org/tsconfig/#baseUrl)
+    "paths": {
+      "@repo/shared": ["../../packages/shared/src/index.ts"],
+      "@repo/shared/*": ["../../packages/shared/src/*"]
+    },
 
     /* Emit */
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "src",
+    "outDir": "dist",
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
     "removeComments": true,
-
-    /* Interop Constraints */
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
 
     /* Type Checking */
     "strict": true,
@@ -31,6 +33,7 @@
     "noUncheckedSideEffectImports": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [{ "path": "../../packages/shared" }]
 }

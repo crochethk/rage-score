@@ -3,6 +3,9 @@
 **/package-lock.json
 !/package-lock.json
 
+# tsc -b artifact
+.tsbuildinfo
+
 # Logs
 logs
 *.log
