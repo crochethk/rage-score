@@ -1,9 +1,4 @@
-/** Represents an RGB color. Each component should be in the range 0-255. */
-export interface ColorRgb {
-  r: number;
-  g: number;
-  b: number;
-}
+import type { ColorRgb } from "./types";
 
 export function randomRgb(): ColorRgb {
   return {
