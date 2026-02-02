@@ -40,23 +40,24 @@ export const playerSchema = z.object({
 });
 export type Player = z.infer<typeof playerSchema>;
 
-/**
- * Contains round-specific data for a player.
- */
-export interface PlayerRoundData {
+export const playerRoundDataSchema = z.object({
   /**
    * The number of tricks the player bid for this round.
    */
-  bid: number;
+  bid: z.int().nonnegative(),
   /**
    * The number of tricks the player actually took in this round.
    */
-  tricksTaken: number;
+  tricksTaken: z.int().nonnegative(),
   /**
    * The bonus/penalty points earned from special cards in this round.
    */
-  bonusCardPoints?: number;
-}
+  bonusCardPoints: z.int().optional(),
+});
+/**
+ * Contains a player's data for a single round.
+ */
+export type PlayerRoundData = z.infer<typeof playerRoundDataSchema>;
 
 /**
  * Represents a single round in the game.
