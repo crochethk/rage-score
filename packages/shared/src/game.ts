@@ -21,21 +21,24 @@ export const colorRgbSchema = z.object({
  */
 export type ColorRgb = z.infer<typeof colorRgbSchema>;
 
-/** Represents a player in the game. */
-export interface Player {
+/**
+ * Represents a player in the game.
+ */
+export const playerSchema = z.object({
   /**
    * The unique identifier of the player.
    */
-  id: PlayerId;
+  id: playerIdSchema,
   /**
    * The display name of the player.
    */
-  name: string;
+  name: z.string().nonempty(),
   /**
    * The player's color, used for UI theming.
    */
-  color: ColorRgb;
-}
+  color: colorRgbSchema,
+});
+export type Player = z.infer<typeof playerSchema>;
 
 /**
  * Contains round-specific data for a player.
