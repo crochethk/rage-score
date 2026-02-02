@@ -59,21 +59,22 @@ export const playerRoundDataSchema = z.object({
  */
 export type PlayerRoundData = z.infer<typeof playerRoundDataSchema>;
 
-/**
- * Represents a single round in the game.
- */
-export interface Round {
+export const roundSchema = z.object({
   /**
    * Which round this object represents.
    */
-  roundNumber: number;
+  roundNumber: z.int(),
   /**
    * The number of cards dealt to each player in this round.
    */
-  cardsDealt: number;
+  cardsDealt: z.int().nonnegative(),
   /**
    * Data of all players for this round, indexed by the player IDs.
    * PlayerRoundData may be partial if the round is still ongoing.
    */
-  playerData: Record<PlayerId, Partial<PlayerRoundData>>;
-}
+  playerData: z.record(playerIdSchema, playerRoundDataSchema.partial()),
+});
+/**
+ * Represents a single round in the game.
+ */
+export type Round = z.infer<typeof roundSchema>;
