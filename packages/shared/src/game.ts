@@ -1,10 +1,5 @@
 import { z } from "zod";
 
-export interface GameData {
-  players: readonly Player[];
-  rounds: readonly Round[];
-}
-
 export const playerIdSchema = z.string().nonempty();
 /**
  * Unique identifier for a player.
@@ -78,3 +73,9 @@ export const roundSchema = z.object({
  * Represents a single round in the game.
  */
 export type Round = z.infer<typeof roundSchema>;
+
+export const gameDataSchema = z.object({
+  players: z.array(playerSchema).readonly(),
+  rounds: z.array(roundSchema).readonly(),
+});
+export type GameData = z.infer<typeof gameDataSchema>;
