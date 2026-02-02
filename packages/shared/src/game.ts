@@ -1,7 +1,15 @@
+import { z } from "zod";
+
 export interface GameData {
   players: readonly Player[];
   rounds: readonly Round[];
 }
+
+export const playerIdSchema = z.string().nonempty();
+/**
+ * Unique identifier for a player.
+ */
+export type PlayerId = z.infer<typeof playerIdSchema>;
 
 /** Represents a player in the game. */
 export interface Player {
@@ -18,9 +26,6 @@ export interface Player {
    */
   color: ColorRgb;
 }
-
-/** Unique identifier for a player. */
-export type PlayerId = string;
 
 /** Represents an RGB color. Each component should be in the range 0-255. */
 export interface ColorRgb {
