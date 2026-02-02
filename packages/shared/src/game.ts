@@ -11,6 +11,16 @@ export const playerIdSchema = z.string().nonempty();
  */
 export type PlayerId = z.infer<typeof playerIdSchema>;
 
+export const colorRgbSchema = z.object({
+  r: z.int().min(0).max(255),
+  g: z.int().min(0).max(255),
+  b: z.int().min(0).max(255),
+});
+/**
+ * Represents an RGB color. Each component should be in the range 0-255.
+ */
+export type ColorRgb = z.infer<typeof colorRgbSchema>;
+
 /** Represents a player in the game. */
 export interface Player {
   /**
@@ -25,13 +35,6 @@ export interface Player {
    * The player's color, used for UI theming.
    */
   color: ColorRgb;
-}
-
-/** Represents an RGB color. Each component should be in the range 0-255. */
-export interface ColorRgb {
-  r: number;
-  g: number;
-  b: number;
 }
 
 /**
