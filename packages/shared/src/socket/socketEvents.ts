@@ -1,8 +1,9 @@
 import type { DefaultEventsMap } from "socket.io";
 import { z } from "zod";
-import type { RoomId } from "./auth.js";
+import type { HostToken, RoomId } from "./auth.js";
 
 export interface ServerToClientEvents {
+  "srv:room:auth": (roomId: RoomId, token: HostToken) => void;
   "srv:ping": (ms: Timestamp, ack: (msg: PingAckMsg) => void) => void;
 }
 export const timestampSchema = z.int().nonnegative();
