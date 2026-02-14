@@ -106,7 +106,15 @@ export async function createIoServer(options?: IoServerOptions) {
     // TODO handle other events...
 
     socket.on("disconnect", (_reason) => {
-      dbg("disconnect", `Socket ${socket.id} disconnected`);
+      switch (socket.data.auth.role) {
+        case "host":
+          handleHostDisconnect(socket);
+          break;
+        case "spectator":
+          //TODO handleSpectatorDisconnect(socket);
+          break;
+      }
+      dbg(`disconnect socket '${socket.id}'`);
     });
   });
 
@@ -169,6 +177,7 @@ export async function createIoServer(options?: IoServerOptions) {
       // create new Room and store it
       const [tokenBytes, tokenHash] = createToken();
       const room = new Room(tokenHash);
+      room.hostSocketId = socket.id;
       rooms.set(room.id, room);
       dbg("created new room with id '%s'", room.id);
 
@@ -196,6 +205,7 @@ export async function createIoServer(options?: IoServerOptions) {
         dbg("invalid token for room '%s'", auth.roomId);
         return next(invalidAuthError());
       }
+      room.hostSocketId = socket.id;
       socket.data.auth = auth as Required<HostAuth>;
     }
     return next();
@@ -230,6 +240,15 @@ export async function createIoServer(options?: IoServerOptions) {
 
   function invalidAuthError() {
     return new Error("Invalid roomId or token");
+  }
+
+  function handleHostDisconnect(socket: ClientSocket) {
+    const roomId = socket.data.auth.roomId;
+    const room = rooms.get(roomId);
+    if (room) {
+      room.hostSocketId = null;
+      dbg("host left room '%s'", roomId);
+    }
   }
 
   // function someMiddleware(
