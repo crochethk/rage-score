@@ -179,5 +179,12 @@ describe("auth flow", () => {
       const socketPromise = connectClient(ts.url, { role: "spectator" });
       await expect(socketPromise).rejects.toThrow(invalidAuthShapeError);
     });
+
+    it("rejects spectator with unknown roomId", async () => {
+      const roomId = Room.createId();
+      const auth = { role: "spectator", roomId };
+      const socketPromise = connectClient(ts.url, auth);
+      await expect(socketPromise).rejects.toThrow(invalidTokenOrRoomIdError);
+    });
   });
 });

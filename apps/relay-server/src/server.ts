@@ -204,6 +204,11 @@ export async function createIoServer(options?: IoServerOptions) {
   /** `next` function __must__ be called before returning */
   function authSpectator(socket: ClientSocket, next: NextFn, auth: SpectatorAuth) {
     dbg("authorizing spectator");
+    const room = rooms.get(auth.roomId);
+    if (!room) {
+      dbg("spectator provided unknown roomId '%s'", auth.roomId);
+      return next(invalidAuthError());
+    }
     socket.data.auth = auth;
     return next();
   }
