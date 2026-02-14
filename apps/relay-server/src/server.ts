@@ -197,6 +197,7 @@ export async function createIoServer(options?: IoServerOptions) {
       dbg("spectator provided unknown roomId '%s'", auth.roomId);
       return next(invalidAuthError());
     }
+    room.spectators.add(socket.id);
     socket.data.auth = auth;
     return next();
   }

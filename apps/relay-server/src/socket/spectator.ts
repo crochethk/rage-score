@@ -30,5 +30,22 @@ function handleDisconnecting(
   rooms: RoomStore,
   _reason: DisconnectReason,
 ) {
-  // TODO implement
+  const roomId = socket.data.auth.roomId;
+  const room = rooms.get(roomId);
+  if (room) {
+    if (!room.spectators.delete(socket.id)) {
+      dbg(
+        "[WARNING] disconnected spectator socket '%s' was not registered in its associated game room '%s'",
+        socket.id,
+        roomId,
+      );
+    }
+    dbg("removed spectator '%s' from game room '%s'", socket.id, roomId);
+  } else {
+    dbg(
+      "[WARNING] disconnected spectator socket '%s' was associated with unknown room '%s'",
+      socket.id,
+      roomId,
+    );
+  }
 }

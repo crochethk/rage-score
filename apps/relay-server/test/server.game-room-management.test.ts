@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest";
 import { IoServer } from "../src/server.js";
 import { useTestServer } from "./helpers/setup.js";
 import { connectClient, createHost } from "./helpers/testClient.js";
@@ -47,6 +47,50 @@ describe("game room management", () => {
       host.disconnect();
       await waitForSocketRemoved(ts.server.io, hostId);
       expect(gameRooms().get(roomId)?.hostSocketId).toBeNull();
+    });
+
+    it("joins host and spectator to same IO room", async () => {
+      const { socket: host, roomId } = await createHost(ts.url);
+      const spectator = await connectClient(ts.url, { role: "spectator", roomId });
+      const sockets = await ts.server.io.fetchSockets();
+      expect(sockets.find((s) => s.id === host.id)?.rooms).toContain(roomId);
+      expect(sockets.find((s) => s.id === spectator.id)?.rooms).toContain(roomId);
+    });
+
+    it("adds spectator to room", async () => {
+      const { socket: host, roomId } = await createHost(ts.url);
+      assert(gameRooms().get(roomId)?.spectatorsCount === 0);
+      const spectator = await connectClient(ts.url, { role: "spectator", roomId });
+      const gameRoom = gameRooms().get(roomId);
+      expect(gameRoom).toMatchObject({ id: roomId, hostSocketId: host.id });
+      expect(gameRoom?.spectators).toContain(spectator.id);
+      expect(gameRoom?.spectatorsCount).toBe(1);
+    });
+
+    it("adds multiple spectators to room", async () => {
+      const { roomId } = await createHost(ts.url);
+      const spectator1 = await connectClient(ts.url, { role: "spectator", roomId });
+      const spectator2 = await connectClient(ts.url, { role: "spectator", roomId });
+      const room = gameRooms().get(roomId);
+      expect(room).toBeDefined();
+      expect(room!.spectators).toContain(spectator1.id);
+      expect(room!.spectators).toContain(spectator2.id);
+      expect(room!.spectatorsCount).toBe(2);
+
+      const spectator1Id = spectator1.id;
+      spectator1.disconnect();
+      await waitForSocketRemoved(ts.server.io, spectator1Id);
+      expect(gameRooms().get(roomId)?.spectatorsCount).toBe(1);
+    });
+
+    it("removes spectator from room on disconnect", async () => {
+      const { roomId } = await createHost(ts.url);
+      const spectator = await connectClient(ts.url, { role: "spectator", roomId });
+      expect(gameRooms().get(roomId)?.spectatorsCount).toBe(1);
+      const spectatorId = spectator.id;
+      spectator.disconnect();
+      await waitForSocketRemoved(ts.server.io, spectatorId);
+      expect(gameRooms().get(roomId)?.spectatorsCount).toBe(0);
     });
   });
 });
