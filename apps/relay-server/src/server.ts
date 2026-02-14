@@ -16,6 +16,7 @@ import Debug from "debug";
 import { createServer } from "http";
 import { Server, type ExtendedError, type Socket } from "socket.io";
 import { Room } from "./Room.js";
+import { createRoomStore } from "./RoomStore.js";
 import { createToken, verifyToken } from "./token.js";
 import { awaitListening, getLocalExternalIPs, isMainModule } from "./utils.js";
 
@@ -78,7 +79,7 @@ export async function createIoServer(options?: IoServerOptions) {
   });
 
   /** Store for existing `Room`s identified by their `id` */
-  const rooms = new Map<RoomId, Room>();
+  const rooms = createRoomStore();
 
   io.use(auth);
   io.use(ping);
