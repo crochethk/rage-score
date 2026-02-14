@@ -2,7 +2,6 @@ import "dotenv/config"; // must be the first import!
 
 import {
   clientAuthSchema,
-  type ClientAuth,
   type HostAuth,
   type RoomId,
   type SpectatorAuth,
@@ -14,9 +13,10 @@ import type {
 } from "@repo/shared/socket/socketEvents";
 import Debug from "debug";
 import { createServer } from "http";
-import { Server, type ExtendedError, type Socket } from "socket.io";
+import { Server, type ExtendedError } from "socket.io";
 import { Room } from "./Room.js";
 import { createRoomStore } from "./RoomStore.js";
+import type { ClientSocket, SocketData } from "./socket/client.js";
 import { createToken, verifyToken } from "./token.js";
 import { awaitListening, getLocalExternalIPs, isMainModule } from "./utils.js";
 
@@ -25,21 +25,6 @@ const dbg = Debug("server:main");
 export type RelayServer = Awaited<ReturnType<typeof createIoServer>>;
 
 export type IoServer = Server<
-  ClientToServerEvents,
-  ServerToClientEvents,
-  InterServerEvents,
-  SocketData
->;
-
-/** `Socket.data` type */
-interface SocketData {
-  /** Similar object to `socket.handshake.auth` but validated/hydrated. */
-  auth: SpectatorAuth | Required<HostAuth>;
-  pingTimer: NodeJS.Timeout;
-  // ...
-}
-
-type ClientSocket = Socket<
   ClientToServerEvents,
   ServerToClientEvents,
   InterServerEvents,
