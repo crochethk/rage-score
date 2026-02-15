@@ -16,7 +16,15 @@ export class Room {
    * The socket ID of the currently connected room host, or `null` if the host
    * is disconnected.
    */
-  hostSocketId: string | null = null;
+  #hostSocketId: string | null = null;
+
+  get hostSocketId() {
+    return this.#hostSocketId;
+  }
+  set hostSocketId(id) {
+    this.#hostSocketId = id;
+    this.touch();
+  }
 
   /**
    * The timestamp of the last activity in this room. Used to determine when to

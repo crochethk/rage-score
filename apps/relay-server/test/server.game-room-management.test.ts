@@ -1,20 +1,23 @@
+import { invalidTokenOrRoomIdError } from "@repo/shared/socket/authErrors";
 import { Socket } from "socket.io-client";
 import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest";
+import { ROOM_CLEANUP_INTERVAL_MS, ROOM_IDLE_TIMEOUT_MS } from "../src/RoomStore.js";
 import { IoServer } from "../src/server.js";
 import { useTestServer } from "./helpers/setup.js";
 import { connectClient, createHost } from "./helpers/testClient.js";
 
 describe("game room management", () => {
-  const ts = useTestServer();
-  const gameRooms = () => ts.server.gameRooms();
-
   beforeEach(() => {
     vi.useFakeTimers();
+    vi.setSystemTime(0);
   });
 
   afterEach(() => {
     vi.useRealTimers();
   });
+
+  const ts = useTestServer();
+  const gameRooms = () => ts.server.gameRooms();
 
   describe("happy paths", () => {
     it("creates and assigns room for host w/o roomId", async () => {
@@ -91,6 +94,88 @@ describe("game room management", () => {
       spectator.disconnect();
       await waitForSocketRemoved(ts.server.io, spectatorId);
       expect(gameRooms().get(roomId)?.spectatorsCount).toBe(0);
+    });
+  });
+
+  describe("room cleanup", () => {
+    it("disposes empty room after grace period", async () => {
+      const { socket: host, roomId } = await createHost(ts.url);
+      expect(gameRooms().has(roomId)).toBe(true);
+      const hostId = host.id; // host.id will be undefined after disconnect
+      host.disconnect();
+      await waitForSocketRemoved(ts.server.io, hostId);
+
+      const room = gameRooms().get(roomId)!;
+      assert(room.hostSocketId === null);
+      assert(room.spectatorsCount === 0);
+
+      vi.advanceTimersByTime(ROOM_IDLE_TIMEOUT_MS - 1000);
+      expect(gameRooms().has(roomId)).toBe(true);
+
+      vi.advanceTimersByTime(ROOM_CLEANUP_INTERVAL_MS + 2000);
+      expect(gameRooms().has(roomId)).toBe(false);
+    });
+
+    it("keeps room with idle host", async () => {
+      const { socket: host, roomId } = await createHost(ts.url);
+      expect(gameRooms().get(roomId)?.hostSocketId).toBe(host.id);
+
+      vi.advanceTimersByTime(ROOM_IDLE_TIMEOUT_MS + ROOM_CLEANUP_INTERVAL_MS + 1000);
+      expect(gameRooms().has(roomId)).toBe(true);
+      expect(host.id).toBeDefined();
+      expect(gameRooms().get(roomId)?.hostSocketId).toBe(host.id);
+    });
+
+    it("keeps room with idle spectator", async () => {
+      const { socket: host, roomId } = await createHost(ts.url);
+      const spectator = await connectClient(ts.url, { role: "spectator", roomId });
+      expect(gameRooms().get(roomId)?.spectatorsCount).toBe(1);
+      const hostId = host.id;
+      host.disconnect();
+      await waitForSocketRemoved(ts.server.io, hostId);
+
+      vi.advanceTimersByTime(ROOM_IDLE_TIMEOUT_MS + ROOM_CLEANUP_INTERVAL_MS + 1000);
+      expect(gameRooms().has(roomId)).toBe(true);
+      expect(gameRooms().get(roomId)?.hostSocketId).toBeNull();
+      expect(spectator.id).toBeDefined();
+      expect(gameRooms().get(roomId)?.spectators).toContain(spectator.id);
+    });
+
+    it("adds spectator to room with just disconnected host", async () => {
+      const { socket: host, roomId } = await createHost(ts.url);
+      const hostId = host.id;
+      host.disconnect();
+      await waitForSocketRemoved(ts.server.io, hostId);
+      vi.advanceTimersByTime(1000);
+      const spectator = await connectClient(ts.url, { role: "spectator", roomId });
+      const gameRoom = gameRooms().get(roomId);
+      expect(gameRoom?.spectators).toContain(spectator.id);
+      expect(gameRoom?.hostSocketId).toBeNull();
+    });
+  });
+
+  describe("sad paths", () => {
+    it("rejects clients when empty room has expired after host disconnect", async () => {
+      const { socket: host, roomId, token } = await createHost(ts.url);
+      const spectator = await connectClient(ts.url, { role: "spectator", roomId });
+      const room = gameRooms().get(roomId);
+      expect(room).toBeDefined();
+      expect(room!.hostSocketId).toBe(host.id);
+      expect(room!.spectators).toContain(spectator.id);
+      const hostId = host.id;
+      const spectatorId = spectator.id;
+      host.disconnect();
+      spectator.disconnect();
+      await waitForSocketRemoved(ts.server.io, hostId);
+      await waitForSocketRemoved(ts.server.io, spectatorId);
+
+      vi.advanceTimersByTime(ROOM_IDLE_TIMEOUT_MS + ROOM_CLEANUP_INTERVAL_MS + 1000);
+      await expect(
+        connectClient(ts.url, { role: "host", roomId, token }),
+      ).rejects.toThrow(invalidTokenOrRoomIdError);
+      await expect(
+        connectClient(ts.url, { role: "spectator", roomId }),
+      ).rejects.toThrow(invalidTokenOrRoomIdError);
     });
   });
 });

@@ -3,9 +3,12 @@ import "dotenv/config"; // must be the first import!
 import {
   clientAuthSchema,
   type HostAuth,
-  type RoomId,
   type SpectatorAuth,
 } from "@repo/shared/socket/auth";
+import {
+  invalidAuthShapeError,
+  invalidTokenOrRoomIdError,
+} from "@repo/shared/socket/authErrors";
 import type {
   ClientToServerEvents,
   InterServerEvents,
@@ -15,7 +18,7 @@ import Debug from "debug";
 import { createServer } from "http";
 import { Server, type ExtendedError } from "socket.io";
 import { Room } from "./Room.js";
-import { createRoomStore } from "./RoomStore.js";
+import { RoomStore } from "./RoomStore.js";
 import type { ClientSocket, SocketData } from "./socket/client.js";
 import { setupSocket as setupHostSocket, type HostSocket } from "./socket/host.js";
 import {
@@ -53,6 +56,10 @@ export interface IoServerOptions {
  *    - `corsOrigins`: An array of allowed CORS origins. Defaults to `["http://localhost:5173"]` plus any URLs specified in `process.env.CORS_APP_URLS` (space-separated).
  *    - `autolisten`: Whether to start listening immediately. Defaults to `true`.
  *    - `serverOpts`: Additional options to pass to the `socket.io` server constructor.
+ * @return An object containing:
+ *    - the `io` server instance
+ *    - a function to access the current game rooms
+ *    - a `close` function to shut down the server and clean up resources
  */
 export async function createIoServer(options?: IoServerOptions) {
   options = { autolisten: true, ...options };
@@ -72,7 +79,7 @@ export async function createIoServer(options?: IoServerOptions) {
   });
 
   /** Store for existing `Room`s identified by their `id` */
-  const rooms = createRoomStore();
+  const roomStore = new RoomStore();
 
   io.use(auth);
   io.use(ping);
@@ -89,11 +96,11 @@ export async function createIoServer(options?: IoServerOptions) {
     switch (socket.data.auth.role) {
       case "host":
         dbg("setup host socket");
-        setupHostSocket(socket as HostSocket, rooms);
+        setupHostSocket(socket as HostSocket, roomStore);
         break;
       case "spectator":
         dbg("setup spectator socket");
-        setupSpectatorSocket(socket as SpectatorSocket, rooms);
+        setupSpectatorSocket(socket as SpectatorSocket, roomStore);
         break;
     }
   });
@@ -104,7 +111,12 @@ export async function createIoServer(options?: IoServerOptions) {
   }
   return {
     io,
-    gameRooms: () => rooms as ReadonlyMap<RoomId, Room>,
+    gameRooms: () => roomStore.rooms(),
+    close: async () => {
+      roomStore.close();
+      io.disconnectSockets(true);
+      await io.close();
+    },
   };
 
   // ----- Handlers -----
@@ -133,7 +145,7 @@ export async function createIoServer(options?: IoServerOptions) {
     const authResult = clientAuthSchema.safeParse(socket.handshake.auth);
     if (!authResult.success) {
       dbg("Invalid auth shape: %s", authResult.error.message);
-      return next(new Error("Invalid auth shape"));
+      return next(new Error(invalidAuthShapeError));
     }
     dbg("auth object shape ok");
 
@@ -159,7 +171,7 @@ export async function createIoServer(options?: IoServerOptions) {
       const [tokenBytes, tokenHash] = createToken();
       const room = new Room(tokenHash);
       room.hostSocketId = socket.id;
-      rooms.set(room.id, room);
+      roomStore.set(room);
       dbg("created new room with id '%s'", room.id);
 
       socket.data.auth = {
@@ -170,7 +182,7 @@ export async function createIoServer(options?: IoServerOptions) {
     } else {
       // -> Reconnect, validate room and token
 
-      const room = rooms.get(auth.roomId);
+      const room = roomStore.get(auth.roomId);
       if (!room) {
         dbg("host provided unknown roomId '%s'", auth.roomId);
         return next(invalidAuthError());
@@ -195,7 +207,7 @@ export async function createIoServer(options?: IoServerOptions) {
   /** `next` function __must__ be called before returning */
   function authSpectator(socket: ClientSocket, next: NextFn, auth: SpectatorAuth) {
     dbg("authorizing spectator");
-    const room = rooms.get(auth.roomId);
+    const room = roomStore.get(auth.roomId);
     if (!room) {
       dbg("spectator provided unknown roomId '%s'", auth.roomId);
       return next(invalidAuthError());
@@ -216,24 +228,19 @@ export async function createIoServer(options?: IoServerOptions) {
   }
 
   function invalidAuthError() {
-    return new Error("Invalid roomId or token");
+    return new Error(invalidTokenOrRoomIdError);
   }
-
-  // function someMiddleware(
-  //   socket: ClientSocket,
-  //   next: (err?: ExtendedError) => void,
-  // ) {
-  //   return next(); // <--IMPORTANT !!!!
-  // }
 }
+
+// --------------------- MAIN ---------------------
 
 if (isMainModule(import.meta.url)) {
   // Start the server immediately if this file is the main module.
   // This allows us to import functions like `createIoServer` from this file in tests without starting the server.
   dbg("Starting server...");
 
-  const { io } = await createIoServer();
-  const { httpServer } = io;
+  const server = await createIoServer();
+  const { httpServer } = server.io;
   const address = httpServer.address();
   const port = typeof address === "object" && address ? address.port : -1;
   const addresses = getLocalExternalIPs().reduce(
@@ -245,4 +252,41 @@ if (isMainModule(import.meta.url)) {
   httpServer.on("error", (err) => {
     console.error("Server error:", err);
   });
+
+  const termEvents = [
+    "beforeExit", // Emptied Node.js event loop
+    "SIGBREAK", // Ctrl-Break on Windows
+    "SIGHUP", // Parent terminal closed
+    "SIGINT", // Terminal interrupt, usually by Ctrl-C
+    "SIGTERM", // Graceful termination
+    "SIGUSR2", // Used by Nodemon
+  ] as const;
+  for (const sig of termEvents) {
+    process.on(sig, () => {
+      dbg("Received %s signal", sig);
+      void shutdown();
+    });
+  }
+
+  let shuttingDown = false;
+
+  async function shutdown() {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    console.log("Shutting down server...");
+
+    const forceExit = setTimeout(() => {
+      console.error("Forced shutdown due to timeout");
+      process.exit(1);
+    }, 10_000);
+
+    try {
+      await server.close();
+      clearTimeout(forceExit);
+      process.exit(0);
+    } catch (err) {
+      console.error("Shutdown failed", err);
+      process.exit(1);
+    }
+  }
 }

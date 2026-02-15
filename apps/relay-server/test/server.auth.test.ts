@@ -1,4 +1,8 @@
 import { hostTokenSchema, roomIdSchema } from "@repo/shared/socket/auth";
+import {
+  invalidAuthShapeError,
+  invalidTokenOrRoomIdError,
+} from "@repo/shared/socket/authErrors";
 import { clearTimeout } from "node:timers";
 import { assert, beforeEach, describe, expect, it } from "vitest";
 import { Room } from "../src/Room.js";
@@ -88,9 +92,6 @@ describe("auth flow", () => {
   });
 
   describe("sad paths", () => {
-    const invalidTokenOrRoomIdError = /invalid (token or roomId|roomId or token)/i;
-    const invalidAuthShapeError = /invalid auth shape/i;
-
     it("rejects invalid host token _value_", async () => {
       const { socket: host, roomId, token } = await createHost(ts.url);
       host.disconnect();
