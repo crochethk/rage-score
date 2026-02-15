@@ -17,6 +17,11 @@ import { Server, type ExtendedError } from "socket.io";
 import { Room } from "./Room.js";
 import { createRoomStore } from "./RoomStore.js";
 import type { ClientSocket, SocketData } from "./socket/client.js";
+import { setupSocket as setupHostSocket, type HostSocket } from "./socket/host.js";
+import {
+  setupSocket as setupSpectatorSocket,
+  type SpectatorSocket,
+} from "./socket/spectator.js";
 import { createToken, verifyToken } from "./token.js";
 import { awaitListening, getLocalExternalIPs, isMainModule } from "./utils.js";
 
@@ -70,38 +75,24 @@ export async function createIoServer(options?: IoServerOptions) {
   io.use(ping);
 
   io.on("connection", async (socket) => {
-    dbg("=".repeat(5), "client connected", "=".repeat(5));
-    dbg("socket id:", socket.id);
-    dbg("provided role:", socket.handshake.auth.role);
-    dbg("provided roomId:", socket.handshake.auth.roomId);
-    dbg("assigned roomId:", socket.data.auth?.roomId);
+    dbg("----- client connected ----- %o", {
+      socketId: socket.id,
+      providedRole: socket.handshake.auth.role as string,
+      providedRoomId: socket.handshake.auth.roomId as string,
+    });
 
     await tryJoinIoRoom(socket);
 
-    if (socket.data.auth.role === "spectator") {
-      // No need to register any event handlers since spectators currently are
-      // passive subscribers listening for state updates.
-      return;
+    switch (socket.data.auth.role) {
+      case "host":
+        dbg("setup host socket");
+        setupHostSocket(socket as HostSocket, rooms);
+        break;
+      case "spectator":
+        dbg("setup spectator socket");
+        setupSpectatorSocket(socket as SpectatorSocket, rooms);
+        break;
     }
-
-    if (isNewHostSession(socket)) {
-      const auth = socket.data.auth;
-      socket.emit("srv:room:auth", auth.roomId, auth.token);
-    }
-
-    // TODO handle other events...
-
-    socket.on("disconnect", (_reason) => {
-      switch (socket.data.auth.role) {
-        case "host":
-          handleHostDisconnect(socket);
-          break;
-        case "spectator":
-          //TODO handleSpectatorDisconnect(socket);
-          break;
-      }
-      dbg(`disconnect socket '${socket.id}'`);
-    });
   });
 
   if (options.autolisten) {
@@ -115,6 +106,7 @@ export async function createIoServer(options?: IoServerOptions) {
 
   // ----- Handlers -----
 
+  // TODO remove this as it is unnecessary and was only for testing purposes
   function ping(socket: ClientSocket, next: NextFn) {
     // save timer ref to socket data
     socket.data.pingTimer = setInterval(() => {
@@ -219,22 +211,8 @@ export async function createIoServer(options?: IoServerOptions) {
     dbg("room join: %o", { socketId: socket.id, role, roomId });
   }
 
-  function isNewHostSession(socket: ClientSocket) {
-    const auth = socket.handshake.auth as ClientAuth;
-    return auth.role === "host" && !auth.roomId;
-  }
-
   function invalidAuthError() {
     return new Error("Invalid roomId or token");
-  }
-
-  function handleHostDisconnect(socket: ClientSocket) {
-    const roomId = socket.data.auth.roomId;
-    const room = rooms.get(roomId);
-    if (room) {
-      room.hostSocketId = null;
-      dbg("host left room '%s'", roomId);
-    }
   }
 
   // function someMiddleware(
