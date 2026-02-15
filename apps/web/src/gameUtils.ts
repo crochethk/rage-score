@@ -239,7 +239,9 @@ export function isValidRound(
     // allow incomplete tricks when correct sum still could be achieved
     (tricksSum < round.cardsDealt && pendingTricksTaken > 0);
 
-  return bidsPlausible && tricksTakenPlausible;
+  const allOrNoTricksTakenEntered =
+    pendingTricksTaken === 0 || pendingTricksTaken === players.length;
+  return bidsPlausible && tricksTakenPlausible && allOrNoTricksTakenEntered;
 }
 
 function isEmptyRound(round: Round, players: readonly Player[]): boolean {
