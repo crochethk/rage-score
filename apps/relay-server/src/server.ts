@@ -43,6 +43,7 @@ export interface IoServerOptions {
   corsOrigins?: string[];
   /* whether the server should immediately start listening after creation */
   autolisten?: boolean;
+  serverOpts?: ConstructorParameters<typeof Server>[1];
 }
 
 /**
@@ -51,6 +52,7 @@ export interface IoServerOptions {
  *    - `port`: The port number to listen on. Defaults to `process.env.PORT` or `3333` if not set.
  *    - `corsOrigins`: An array of allowed CORS origins. Defaults to `["http://localhost:5173"]` plus any URLs specified in `process.env.CORS_APP_URLS` (space-separated).
  *    - `autolisten`: Whether to start listening immediately. Defaults to `true`.
+ *    - `serverOpts`: Additional options to pass to the `socket.io` server constructor.
  */
 export async function createIoServer(options?: IoServerOptions) {
   options = { autolisten: true, ...options };
@@ -66,6 +68,7 @@ export async function createIoServer(options?: IoServerOptions) {
   const io: IoServer = new Server(httpServer, {
     cors: { origin: corsOrigins },
     serveClient: false,
+    ...options.serverOpts,
   });
 
   /** Store for existing `Room`s identified by their `id` */
