@@ -93,6 +93,10 @@ export async function createIoServer(options?: IoServerOptions) {
 
     await tryJoinIoRoom(socket);
 
+    socket.on("disconnecting", (reason, desc: object) => {
+      dbg("client '%s' disconnecting: %o", socket.id, { reason, desc });
+    });
+
     switch (socket.data.auth.role) {
       case "host":
         dbg("setup host socket");
