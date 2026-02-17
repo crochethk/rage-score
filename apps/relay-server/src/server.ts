@@ -198,6 +198,18 @@ export async function createIoServer(options?: IoServerOptions) {
         dbg("invalid token for room '%s'", auth.roomId);
         return next(invalidAuthError());
       }
+
+      if (room.hostSocketId !== null) {
+        // disconnect previous host
+        dbg(
+          "new host '%s' for room '%s', disconnecting previous host '%s'",
+          socket.id,
+          room.id,
+          room.hostSocketId,
+        );
+        io.in(room.hostSocketId).disconnectSockets(true);
+      }
+
       room.hostSocketId = socket.id;
       socket.data.auth = auth as Required<HostAuth>;
     }

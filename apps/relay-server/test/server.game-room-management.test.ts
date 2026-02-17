@@ -95,6 +95,27 @@ describe("game room management", () => {
       await waitForSocketRemoved(ts.server.io, spectatorId);
       expect(gameRooms().get(roomId)?.spectatorsCount).toBe(0);
     });
+
+    it("disconnects host when a second host successfully joins the same room", async () => {
+      const { socket: first, roomId, token } = await createHost(ts.url);
+      expect(first.connected).toBe(true);
+      let sockets = await ts.server.io.fetchSockets();
+      expect(sockets.find((s) => s.id === first.id)).toBeDefined();
+
+      let room = gameRooms().get(roomId);
+      expect(room).toBeDefined();
+      expect(room!.hostSocketId).toBe(first.id);
+
+      const second = await connectClient(ts.url, { role: "host", roomId, token });
+      expect(second.connected).toBe(true);
+
+      sockets = await ts.server.io.fetchSockets();
+      expect(first.connected).toBe(false);
+      expect(sockets.find((s) => s.id === first.id)).not.toBeDefined();
+      room = gameRooms().get(roomId);
+      expect(room).toBeDefined();
+      expect(room!.hostSocketId).toBe(second.id);
+    });
   });
 
   describe("room cleanup", () => {
