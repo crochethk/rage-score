@@ -22,6 +22,12 @@ export type SpectatorSocketData = Omit<SocketData, "auth"> & {
 };
 
 export function setupSocket(socket: SpectatorSocket, rooms: RoomStore) {
+  const room = rooms.get(socket.data.auth.roomId);
+  if (room) {
+    room.spectators.add(socket.id);
+    dbg("added spectator '%s' to game room '%s'", socket.id, room.id);
+  }
+
   socket.on("disconnecting", (reason) => handleDisconnecting(socket, rooms, reason));
 }
 

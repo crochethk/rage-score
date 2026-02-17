@@ -174,7 +174,6 @@ export async function createIoServer(options?: IoServerOptions) {
       // create new Room and store it
       const [tokenBytes, tokenHash] = createToken();
       const room = new Room(tokenHash);
-      room.hostSocketId = socket.id;
       roomStore.set(room);
       dbg("created new room with id '%s'", room.id);
 
@@ -214,7 +213,6 @@ export async function createIoServer(options?: IoServerOptions) {
         io.in(room.hostSocketId).disconnectSockets(true);
       }
 
-      room.hostSocketId = socket.id;
       socket.data.auth = auth as Required<HostAuth>;
     }
     return next();
@@ -228,7 +226,6 @@ export async function createIoServer(options?: IoServerOptions) {
       dbg("spectator provided unknown roomId '%s'", auth.roomId);
       return next(invalidAuthError());
     }
-    room.spectators.add(socket.id);
     socket.data.auth = auth;
     return next();
   }

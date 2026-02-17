@@ -23,8 +23,14 @@ export type HostSocketData = Omit<SocketData, "auth"> & {
 
 export function setupSocket(socket: HostSocket, rooms: RoomStore) {
   if (isNewHostSession(socket)) {
-    const auth = socket.data.auth;
-    socket.emit("srv:room:auth", auth.roomId, auth.token);
+    const { roomId, token } = socket.data.auth;
+    socket.emit("srv:room:auth", roomId, token);
+  }
+
+  const room = rooms.get(socket.data.auth.roomId);
+  if (room) {
+    room.hostSocketId = socket.id;
+    dbg("registered host '%s' for game room '%s'", socket.id, room.id);
   }
 
   socket.on("disconnecting", (reason) => handleDisconnecting(socket, rooms, reason));

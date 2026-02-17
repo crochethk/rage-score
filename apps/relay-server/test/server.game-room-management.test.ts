@@ -227,6 +227,43 @@ describe("game room management", () => {
         connectClient(ts.url, { role: "spectator", roomId }),
       ).rejects.toThrow(invalidTokenOrRoomIdError);
     });
+
+    it("cleans up room when error occurs before host fully connects", async () => {
+      ts.server.io.use((socket, next) => {
+        next(new Error("test error before fully connected"));
+      });
+      expect(ts.server.gameRooms().size).toBe(0);
+      await createHost(ts.url).catch((err: Error) => {
+        expect(err.message).toBe("test error before fully connected");
+      });
+      expect((await ts.server.io.fetchSockets()).length).toBe(0);
+      expect(ts.server.gameRooms().size).toBe(1);
+      vi.advanceTimersByTime(ROOM_IDLE_TIMEOUT_MS + ROOM_CLEANUP_INTERVAL_MS + 1000);
+      expect(ts.server.gameRooms().size).toBe(0);
+    });
+
+    it("does not add spectator to room on connection error", async () => {
+      ts.server.io.use((socket, next) => {
+        if (socket.handshake.auth.role === "spectator") {
+          return next(new Error("test error before fully connected"));
+        }
+        return next();
+      });
+      const { socket: host, roomId } = await createHost(ts.url);
+      expect(ts.server.gameRooms().size).toBe(1);
+      expect((await ts.server.io.fetchSockets()).length).toBe(1);
+
+      const spectator = connectClient(ts.url, { role: "spectator", roomId });
+      await expect(spectator).rejects.toThrow("test error before fully connected");
+
+      expect(host.connected).toBe(true);
+      expect((await ts.server.io.fetchSockets()).length).toBe(1);
+
+      const room = ts.server.gameRooms().get(roomId);
+      expect(room).toBeDefined();
+      expect(room!.hostSocketId).toBe(host.id);
+      expect(room!.spectatorsCount).toBe(0);
+    });
   });
 });
 
