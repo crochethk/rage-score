@@ -116,6 +116,35 @@ describe("game room management", () => {
       expect(room).toBeDefined();
       expect(room!.hostSocketId).toBe(second.id);
     });
+
+    it("creates separate rooms for different hosts", async () => {
+      const { socket: host1, roomId: roomId1 } = await createHost(ts.url);
+      const { socket: host2, roomId: roomId2 } = await createHost(ts.url);
+      expect(roomId1).not.toBe(roomId2);
+      const spectator1 = await connectClient(ts.url, {
+        role: "spectator",
+        roomId: roomId1,
+      });
+      let room1 = gameRooms().get(roomId1);
+      let room2 = gameRooms().get(roomId2);
+      expect(room1?.spectatorsCount).toBe(1);
+      expect(room2?.spectatorsCount).toBe(0);
+
+      const spectator2 = await connectClient(ts.url, {
+        role: "spectator",
+        roomId: roomId2,
+      });
+      room1 = gameRooms().get(roomId1);
+      room2 = gameRooms().get(roomId2);
+      expect(room1).toBeDefined();
+      expect(room2).toBeDefined();
+      expect(room1!.spectatorsCount).toBe(1);
+      expect(room2!.spectatorsCount).toBe(1);
+      expect(room1!.hostSocketId).toBe(host1.id);
+      expect(room2!.hostSocketId).toBe(host2.id);
+      expect(room1!.spectators).toContain(spectator1.id);
+      expect(room2!.spectators).toContain(spectator2.id);
+    });
   });
 
   describe("room cleanup", () => {
