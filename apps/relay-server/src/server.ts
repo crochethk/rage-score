@@ -100,7 +100,7 @@ export async function createIoServer(options?: IoServerOptions) {
     switch (socket.data.auth.role) {
       case "host":
         dbg("setup host socket");
-        setupHostSocket(socket as HostSocket, roomStore);
+        setupHostSocket(io, socket as HostSocket, roomStore);
         break;
       case "spectator":
         dbg("setup spectator socket");

@@ -6,6 +6,7 @@ import type {
 } from "@repo/shared/socket/socketEvents";
 import Debug from "debug";
 import type { DisconnectReason, Socket } from "socket.io";
+import type { IoServer } from "src/server.js";
 import type { RoomStore } from "../RoomStore.js";
 import type { SocketData } from "./client.js";
 const dbg = Debug("server:socket:host");
@@ -21,7 +22,7 @@ export type HostSocketData = Omit<SocketData, "auth"> & {
   auth: Required<HostAuth>;
 };
 
-export function setupSocket(socket: HostSocket, rooms: RoomStore) {
+export function setupSocket(io: IoServer, socket: HostSocket, rooms: RoomStore) {
   if (isNewHostSession(socket)) {
     const { roomId, token } = socket.data.auth;
     socket.emit("srv:room:auth", roomId, token);
@@ -34,6 +35,7 @@ export function setupSocket(socket: HostSocket, rooms: RoomStore) {
   }
 
   socket.on("disconnecting", (reason) => handleDisconnecting(socket, rooms, reason));
+  socket.on("hst:room:close", () => handleRoomClose(io, socket, rooms));
 }
 
 function isNewHostSession(socket: HostSocket) {
@@ -65,4 +67,16 @@ function handleDisconnecting(
       roomId,
     );
   }
+}
+
+function handleRoomClose(io: IoServer, socket: HostSocket, rooms: RoomStore) {
+  // TODO: this might be a bit timing-sensitive and might print warnings if room
+  // is deleted before all sockets are disconnected. Consider adding a `state`
+  // property to `Room` ("open"|"closing"). Then in "disconnecting" event handlers
+  // skip room cleanup when in `closing` state.
+  const roomId = socket.data.auth.roomId;
+  dbg("host '%s' closes room '%s'", socket.id, roomId);
+  io.in(roomId).disconnectSockets(true);
+  rooms.delete(roomId);
+  dbg("removed room '%s'", roomId);
 }

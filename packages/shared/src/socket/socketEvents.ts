@@ -12,8 +12,7 @@ export const pingAckMsgSchema = z.string();
 export type PingAckMsg = z.infer<typeof pingAckMsgSchema>;
 
 export interface ClientToServerEvents {
-  clientEmitDummy: () => void;
-  createRoom: (ackFn: (roomId: RoomId) => void) => void;
+  "hst:room:close": () => void;
 }
 
 export type InterServerEvents = DefaultEventsMap;

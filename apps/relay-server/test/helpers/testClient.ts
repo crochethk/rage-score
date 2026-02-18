@@ -9,6 +9,7 @@ import {
   type Socket,
   type SocketOptions,
 } from "socket.io-client";
+import type { useTestServer } from "./setup.js";
 
 export type RoomAuthPayload = Required<Pick<HostAuth, "roomId" | "token">>;
 export type TestClientSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
@@ -43,4 +44,10 @@ export function createClient(
     forceNew: true,
     ...opts,
   }) as Socket<ServerToClientEvents, ClientToServerEvents>;
+}
+
+export async function createRoomWithSpectator(ts: ReturnType<typeof useTestServer>) {
+  const { socket: host, roomId, token } = await createHost(ts.url);
+  const spectator = await connectClient(ts.url, { role: "spectator", roomId });
+  return { host, spectator, roomId, token };
 }

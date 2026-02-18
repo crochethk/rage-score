@@ -4,7 +4,11 @@ import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest"
 import { ROOM_CLEANUP_INTERVAL_MS, ROOM_IDLE_TIMEOUT_MS } from "../src/RoomStore.js";
 import { IoServer } from "../src/server.js";
 import { useTestServer } from "./helpers/setup.js";
-import { connectClient, createHost } from "./helpers/testClient.js";
+import {
+  connectClient,
+  createHost,
+  createRoomWithSpectator,
+} from "./helpers/testClient.js";
 
 describe("game room management", () => {
   beforeEach(() => {
@@ -144,6 +148,55 @@ describe("game room management", () => {
       expect(room2!.hostSocketId).toBe(host2.id);
       expect(room1!.spectators).toContain(spectator1.id);
       expect(room2!.spectators).toContain(spectator2.id);
+    });
+
+    it("removes room on room close request", async () => {
+      const { host, spectator, roomId } = await createRoomWithSpectator(ts);
+      expect(gameRooms().has(roomId)).toBe(true);
+      const hostId = host.id;
+      const spectatorId = spectator.id;
+      host.emit("hst:room:close");
+      await expect(
+        waitForSocketRemoved(ts.server.io, hostId),
+      ).resolves.toBeUndefined();
+      await expect(
+        waitForSocketRemoved(ts.server.io, spectatorId),
+      ).resolves.toBeUndefined();
+      await expect(
+        vi.waitFor(() => {
+          if (gameRooms().has(roomId)) {
+            throw new Error("room still exists");
+          }
+        }),
+      ).resolves.toBeUndefined();
+    });
+
+    it("disconnects only members of room in question, on room close request", async () => {
+      const lobby1 = await createRoomWithSpectator(ts);
+      const lobby2 = await createRoomWithSpectator(ts);
+      expect(gameRooms().has(lobby1.roomId)).toBe(true);
+      expect(gameRooms().has(lobby2.roomId)).toBe(true);
+
+      const hostId = lobby1.host.id;
+      const spectatorId = lobby1.spectator.id;
+      lobby1.host.emit("hst:room:close");
+      await expect(
+        waitForSocketRemoved(ts.server.io, hostId),
+      ).resolves.toBeUndefined();
+      await expect(
+        waitForSocketRemoved(ts.server.io, spectatorId),
+      ).resolves.toBeUndefined();
+      await expect(
+        vi.waitFor(() => {
+          if (gameRooms().has(lobby1.roomId)) {
+            throw new Error("room still exists");
+          }
+        }),
+      ).resolves.toBeUndefined();
+      const room2 = gameRooms().get(lobby2.roomId);
+      expect(room2).toBeDefined();
+      expect(room2!.hostSocketId).toBe(lobby2.host.id);
+      expect(room2!.spectators).toContain(lobby2.spectator.id);
     });
   });
 
