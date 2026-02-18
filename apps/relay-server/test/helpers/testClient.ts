@@ -12,7 +12,10 @@ import {
 import type { useTestServer } from "./setup.js";
 
 export type RoomAuthPayload = Required<Pick<HostAuth, "roomId" | "token">>;
-export type TestClientSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+export type TestClientSocket = Socket<ServerToClientEvents, ClientToServerEvents> & {
+  /** For testing purposes only, not part of actual client socket type */
+  testData?: unknown;
+};
 
 export async function connectClient(url: string, auth: Record<string, unknown>) {
   const socket: TestClientSocket = createClient(url, { auth });

@@ -32,6 +32,10 @@ export function setupSocket(
     room.spectators.add(socket.id);
     dbg("added spectator '%s' to game room '%s'", socket.id, room.id);
     emitSpectatorsCountToHost(io, room.hostSocketId, room.spectatorsCount);
+
+    if (room.cachedState) {
+      socket.emit("srv:state:replace", room.cachedState);
+    }
   }
 
   socket.on("disconnecting", (reason) =>

@@ -1,3 +1,4 @@
+import type { GameData } from "@repo/shared/game";
 import type { RoomId } from "@repo/shared/socket/auth";
 import crypto from "crypto";
 import type { TokenHash } from "./token.js";
@@ -43,6 +44,8 @@ export class Room {
 
   /** The socket IDs of spectators currently connected to this room. */
   spectators = new Set<string>();
+
+  cachedState: GameData | null = null;
 
   /**
    * @param roomHostToken The room host's token hash.

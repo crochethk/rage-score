@@ -1,3 +1,4 @@
+import { gameDataSchema, type GameData } from "@repo/shared/game";
 import type { ClientAuth, HostAuth } from "@repo/shared/socket/auth";
 import type {
   ClientToServerEvents,
@@ -38,6 +39,20 @@ export function setupSocket(io: IoServer, socket: HostSocket, rooms: RoomStore) 
 
   socket.on("disconnecting", (reason) => handleDisconnecting(socket, rooms, reason));
   socket.on("hst:room:close", () => handleRoomClose(io, socket, rooms));
+  socket.on("hst:state:replace", (data) => handleStateReplace(socket, rooms, data));
+}
+
+function handleStateReplace(socket: HostSocket, rooms: RoomStore, data: GameData) {
+  const result = gameDataSchema.safeParse(data);
+  if (!result.success) {
+    dbg("[ERROR] host provided invalid game state:", result.error);
+    return;
+  }
+  const { roomId } = socket.data.auth;
+  const room = rooms.get(roomId);
+  if (room) room.cachedState = result.data;
+  dbg("broadcast 'srv:state:replace' to room '%s'", roomId);
+  socket.to(roomId).emit("srv:state:replace", result.data);
 }
 
 function isNewHostSession(socket: HostSocket) {
