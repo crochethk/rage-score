@@ -57,8 +57,7 @@ describe("game room management", () => {
     });
 
     it("joins host and spectator to same IO room", async () => {
-      const { socket: host, roomId } = await createHost(ts.url);
-      const spectator = await connectClient(ts.url, { role: "spectator", roomId });
+      const { host, spectator, roomId } = await createRoomWithSpectator(ts);
       const sockets = await ts.server.io.fetchSockets();
       expect(sockets.find((s) => s.id === host.id)?.rooms).toContain(roomId);
       expect(sockets.find((s) => s.id === spectator.id)?.rooms).toContain(roomId);
@@ -91,8 +90,7 @@ describe("game room management", () => {
     });
 
     it("removes spectator from room on disconnect", async () => {
-      const { roomId } = await createHost(ts.url);
-      const spectator = await connectClient(ts.url, { role: "spectator", roomId });
+      const { spectator, roomId } = await createRoomWithSpectator(ts);
       expect(gameRooms().get(roomId)?.spectatorsCount).toBe(1);
       const spectatorId = spectator.id;
       spectator.disconnect();
@@ -230,8 +228,7 @@ describe("game room management", () => {
     });
 
     it("keeps room with idle spectator", async () => {
-      const { socket: host, roomId } = await createHost(ts.url);
-      const spectator = await connectClient(ts.url, { role: "spectator", roomId });
+      const { host, spectator, roomId } = await createRoomWithSpectator(ts);
       expect(gameRooms().get(roomId)?.spectatorsCount).toBe(1);
       const hostId = host.id;
       host.disconnect();
@@ -259,8 +256,7 @@ describe("game room management", () => {
 
   describe("sad paths", () => {
     it("rejects clients when empty room has expired after host disconnect", async () => {
-      const { socket: host, roomId, token } = await createHost(ts.url);
-      const spectator = await connectClient(ts.url, { role: "spectator", roomId });
+      const { host, spectator, roomId, token } = await createRoomWithSpectator(ts);
       const room = gameRooms().get(roomId);
       expect(room).toBeDefined();
       expect(room!.hostSocketId).toBe(host.id);
