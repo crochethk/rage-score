@@ -4,6 +4,7 @@ import type { HostToken, RoomId } from "./auth.js";
 
 export interface ServerToClientEvents {
   "srv:room:auth": (roomId: RoomId, token: HostToken) => void;
+  "srv:room:spectators": (count: number) => void;
   "srv:ping": (ms: Timestamp, ack: (msg: PingAckMsg) => void) => void;
 }
 export const timestampSchema = z.int().nonnegative();

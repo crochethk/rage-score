@@ -6,6 +6,7 @@ import { IoServer } from "../src/server.js";
 import { useTestServer } from "./helpers/setup.js";
 import {
   connectClient,
+  createClient,
   createHost,
   createRoomWithSpectator,
 } from "./helpers/testClient.js";
@@ -195,6 +196,76 @@ describe("game room management", () => {
       expect(room2).toBeDefined();
       expect(room2!.hostSocketId).toBe(lobby2.host.id);
       expect(room2!.spectators).toContain(lobby2.spectator.id);
+    });
+
+    it("emits spectator count to host on reconnection", async () => {
+      const { host: oldHost, roomId, token } = await createRoomWithSpectator(ts);
+      const oldHostId = oldHost.id;
+      oldHost.disconnect();
+      await waitForSocketRemoved(ts.server.io, oldHostId);
+
+      const theHost = createClient(ts.url, {
+        autoConnect: false,
+        auth: { role: "host", roomId, token },
+      });
+
+      let receivedCount = -1;
+      theHost.on("srv:room:spectators", (count) => {
+        receivedCount = count;
+      });
+      theHost.connect();
+      await vi.waitFor(() => {
+        expect(theHost.connected).toBe(true);
+        expect(receivedCount).toBe(1);
+      });
+    });
+
+    it("emits current spectator count to host on spectator join and leave", async () => {
+      const { socket: host, roomId } = await createHost(ts.url);
+
+      let spectatorCount = -1;
+      host.on("srv:room:spectators", (count) => {
+        spectatorCount = count;
+      });
+
+      const spectator = await connectClient(ts.url, { role: "spectator", roomId });
+
+      await vi.waitFor(() => {
+        expect(spectatorCount).toBe(1);
+      });
+
+      const spectatorId = spectator.id;
+      spectator.disconnect();
+      await waitForSocketRemoved(ts.server.io, spectatorId);
+      expect(spectatorCount).toBe(0);
+    });
+
+    it("does not emit spectator count to spectators", async () => {
+      const { host, spectator, roomId } = await createRoomWithSpectator(ts);
+
+      let countKnownToHost = -1;
+      let countKnownToSpectator = -1;
+      host.on("srv:room:spectators", (count) => {
+        countKnownToHost = count;
+      });
+      spectator.on("srv:room:spectators", (count) => {
+        countKnownToSpectator = count;
+      });
+      expect(countKnownToHost).toBe(-1);
+      expect(countKnownToSpectator).toBe(-1);
+
+      // Add a second spectator to trigger the spectator count update
+      const spectator2 = await connectClient(ts.url, { role: "spectator", roomId });
+      await vi.waitFor(() => {
+        expect(countKnownToHost).toBe(1);
+        expect(countKnownToSpectator).toBe(-1);
+      });
+
+      const spectator2Id = spectator2.id;
+      spectator2.disconnect();
+      await waitForSocketRemoved(ts.server.io, spectator2Id);
+      expect(countKnownToHost).toBe(1);
+      expect(countKnownToSpectator).toBe(-1);
     });
   });
 

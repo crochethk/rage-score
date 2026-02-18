@@ -32,6 +32,8 @@ export function setupSocket(io: IoServer, socket: HostSocket, rooms: RoomStore) 
   if (room) {
     room.hostSocketId = socket.id;
     dbg("registered host '%s' for game room '%s'", socket.id, room.id);
+
+    socket.emit("srv:room:spectators", room.spectatorsCount);
   }
 
   socket.on("disconnecting", (reason) => handleDisconnecting(socket, rooms, reason));

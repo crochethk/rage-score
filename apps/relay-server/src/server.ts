@@ -104,7 +104,7 @@ export async function createIoServer(options?: IoServerOptions) {
         break;
       case "spectator":
         dbg("setup spectator socket");
-        setupSpectatorSocket(socket as SpectatorSocket, roomStore);
+        setupSpectatorSocket(io, socket as SpectatorSocket, roomStore);
         break;
     }
   });
