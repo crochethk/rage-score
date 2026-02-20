@@ -74,8 +74,20 @@ export const roundSchema = z.object({
  */
 export type Round = z.infer<typeof roundSchema>;
 
-export const gameDataSchema = z.object({
-  players: z.array(playerSchema).readonly(),
-  rounds: z.array(roundSchema).readonly(),
-});
+export const gameDataSchema = z
+  .object({
+    players: z.array(playerSchema).readonly(),
+    rounds: z.array(roundSchema).readonly(),
+  })
+  // check each player has a record for each round
+  .refine((gd) => {
+    const { players, rounds } = gd;
+    return players.every((p) => {
+      const pid = p.id;
+      return rounds.every((r) => {
+        const playerRoundData = r.playerData;
+        return new Set(Object.keys(playerRoundData)).has(pid);
+      });
+    });
+  });
 export type GameData = z.infer<typeof gameDataSchema>;

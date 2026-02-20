@@ -151,4 +151,17 @@ export const invalidGameDataExamples = {
       },
     },
   },
+  missingPlayerIdInRoundPlayerData: {
+    players: [
+      { id: "p-alex", name: "Alex", color: { r: 230, g: 57, b: 70 } },
+      { id: "p-sam", name: "Sam", color: { r: 29, g: 53, b: 87 } },
+    ],
+    rounds: [
+      {
+        roundNumber: 1,
+        cardsDealt: 10,
+        playerData: { "p-alex": { bid: 2, tricksTaken: 2 } },
+      },
+    ],
+  },
 } as const satisfies Record<string, unknown>;
