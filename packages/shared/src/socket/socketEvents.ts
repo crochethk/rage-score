@@ -1,4 +1,3 @@
-import type { DefaultEventsMap } from "socket.io";
 import { z } from "zod";
 import type { GameData } from "../game.js";
 import type { HostToken, RoomId } from "./auth.js";
@@ -21,4 +20,6 @@ export interface ClientToServerEvents {
   "hst:state:replace": StateReplaceHandler;
 }
 
+/** Clone of socket.io's `DefaultEventsMap` to avoid leaking node types globally... */
+type DefaultEventsMap = Record<string, (...args: unknown[]) => void>;
 export type InterServerEvents = DefaultEventsMap;
