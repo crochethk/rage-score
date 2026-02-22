@@ -22,7 +22,7 @@ export default defineConfig([
       // Stylistic rules (optional)
       ...tseslint.configs.stylisticTypeChecked,
 
-      reactHooks.configs["recommended-latest"],
+      reactHooks.configs.flat["recommended-latest"],
       reactRefresh.configs.vite,
 
       // Enable lint rules for React
