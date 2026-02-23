@@ -16,4 +16,13 @@ export const env = {
       (import.meta.env.VITE_RELAY_SERVER_URL as string) ??
       "http://localhost:3333",
   },
+
+  debug: {
+    /** Enables the on-page console. Useful for example to debug on mobile devices. */
+    showConsole: import.meta.env.VITE_SHOW_CONSOLE === "true",
+    consoleExpansionLevel: (import.meta.env
+      .VITE_DEFAULT_CONSOLE_EXPANSION_LEVEL ?? "semi") as ExpansionLevel,
+  },
 };
+
+export type ExpansionLevel = "hidden" | "semi" | "full";

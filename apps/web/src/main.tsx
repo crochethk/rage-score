@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import { AppHost } from "./AppHost.tsx";
 import { AppSpectator } from "./AppSpectator.tsx";
 import { Error404 } from "./Error.tsx";
+import { ConsoleMirror } from "./components/ConsoleMirror.tsx";
 import { HostWrapper } from "./contexts/socket/HostWrapper.tsx";
 import { SpectatorWrapper } from "./contexts/socket/SpectatorWrapper.tsx";
 import { env } from "./env.ts";
@@ -15,6 +16,7 @@ import "./main.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
+      {env.debug.showConsole && <ConsoleMirror />}
       <Routes>
         <Route path="/" element={<HostWrapper url={env.config.serverUrl} />}>
           <Route index element={<AppHost />} />
