@@ -1,7 +1,8 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import App from "./App";
 import { GameState } from "./classes/GameState";
 import * as clr from "./color";
+import { useHostClient } from "./contexts/socket/SocketContext";
 import { useGameState } from "./hooks/useGameState";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import type { GameData, Player } from "./types";
@@ -22,11 +23,26 @@ export function AppHost() {
     handleInitialLoad,
   );
 
-  // TODO ------------------------------------------------NEW STUFF-----
-
   const gs = useGameState(() => data, setData);
+  const { client } = useHostClient();
 
-  // TODO add socket connection logic for hosting a game
+  useEffect(() => {
+    // emit on every change (client debounces)
+    client.emitStateSnapshot(data);
+  }, [client, data]);
+
+  // Needed to cleanly emit state once on connect, without re-registering the
+  // handler on every data change
+  const latestDataRef = useRef(data);
+  useEffect(() => {
+    latestDataRef.current = data;
+  }, [data]);
+
+  useEffect(() => {
+    return client.onConnected(() => {
+      client.emitStateSnapshot(latestDataRef.current);
+    });
+  }, [client]);
 
   return <App gs={gs} />;
 }
