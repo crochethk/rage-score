@@ -44,7 +44,11 @@ export function AppHost() {
     });
   }, [client]);
 
-  return <App gs={gs} />;
+  return (
+    <>
+      <App gs={gs} />
+    </>
+  );
 }
 
 function sanitizePlayerColors(players: readonly Player[]) {

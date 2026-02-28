@@ -7,6 +7,7 @@ import type { GameState } from "./classes/GameState";
 import { AddPlayerModal } from "./components/dialogs/AddPlayerModal";
 import { EditPlayerModal } from "./components/dialogs/EditPlayerModal";
 import { ScoreInputModal } from "./components/dialogs/ScoreInputModal";
+import { HostClientControls } from "./components/ShareGame";
 import type { EditPlayerDialogData } from "./contexts/EditPlayerContext";
 import { GameInteractionContext } from "./contexts/GameInteractionContext";
 import type { ScoreInputData } from "./contexts/ScoreInputContext";
@@ -109,6 +110,7 @@ export default function App({ gs, readonly = false }: AppProps) {
               >
                 <i className="bi bi-trash fw-bold" /> Punkte Löschen
               </Button>
+              <HostClientControls />
             </Col>
           </Row>
         )}
