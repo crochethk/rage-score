@@ -82,7 +82,6 @@ export async function createIoServer(options?: IoServerOptions) {
   const roomStore = new RoomStore();
 
   io.use(auth);
-  io.use(ping);
 
   io.on("connection", async (socket) => {
     dbg("----- client connected ----- %o", {
@@ -124,25 +123,6 @@ export async function createIoServer(options?: IoServerOptions) {
   };
 
   // ----- Handlers -----
-
-  // TODO remove this as it is unnecessary and was only for testing purposes
-  function ping(socket: ClientSocket, next: NextFn) {
-    // save timer ref to socket data
-    socket.data.pingTimer = setInterval(() => {
-      const timestamp = Date.now();
-      dbg("[emit] PING", timestamp);
-      socket.emit("srv:ping", timestamp, (msg) =>
-        // handle ACK from client
-        dbg("[receive]", msg.toUpperCase(), " from client"),
-      );
-    }, 5000);
-
-    socket.on("disconnect", (_reason) => {
-      // stop ping timer
-      clearInterval(socket.data.pingTimer);
-    });
-    return next();
-  }
 
   function auth(socket: ClientSocket, next: NextFn) {
     // validate auth shape

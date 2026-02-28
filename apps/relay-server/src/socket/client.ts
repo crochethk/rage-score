@@ -17,6 +17,5 @@ export type ClientSocket = Socket<
 export interface SocketData {
   /** Similar object to `socket.handshake.auth` but validated/hydrated. */
   auth: SpectatorAuth | Required<HostAuth>;
-  pingTimer: NodeJS.Timeout;
   // ...
 }
