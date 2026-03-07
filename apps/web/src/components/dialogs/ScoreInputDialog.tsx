@@ -55,7 +55,7 @@ interface ScoreInputFormProps {
 
 function ScoreInputForm(props: ScoreInputFormProps) {
   const { playerId, roundData, cardsDealt, readonly } = props;
-  const { onScoreInput } = useScoreInput();
+  const { onScoreInput, onNextPlayer } = useScoreInput();
 
   const possibleBidsOptions = gu.getPossibleBids(cardsDealt).map((b) => (
     <option key={b} value={b}>
@@ -81,9 +81,10 @@ function ScoreInputForm(props: ScoreInputFormProps) {
         controlId="bidInput"
         required
         value={roundData.bid ?? ""}
-        onChange={(val) =>
-          onScoreInput(playerId, { bid: parseTricksValue(val) })
-        }
+        onChange={(val) => {
+          onScoreInput(playerId, { bid: parseTricksValue(val) });
+          onNextPlayer(playerId);
+        }}
         disabled={readonly}
       >
         <option value="">---</option>
