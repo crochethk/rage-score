@@ -38,12 +38,15 @@ function HostClientProvider(props: HostClientProviderProps) {
     }
   }, [auth, client, connectionDesired, status]);
 
+  const spectators = useSpectatorCount(client);
+
   return (
     <HostClientContext
       value={{
         client,
         auth,
         connectionDesired,
+        spectators,
       }}
     >
       {children}
@@ -113,4 +116,10 @@ function useConnectionDesire(client: BaseClient) {
   }, [client, setConnDesire]);
 
   return connDesire.desired;
+}
+
+function useSpectatorCount(client: HostClient) {
+  const [count, setCount] = useState(0);
+  useEffect(() => client.onSpectatorCount((c) => setCount(c)), [client]);
+  return count;
 }

@@ -11,6 +11,7 @@ export interface HostClientContextValue {
   client: HostClient;
   auth: HostAuth;
   connectionDesired: boolean;
+  spectators: number;
 }
 export interface SpectatorClientContextValue {
   client: SpectatorClient;
