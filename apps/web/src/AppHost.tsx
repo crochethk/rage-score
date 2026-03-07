@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef } from "react";
 import App from "./App";
 import { GameState } from "./classes/GameState";
 import * as clr from "./color";
-import { useHostClient } from "./contexts/socket/SocketContext";
+import { ConnectionStatus } from "./components/ConnectionStatus";
+import { useBaseClient, useHostClient } from "./contexts/socket/SocketContext";
 import { useGameState } from "./hooks/useGameState";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import type { GameData, Player } from "./types";
@@ -44,8 +45,10 @@ export function AppHost() {
     });
   }, [client]);
 
+  const { status } = useBaseClient();
   return (
     <>
+      <ConnectionStatus status={status} />
       <App gs={gs} />
     </>
   );

@@ -1,6 +1,10 @@
 import { useParams } from "react-router";
 import App from "./App";
-import { useSpectatorClient } from "./contexts/socket/SocketContext";
+import { ConnectionStatus } from "./components/ConnectionStatus";
+import {
+  useBaseClient,
+  useSpectatorClient,
+} from "./contexts/socket/SocketContext";
 import { useGameState } from "./hooks/useGameState";
 
 export function AppSpectator() {
@@ -8,8 +12,10 @@ export function AppSpectator() {
   const [data, setData] = useSpectatorClient().incomingGameData;
   const gs = useGameState(() => data, setData);
 
+  const { status } = useBaseClient();
   return (
     <>
+      <ConnectionStatus status={status} />
       <App gs={gs} readonly />
       <div>
         <hr />

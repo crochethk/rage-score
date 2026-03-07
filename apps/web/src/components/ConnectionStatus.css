@@ -1,0 +1,11 @@
+.spin {
+  display: inline-block;
+  animation: spin 1.5s linear infinite;
+  line-height: 1;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
