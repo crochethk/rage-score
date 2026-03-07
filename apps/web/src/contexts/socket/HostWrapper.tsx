@@ -7,16 +7,11 @@ import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { BaseClientProvider } from "./BaseClientProvider";
-import { HostClient, type OffFn } from "./SocketClient";
-import { HostClientContext } from "./SocketContext";
-
-// TODO reconnect on page reload (only) if client was previously connected
+import { BaseClient, HostClient, type OffFn } from "./SocketClient";
+import { HostClientContext, useBaseClient } from "./SocketContext";
 
 export function HostWrapper({ url }: { url: string }) {
   const [client] = useState<HostClient>(() => new HostClient(url));
-  useEffect(() => {
-    return () => client.disconnect();
-  }, [client]);
 
   return (
     <BaseClientProvider client={client}>
@@ -35,11 +30,20 @@ function HostClientProvider(props: HostClientProviderProps) {
   const { client, children } = props;
   const auth = useRoomAuth(client);
 
+  const { status } = useBaseClient();
+  const connectionDesired = useConnectionDesire(client);
+  useEffect(() => {
+    if (connectionDesired && status === "disconnected") {
+      client.connect(auth);
+    }
+  }, [auth, client, connectionDesired, status]);
+
   return (
     <HostClientContext
       value={{
         client,
         auth,
+        connectionDesired,
       }}
     >
       {children}
@@ -72,4 +76,41 @@ function useRoomAuth(client: HostClient) {
   }, [client, setAuth]);
 
   return auth;
+}
+
+interface ConnectionDesireRecord {
+  desired: boolean;
+  timestamp: number;
+}
+
+const CONNECTION_DESIRE_EXPIRATION = 2 * 60 * 60_000; // 2h
+const connectionNotDesired = { desired: false, timestamp: 0 };
+
+function useConnectionDesire(client: BaseClient) {
+  const sanitizeExpired = (prevConnDesire: ConnectionDesireRecord) => {
+    if (!prevConnDesire.desired) return prevConnDesire;
+    const now = Date.now();
+    const timestamp = prevConnDesire.timestamp;
+    const isExpired = now - timestamp > CONNECTION_DESIRE_EXPIRATION;
+    return isExpired ? connectionNotDesired : { desired: true, timestamp: now };
+  };
+
+  const [connDesire, setConnDesire] = useLocalStorage<ConnectionDesireRecord>(
+    "hostConnectionDesire",
+    connectionNotDesired,
+    sanitizeExpired,
+  );
+
+  useEffect(() => {
+    const setDesiredToTrue = () =>
+      setConnDesire({ desired: true, timestamp: Date.now() });
+    const offs = [
+      client.onStartConnect(setDesiredToTrue),
+      client.onConnected(setDesiredToTrue),
+      client.onStartDisconnect(() => setConnDesire(connectionNotDesired)),
+    ];
+    return () => offs.forEach((off) => off());
+  }, [client, setConnDesire]);
+
+  return connDesire.desired;
 }

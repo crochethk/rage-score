@@ -10,6 +10,7 @@ export interface BaseClientContextValue {
 export interface HostClientContextValue {
   client: HostClient;
   auth: HostAuth;
+  connectionDesired: boolean;
 }
 export interface SpectatorClientContextValue {
   client: SpectatorClient;

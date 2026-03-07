@@ -25,7 +25,7 @@ export function AppHost() {
   );
 
   const gs = useGameState(() => data, setData);
-  const { client } = useHostClient();
+  const { client, connectionDesired } = useHostClient();
 
   useEffect(() => {
     // emit on every change (client debounces)
@@ -48,7 +48,7 @@ export function AppHost() {
   const { status } = useBaseClient();
   return (
     <>
-      <ConnectionStatus status={status} />
+      {connectionDesired && <ConnectionStatus status={status} />}
       <App gs={gs} />
     </>
   );
