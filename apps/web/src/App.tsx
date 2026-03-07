@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
-import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
+import Dropdown from "react-bootstrap/Dropdown";
 import Row from "react-bootstrap/Row";
 import type { GameState } from "./classes/GameState";
 import { AddPlayerModal } from "./components/dialogs/AddPlayerModal";
@@ -96,20 +96,10 @@ export default function App({ gs, readonly = false }: AppProps) {
         {!readonly && (
           <Row className="mt-2">
             <Col className="col-12 mx-auto text-start text-sm-center">
-              <Button
-                variant="danger"
-                className="fw-bold m-1"
-                onClick={handleFullReset}
-              >
-                <i className="bi bi-trash" /> Alles Löschen
-              </Button>
-              <Button
-                variant="danger"
-                className="fw-bold m-1"
-                onClick={handleScoreReset}
-              >
-                <i className="bi bi-trash fw-bold" /> Punkte Löschen
-              </Button>
+              <ResetMenu
+                onFullReset={handleFullReset}
+                onScoreReset={handleScoreReset}
+              />
               <HostClientControls />
             </Col>
           </Row>
@@ -130,5 +120,27 @@ export default function App({ gs, readonly = false }: AppProps) {
         <AddPlayerModal gs={gs} dialogState={addPlayerState} />
       )}
     </>
+  );
+}
+
+interface ResetMenuProps {
+  onFullReset: () => void;
+  onScoreReset: () => void;
+}
+function ResetMenu(props: ResetMenuProps) {
+  const { onFullReset, onScoreReset } = props;
+  return (
+    <Dropdown drop="up" className="d-inline-block">
+      <Dropdown.Toggle variant="danger" id="reset-dropdown">
+        <i className="bi bi-trash" />
+        <span className="visually-hidden">Zurücksetzen...</span>
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu style={{ zIndex: "1337" }}>
+        <Dropdown.Item onClick={onFullReset}>Alles löschen</Dropdown.Item>
+        <Dropdown.Divider />
+        <Dropdown.Item onClick={onScoreReset}>Punkte löschen</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
   );
 }
