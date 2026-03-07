@@ -63,9 +63,14 @@ export abstract class BaseClient {
 
   disconnect() {
     if (this.disconnected && !this.active) return;
+    this.prepareDisconnect();
+    this.io.disconnect();
+  }
+
+  /** Logic to be executed prior to the socket being disconnected (client-side). */
+  protected prepareDisconnect() {
     console.log("disconnecting...");
     this.emitDisconnect();
-    this.io.disconnect();
   }
 
   private emitDisconnect() {
@@ -129,10 +134,13 @@ export class HostClient extends BaseClient {
     if (this.connected) {
       console.log("closing room");
       this.io.emit("hst:room:close");
+      // let server disconnect us to avoid timing issues, caused by early client disconnect
+      this.prepareDisconnect();
+    } else {
+      super.disconnect();
     }
-    this.io.auth = {};
 
-    super.disconnect();
+    this.io.auth = {};
     if (this.stateReplaceDebounceTimer !== null) {
       clearTimeout(this.stateReplaceDebounceTimer);
       this.stateReplaceDebounceTimer = null;
