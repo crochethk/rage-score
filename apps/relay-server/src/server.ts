@@ -17,6 +17,7 @@ import type {
 import Debug from "debug";
 import { createServer } from "http";
 import { Server, type ExtendedError } from "socket.io";
+import { setupHeartbeat } from "./heartbeat.js";
 import { Room } from "./Room.js";
 import { RoomStore } from "./RoomStore.js";
 import type { ClientSocket, SocketData } from "./socket/client.js";
@@ -77,6 +78,8 @@ export async function createIoServer(options?: IoServerOptions) {
     serveClient: false,
     ...options.serverOpts,
   });
+
+  setupHeartbeat(io, port);
 
   /** Store for existing `Room`s identified by their `id` */
   const roomStore = new RoomStore();
