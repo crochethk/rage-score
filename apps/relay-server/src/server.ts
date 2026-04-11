@@ -72,7 +72,13 @@ export async function createIoServer(options?: IoServerOptions) {
       : []),
   ];
 
-  const httpServer = createServer();
+  const httpServer = createServer((req, res) => {
+    if (req.url?.startsWith("/health")) {
+      res.writeHead(200);
+      return res.end("OK");
+    }
+  });
+
   const io: IoServer = new Server(httpServer, {
     cors: { origin: corsOrigins },
     serveClient: false,
