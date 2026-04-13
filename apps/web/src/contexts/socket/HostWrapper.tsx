@@ -120,6 +120,12 @@ function useConnectionDesire(client: BaseClient) {
 
 function useSpectatorCount(client: HostClient) {
   const [count, setCount] = useState(0);
-  useEffect(() => client.onSpectatorCount((c) => setCount(c)), [client]);
+  useEffect(() => {
+    const offs = [
+      client.onSpectatorCount((c) => setCount(c)),
+      client.onStartDisconnect(() => setCount(0)),
+    ];
+    return () => offs.forEach((off) => off());
+  }, [client]);
   return count;
 }
